@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -r \"import.*chains\\\\|from.*chains\" d:/Projects/react-base/src --include=*.ts --include=*.tsx)",
+      "Bash(npx vitest:*)",
+      "Read(//d/Projects/store/src/utils/**)",
+      "Bash(npm outdated:*)",
+      "Bash(npm update:*)",
+      "WebSearch",
+      "WebFetch(domain:eslint.org)",
+      "Bash(npm info:*)",
+      "Bash(curl -s \"https://raw.githubusercontent.com/vultisig/vultisig-windows/main/.github/workflows/build.yml\")",
+      "Bash(curl -s \"https://raw.githubusercontent.com/vultisig/vultisig-windows/main/.github/workflows/sync-extension-docs.yml\")",
+      "Bash(gh repo:*)"
+    ]
+  }
+}
