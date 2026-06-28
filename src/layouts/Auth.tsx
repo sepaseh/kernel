@@ -1,31 +1,44 @@
+import { Flex, theme } from "antd";
+import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
-import { useTheme } from "styled-components";
 
-import { HStack, VStack } from "@/ui/Stack";
+import { authTokenKey } from "@/config";
+import { useCore } from "@/hooks";
+import { delCookie } from "@/utils";
+
+const { useToken } = theme;
 
 export const AuthLayout = () => {
-  const token = useTheme();
+  const { setUser } = useCore();
+  const { token } = useToken();
+
+  useEffect(() => {
+    delCookie(authTokenKey);
+
+    setUser();
+  }, [setUser]);
 
   return (
-    <HStack
-      $style={{
-        overflow: "hidden",
-        minHeight: "100vh",
-        flexGrow: "1",
-        backgroundImage: `linear-gradient(314deg, ${token.colorBgContainer} 64%, ${token.colorBgElevated} 154%)`,
+    <Flex
+      style={{
+        padding: token.paddingSM,
+        flexGrow: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: token.colorBgLayout,
       }}
     >
-      <VStack
-        $style={{
-          minWidth: "480px",
-          padding: "32px",
-          flexGrow: "1",
-          alignItems: "center",
-          justifyContent: "center",
+      <div
+        style={{
+          width: "100%",
+          maxWidth: token.screenXS,
+          padding: 32,
+          borderRadius: 8,
+          backgroundColor: token.colorBgBase,
         }}
       >
         <Outlet />
-      </VStack>
-    </HStack>
+      </div>
+    </Flex>
   );
 };

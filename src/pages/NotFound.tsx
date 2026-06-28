@@ -1,18 +1,12 @@
-import { Stack,VStack } from "@/ui/Stack";
+import { Button, Result } from "antd";
 
 export const NotFoundPage = () => {
   return (
-    <VStack
-      $style={{
-        minHeight: "100vh",
-        flexGrow: "1",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <Stack as="span" $style={{ fontSize: "22px" }}>
-        404 — Page Not Found
-      </Stack>
-    </VStack>
+    <Result
+      status="404"
+      title="404"
+      subTitle="Sorry, the page you visited does not exist"
+      extra={<Button type="primary">Back Home</Button>}
+    />
   );
 };

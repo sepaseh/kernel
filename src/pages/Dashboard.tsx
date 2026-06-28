@@ -1,5 +1,17 @@
-import { Stack } from "@/ui/Stack";
+import { theme } from "antd";
+
+const { useToken } = theme;
 
 export const DashboardPage = () => {
-  return <Stack $style={{ padding: "24px" }}>Dashboard</Stack>;
+  const { token } = useToken();
+
+  return (
+    <div
+      style={{
+        paddingBlock: token.paddingMD,
+        paddingInline: token.paddingSM,
+        flexGrow: 1,
+      }}
+    />
+  );
 };

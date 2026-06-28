@@ -1,10 +1,5 @@
-import de from "./de";
-import en from "./en";
-import es from "./es";
-import hr from "./hr";
-import it from "./it";
-import pt from "./pt";
+﻿import { en } from "./en";
+import { fa } from "./fa";
+export { faDayjs } from "./dayjs/fa";
 
-export const resources = { de, en, es, hr, it, pt };
-
-export type Translations = typeof en;
+export const resources = { en, fa };

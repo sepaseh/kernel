@@ -5,11 +5,8 @@ const isObject = (obj: any): obj is Record<string, any> =>
 
 const toCamel = (value: string) =>
   value.replace(/([-_][a-z])/gi, ($1) =>
-    $1.toUpperCase().replace("-", "").replace("_", "")
+    $1.toUpperCase().replace("-", "").replace("_", ""),
   );
-
-const toKebab = (value: string) =>
-  value.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
 
 const toSnake = (value: string) =>
   value.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
@@ -23,19 +20,6 @@ export const toCamelCase = <T>(obj: T): T => {
     return result as T;
   } else if (isArray(obj)) {
     return obj.map((item) => toCamelCase(item)) as T;
-  }
-  return obj;
-};
-
-export const toKebabCase = <T>(obj: T): T => {
-  if (isObject(obj)) {
-    const result: Record<string, unknown> = {};
-    Object.keys(obj).forEach((key) => {
-      result[toKebab(key)] = toKebabCase((obj as Record<string, unknown>)[key]);
-    });
-    return result as T;
-  } else if (isArray(obj)) {
-    return obj.map((item) => toKebabCase(item)) as T;
   }
   return obj;
 };

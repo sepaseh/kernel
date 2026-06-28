@@ -1,186 +1,117 @@
-import {
+﻿import {
   ConfigProvider,
-  FormInstance,
-  FormProps,
+  ConfigProviderProps,
+  GlobalToken,
   message as Message,
   Modal,
-  theme,
-  UploadProps,
+  notification as Notification,
+  theme as antdTheme,
+  ThemeConfig,
 } from "antd";
-import { createStyles } from "antd-style";
-import { FC, ReactNode } from "react";
-import { createGlobalStyle, ThemeProvider } from "styled-components";
+import enUS from "antd/locale/en_US";
+import faIR from "antd/locale/fa_IR";
+import { FC, ReactNode, useEffect } from "react";
 
-import { themeConfigs } from "@/config/theme";
-import { AntdContext } from "@/contexts/Antd";
-import { useCore } from "@/hooks/useCore";
-import { imageToBase64, imageToDimensions } from "@/utils/format";
+import { Language, Theme } from "@/config";
+import { AntdContext } from "@/contexts";
+import { useCore } from "@/hooks";
 
-const useStyles = createStyles(({ css, cssVar, prefixCls }) => ({
-  modal: css`
-    .${prefixCls}-modal-close {
-      background-color: ${cssVar.colorBgContainerDisabled};
-      inset-inline-end: 24px;
-      top: 18px;
-    }
-    .${prefixCls}-modal-container {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      padding: 24px;
-    }
-    .${prefixCls}-modal-footer {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-    }
-    .${prefixCls}-modal-header {
-      padding-right: ${cssVar.controlHeight};
-    }
-    .${prefixCls}-modal-title {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  `,
-  table: css`
-    .${prefixCls}-table-container {
-      overflow: hidden;
-    }
-    .${prefixCls}-table-content table {
-      border-spacing: 0 12px;
-      margin: -12px 0;
-    }
-    .${prefixCls}-table-tbody > tr > td {
-      border-top: 1px solid ${cssVar.colorBorder};
-      &:first-child {
-        border-inline-start: 1px solid ${cssVar.colorBorder};
-        border-start-start-radius: ${cssVar.borderRadius};
-        border-end-start-radius: ${cssVar.borderRadius};
-      }
-      &:last-child {
-        border-inline-end: 1px solid ${cssVar.colorBorder};
-        border-start-end-radius: ${cssVar.borderRadius};
-        border-end-end-radius: ${cssVar.borderRadius};
-      }
-    }
-    .${prefixCls}-table-thead > tr > th {
-      border: none;
-      &:first-child {
-        border-end-start-radius: ${cssVar.borderRadius};
-      }
-      &:last-child {
-        border-end-end-radius: ${cssVar.borderRadius};
-      }
-    }
-  `,
-  upload: css`
-    .${prefixCls}-upload {
-      &.${prefixCls}-upload-select {
-        overflow: hidden;
-      }
-    }
-    .${prefixCls}-upload-drag {
-      .${prefixCls}-upload {
-        overflow: hidden;
-        padding: 0;
-      }
-      .${prefixCls}-upload-drag-container {
-        display: block;
-      }
-    }
-  `,
-}));
+type Palette = Pick<
+  GlobalToken,
+  | "colorBgBase"
+  | "colorBgContainer"
+  | "colorBorder"
+  | "colorTextBase"
+  | "colorTextDescription"
+>;
 
-const GlobalStyle = createGlobalStyle`
-  body {
-    background-color: ${({ theme }) => theme.colorBgContainer};
-    color: ${({ theme }) => theme.colorText};
-  }
-`;
-
-const TokenBridge: FC<{ children: ReactNode }> = ({ children }) => {
-  const { token } = theme.useToken();
-  return (
-    <ThemeProvider theme={token}>
-      <GlobalStyle />
-      {children}
-    </ThemeProvider>
-  );
+const token: Partial<GlobalToken> = {
+  colorLink: "#0a84ff",
+  colorPrimary: "#ff2b2b",
 };
+
+const palettes: Record<Theme, Palette> = {
+  light: {
+    colorBgBase: "#f9f9f9",
+    colorBgContainer: "#ffffff",
+    colorBorder: "#e5e5ea",
+    colorTextBase: "#2c2c2e",
+    colorTextDescription: "#48484a",
+  },
+  dark: {
+    colorBgBase: "#1c1c1e",
+    colorBgContainer: "#1a1a1a",
+    colorBorder: "#3a3a3c",
+    colorTextBase: "#ffffff",
+    colorTextDescription: "#aeaeb2",
+  },
+};
+
+const buildThemeConfig = (
+  algorithm: ThemeConfig["algorithm"],
+  p: Palette,
+): ThemeConfig => ({
+  algorithm,
+  token: {
+    ...p,
+    ...token,
+    fontFamily: "inherit",
+    colorBgElevated: p.colorBgContainer,
+    screenXLMax: 1399,
+    screenXXL: 1400,
+    screenXXLMin: 1400,
+  },
+  components: {
+    Badge: {
+      dotSize: 12,
+    },
+    Divider: {
+      marginLG: 0,
+    },
+    Menu: {
+      colorBgContainer: "transparent",
+      colorSplit: "transparent",
+      itemPaddingInline: 8,
+    },
+  },
+});
+
+const themeConfigs: Record<Theme, ThemeConfig> = {
+  dark: buildThemeConfig(antdTheme.darkAlgorithm, palettes.dark),
+  light: buildThemeConfig(antdTheme.defaultAlgorithm, palettes.light),
+};
+
+const localeConfigs = {
+  en: { direction: "ltr", locale: enUS },
+  fa: { direction: "rtl", locale: faIR },
+} satisfies Record<Language, Pick<ConfigProviderProps, "direction" | "locale">>;
 
 export const AntdProvider: FC<{ children?: ReactNode }> = ({ children }) => {
   const [messageAPI, messageHolder] = Message.useMessage();
   const [modalAPI, modalHolder] = Modal.useModal();
-  const { theme: currentTheme } = useCore();
-  const { styles } = useStyles();
+  const [notificationAPI, notificationHolder] = Notification.useNotification();
 
-  const beforeUpload: (props: {
-    dimensions?: { height: number; width: number };
-    file: Parameters<NonNullable<UploadProps["beforeUpload"]>>[0];
-    form: FormInstance;
-    name: string;
-    onChange: (value: string) => void;
-    size?: number;
-  }) => Promise<boolean> = async ({ dimensions, file, form, name, onChange, size }) => {
-    if (size && file.size / 1024 / 1024 > size) {
-      form.setFields([{ name, errors: [`Image must be smaller than ${size}MB`] }]);
-      return false;
-    }
+  const { language, theme: currentTheme } = useCore();
+  const { token } = themeConfigs[currentTheme];
+  const { direction, locale } = localeConfigs[language];
 
-    if (dimensions) {
-      const { height, width } = await imageToDimensions(file);
-
-      if (height > dimensions.height || width > dimensions.width) {
-        form.setFields([
-          {
-            errors: [`Image dimensions must be smaller than ${dimensions.width}x${dimensions.height}px`],
-            name,
-          },
-        ]);
-        return false;
-      }
-    }
-
-    const base64 = await imageToBase64(file);
-    onChange(base64);
-    return false;
-  };
-
-  const onFinishFailed: (
-    errorInfo: Parameters<NonNullable<FormProps["onFinishFailed"]>>[0],
-    form: FormInstance,
-  ) => void = (errorInfo, form) => {
-    const [errorField] = errorInfo.errorFields;
-    if (!errorField) return;
-
-    const element = document.getElementById(errorField.name.join("_"));
-
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "center" });
-    } else {
-      form.scrollToField(errorField.name, { behavior: "smooth", block: "center" });
-    }
-
-    form.focusField(errorField.name);
-  };
+  useEffect(() => {
+    document.body.style.backgroundColor = token?.colorBgBase ?? "";
+    document.body.style.color = token?.colorTextBase ?? "";
+  }, [token]);
 
   return (
     <ConfigProvider
-      modal={{ className: styles.modal }}
-      table={{ className: styles.table }}
+      direction={direction}
+      locale={locale}
       theme={themeConfigs[currentTheme]}
-      upload={{ className: styles.upload }}
     >
-      <TokenBridge>
-        <AntdContext.Provider
-          value={{ beforeUpload, messageAPI, modalAPI, onFinishFailed }}
-        >
-          {children}
-          {messageHolder}
-          {modalHolder}
-        </AntdContext.Provider>
-      </TokenBridge>
+      <AntdContext.Provider value={{ messageAPI, modalAPI, notificationAPI }}>
+        {children}
+        {messageHolder}
+        {modalHolder}
+        {notificationHolder}
+      </AntdContext.Provider>
     </ConfigProvider>
   );
 };
