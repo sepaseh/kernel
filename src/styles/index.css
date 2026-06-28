@@ -9,8 +9,21 @@ a {
   text-decoration: none;
 }
 
+button {
+  font-family: inherit;
+  -moz-font-feature-settings: inherit;
+  -webkit-font-feature-settings: inherit;
+  font-feature-settings: inherit;
+}
+
 img {
   border: none;
+}
+
+input {
+  -moz-font-feature-settings: inherit;
+  -webkit-font-feature-settings: inherit;
+  font-feature-settings: inherit;
 }
 
 li {
@@ -18,9 +31,12 @@ li {
 }
 
 html {
-  font-size: 14px;
-  font-weight: 500;
-  min-width: 480px;
+  direction: rtl;
+  font-family: "IRANSansX", Tahoma, Geneva, Verdana, sans-serif;
+  -moz-font-feature-settings: "ss01";
+  -webkit-font-feature-settings: "ss01";
+  font-feature-settings: "ss01";
+  min-width: 320px;
   overflow-x: hidden;
 }
 

@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 
-import { StorageKey } from "@/config/constants";
+import { storageKeys } from "@/config";
 
 export const useLocalStorageWatcher = (
-  key: StorageKey,
-  callback: () => void
+  key: (typeof storageKeys)[keyof typeof storageKeys],
+  callback: () => void,
 ) => {
   useEffect(() => {
     const handleStorage = (event: StorageEvent) => {

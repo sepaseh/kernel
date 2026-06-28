@@ -1,5 +1,4 @@
-import { storageKeys } from "@/config/constants";
-import { defaultTheme, Theme } from "@/config/theme";
+import { defaultTheme, storageKeys, Theme } from "@/config";
 
 import { getState, setState } from "./state";
 

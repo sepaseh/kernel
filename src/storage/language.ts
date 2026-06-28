@@ -1,5 +1,4 @@
-import { storageKeys } from "@/config/constants";
-import { defaultLanguage, Language } from "@/config/language";
+﻿import { defaultLanguage, Language, storageKeys } from "@/config";
 
 import { getState, setState } from "./state";
 

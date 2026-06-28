@@ -1,19 +1,29 @@
-import { FC, ReactNode, useCallback, useState } from "react";
+﻿import dayjs from "dayjs";
+import calendar from "dayjs/plugin/calendar";
+import jalaliday from "jalaliday";
+import { FC, ReactNode, useCallback, useEffect, useState } from "react";
 
-import { storageKeys } from "@/config/constants";
-import { Language } from "@/config/language";
-import { RouteKey } from "@/config/routes";
-import { Theme } from "@/config/theme";
-import { CoreContext, CoreContextProps } from "@/contexts/Core";
-import i18n from "@/i18n";
-import { useLocalStorageWatcher } from "@/storage/hooks/useLocalStorageWatcher";
+import { Language, RouteKey, storageKeys, Theme } from "@/config";
+import { CoreContext, CoreContextProps } from "@/contexts";
+import { i18nInstance } from "@/i18n";
+import { faDayjs } from "@/locales";
 import {
   getLanguage,
+  getTheme,
   setLanguage as setLanguageStorage,
-} from "@/storage/language";
-import { getTheme, setTheme as setThemeStorage } from "@/storage/theme";
+  setTheme as setThemeStorage,
+  useLocalStorageWatcher,
+} from "@/storage";
 
-type StateProps = Pick<CoreContextProps, "currentRoute" | "language" | "theme">;
+dayjs.extend(calendar);
+dayjs.extend(jalaliday);
+dayjs.locale(faDayjs, undefined, true);
+dayjs.locale("fa");
+
+type StateProps = Pick<
+  CoreContextProps,
+  "currentRoute" | "language" | "theme" | "user"
+>;
 
 export const CoreProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [state, setState] = useState<StateProps>({
@@ -21,7 +31,11 @@ export const CoreProvider: FC<{ children: ReactNode }> = ({ children }) => {
     language: getLanguage(),
     theme: getTheme(),
   });
-  const { currentRoute, language, theme } = state;
+  const { currentRoute, language, theme, user } = state;
+
+  const setUser: CoreContextProps["setUser"] = useCallback((user) => {
+    setState((prev) => ({ ...prev, user }));
+  }, []);
 
   const setCurrentRoute = useCallback((currentRoute: RouteKey) => {
     setState((prev) => ({ ...prev, currentRoute }));
@@ -29,12 +43,15 @@ export const CoreProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   const setLanguage = (language: Language, fromStorage?: boolean) => {
     if (!fromStorage) setLanguageStorage(language);
-    i18n.changeLanguage(language);
+
+    i18nInstance.changeLanguage(language);
+
     setState((prev) => ({ ...prev, language }));
   };
 
   const setTheme = (theme: Theme, fromStorage?: boolean) => {
     if (!fromStorage) setThemeStorage(theme);
+
     setState((prev) => ({ ...prev, theme }));
   };
 
@@ -46,6 +63,11 @@ export const CoreProvider: FC<{ children: ReactNode }> = ({ children }) => {
     setTheme(getTheme(), true);
   });
 
+  useEffect(() => {
+    dayjs.calendar(language === "fa" ? "jalali" : "gregory");
+    dayjs.locale(language === "fa" ? "fa" : "en");
+  }, [language]);
+
   return (
     <CoreContext.Provider
       value={{
@@ -54,7 +76,9 @@ export const CoreProvider: FC<{ children: ReactNode }> = ({ children }) => {
         setCurrentRoute,
         setLanguage,
         setTheme,
+        setUser,
         theme,
+        user,
       }}
     >
       {children}

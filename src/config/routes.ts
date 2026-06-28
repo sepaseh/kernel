@@ -1,6 +1,19 @@
-export type RouteKey = "notFound" | "root";
+export type RouteKey =
+  | "auth"
+  | "notFound"
+  | "password"
+  | "roles"
+  | "root"
+  | "users";
 
 export const routeTree = {
+  auth: { path: "/auth" },
   notFound: { path: "*" },
+  password: { path: "/password" },
+  roles: { path: "/roles" },
   root: { path: "/" },
-} satisfies Record<RouteKey, { path: string; link?: (...args: string[]) => string }>;
+  users: { path: "/users" },
+} satisfies Record<
+  RouteKey,
+  { path: string; link?: (...args: string[]) => string }
+>;
