@@ -18,7 +18,7 @@ const ROUTE_RULES: Record<RouteKey, RouteAccess> = {
 
 const ROUTE_KEYS = Object.keys(ROUTE_RULES) as RouteKey[];
 
-export const usePermissions = () => {
+export const useAllowedRoutes = (): ReadonlySet<RouteKey> => {
   const { user } = useCore();
 
   return useMemo(

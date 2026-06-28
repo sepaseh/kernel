@@ -59,6 +59,6 @@ Authentication uses a token cookie. API requests read the token key from `VITE_A
 
 ## Styling
 
-Global styles live in `src/styles`. The app uses IRANSans font files from `public/fonts/iransans`.
+Global styles live in `src/styles`. The app keeps `IRANSansX` first in the font stack, but font binaries are not committed because their public redistribution license is unclear. Copy licensed files into `public/fonts/iransans` locally and add matching `@font-face` rules in `src/styles/iransans.css` when needed.
 
 Prefer Ant Design components and theme tokens for new UI so layout, spacing, RTL behavior, and dark/light themes stay consistent.
