@@ -18,7 +18,7 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import { me, setUnauthorizedHandler } from "@/api";
 import { Icon } from "@/components/Icon";
 import { authTokenKey, RouteKey, routeTree } from "@/config";
-import { useCore, usePermissions } from "@/hooks";
+import { useAllowedRoutes, useCore } from "@/hooks";
 import { delCookie, getCookie } from "@/utils";
 
 const { useBreakpoint } = Grid;
@@ -31,7 +31,7 @@ export const DefaultLayout = () => {
   const { currentRoute, setTheme, setUser, theme: coreTheme, user } = useCore();
   const { token } = useToken();
   const navigate = useNavigate();
-  const permissions = usePermissions();
+  const allowedRoutes = useAllowedRoutes();
   const darkMode = coreTheme === "dark";
 
   const menuItemLabels: Partial<Record<RouteKey, string>> = {
@@ -41,7 +41,7 @@ export const DefaultLayout = () => {
   };
 
   const menuItems = (Object.entries(menuItemLabels) as [RouteKey, string][])
-    .filter(([key]) => permissions.has(key))
+    .filter(([key]) => allowedRoutes.has(key))
     .map(([key, label]) => ({
       key,
       label: <Link to={routeTree[key].path}>{label}</Link>,

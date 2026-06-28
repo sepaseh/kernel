@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 
 import { baseUrl, RouteKey, routeTree } from "@/config";
-import { useCore, usePermissions } from "@/hooks";
+import { useAllowedRoutes, useCore } from "@/hooks";
 import { AuthLayout } from "@/layouts/Auth";
 import { DefaultLayout } from "@/layouts/Default";
 import { DashboardPage } from "@/pages/Dashboard";
@@ -21,13 +21,13 @@ const RouteWrapper: FC<{ route: RouteKey; children: ReactNode }> = ({
   children,
 }) => {
   const { setCurrentRoute } = useCore();
-  const permissions = usePermissions();
+  const allowedRoutes = useAllowedRoutes();
 
   useEffect(() => {
     setCurrentRoute(route);
   }, [route, setCurrentRoute]);
 
-  if (permissions.has(route)) return children;
+  if (allowedRoutes.has(route)) return children;
 
   return <Navigate to={routeTree.root.path} replace />;
 };
