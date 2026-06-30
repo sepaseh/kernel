@@ -89,7 +89,7 @@ export const DefaultLayout = () => {
       >
         <Link to={routeTree.root.path}>
           <Typography.Text strong style={{ color: token.colorTextBase }}>
-            react-base
+            kernel
           </Typography.Text>
         </Link>
         {lg ? (
