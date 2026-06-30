@@ -1,6 +1,6 @@
-# React Base
+# Kernel
 
-React starter kit upgraded as a dashboard-ready foundation while keeping the `react-base` project name. It includes authentication, protected routing, an Ant Design layout, multilingual setup, API examples, and starter user/role management screens.
+React starter kit upgraded as a dashboard-ready foundation under the `kernel` project name. It includes authentication, protected routing, an Ant Design layout, multilingual setup, API examples, and starter user/role management screens.
 
 ## Stack
 
@@ -54,7 +54,7 @@ npm run knip       # detect unused files, exports, and dependencies
 | --- | --- | --- |
 | `VITE_API_BASE_URL` | Backend HTTP API base URL | `http://<current-host>` |
 | `VITE_APP_BASE_URL` | Router basename / deployed base path | empty string |
-| `VITE_AUTH_TOKEN_KEY` | Cookie key used for the bearer token | `react_base_auth_token` |
+| `VITE_AUTH_TOKEN_KEY` | Cookie key used for the bearer token | `kernel_auth_token` |
 
 Example values are available in `.env.example`.
 
