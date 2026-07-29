@@ -1,17 +1,17 @@
-﻿import { Button, Drawer, Form, FormProps, Input, Space } from "antd";
+/* eslint-disable react-hooks/set-state-in-effect */
+import { Button, Drawer, Form, FormProps, Input, Space } from "antd";
 import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 
 import { createUser, updateUser } from "@/api";
+import { DigitsInput } from "@/components/DigitsInput";
 import { modalKeys } from "@/config";
 import { useAntd, useGoBack } from "@/hooks";
-import { UserProps } from "@/types";
-import { tinyId } from "@/utils";
+import { CreateUserParams, UpdateUserParams, UserProps } from "@/types";
 
-type StateProps = {
-  open?: boolean;
-  submitting?: boolean;
+type UserFormParams = CreateUserParams & {
+  confirmPassword: string;
 };
 
 export const UserForm: FC<{ data?: UserProps; onFinish: () => void }> = ({
@@ -19,76 +19,66 @@ export const UserForm: FC<{ data?: UserProps; onFinish: () => void }> = ({
   onFinish,
 }) => {
   const { t } = useTranslation();
-  const [state, setState] = useState<StateProps>({});
-  const { open, submitting } = state;
-  const { messageAPI, notificationAPI } = useAntd();
+  const [open, setOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const { messageAPI } = useAntd();
   const { hash } = useLocation();
-  const [form] = Form.useForm<UserProps>();
+  const [form] = Form.useForm<UserFormParams>();
   const goBack = useGoBack();
   const isUpdate = hash === modalKeys.update && !!data;
 
-  const handleSubmit: FormProps<UserProps>["onFinish"] = async (values) => {
+  const handleSubmit: FormProps<UserFormParams>["onFinish"] = async ({
+    firstName,
+    lastName,
+    mobile,
+    password,
+    personnelCode,
+  }) => {
     if (submitting) return;
 
     try {
-      setState((prevState) => ({ ...prevState, submitting: true }));
+      setSubmitting(true);
+
+      const profile = { firstName, lastName, mobile, personnelCode };
 
       if (isUpdate) {
-        const { message } = await updateUser(data.id, values);
-
-        messageAPI.success(message);
+        await updateUser(data.id, profile satisfies UpdateUserParams);
       } else {
-        const password = tinyId();
-
-        await createUser({ ...values, password });
-
-        navigator.clipboard.writeText(password);
-
-        notificationAPI.success({
-          title: t("password"),
-          description: password,
-        });
+        await createUser({ ...profile, password });
       }
 
+      messageAPI.success(t(isUpdate ? "userUpdated" : "userCreated"));
       goBack();
-
       onFinish();
     } catch (error) {
       if (error instanceof Error) messageAPI.error(error.message);
       else console.error(error);
     } finally {
-      setState((prevState) => ({ ...prevState, submitting: false }));
+      setSubmitting(false);
     }
   };
 
   useEffect(() => {
-    void (() => {
-      switch (hash) {
-        case modalKeys.create: {
-          setState((prevState) => ({ ...prevState, open: true }));
-
-          break;
-        }
-        case modalKeys.update: {
-          if (data) {
-            setState((prevState) => ({ ...prevState, open: true }));
-
-            form.setFieldsValue(data);
-          } else {
-            goBack();
-          }
-
-          break;
-        }
-        default: {
-          if (open) form.resetFields();
-
-          setState({});
-
-          break;
-        }
+    switch (hash) {
+      case modalKeys.create: {
+        setOpen(true);
+        break;
       }
-    })();
+      case modalKeys.update: {
+        if (data) {
+          setOpen(true);
+          form.setFieldsValue(data);
+        } else {
+          goBack();
+        }
+        break;
+      }
+      default: {
+        if (open) form.resetFields();
+        setOpen(false);
+        setSubmitting(false);
+      }
+    }
   }, [data, form, goBack, hash, open]);
 
   return (
@@ -114,35 +104,69 @@ export const UserForm: FC<{ data?: UserProps; onFinish: () => void }> = ({
       title={t(isUpdate ? "update" : "create")}
       styles={{ footer: { textAlign: "end" } }}
     >
-      <Form<UserProps> form={form} layout="vertical" onFinish={handleSubmit}>
-        <Form.Item<UserProps>
+      <Form<UserFormParams>
+        form={form}
+        layout="vertical"
+        onFinish={handleSubmit}
+      >
+        <Form.Item
           label={t("firstName")}
           name="firstName"
           rules={[{ required: true }]}
         >
           <Input />
         </Form.Item>
-        <Form.Item<UserProps>
+        <Form.Item
           label={t("lastName")}
           name="lastName"
           rules={[{ required: true }]}
         >
           <Input />
         </Form.Item>
-        <Form.Item<UserProps>
+        <Form.Item
+          label={t("mobile")}
+          name="mobile"
+          rules={[{ required: true }]}
+        >
+          <DigitsInput style={{ direction: "ltr" }} />
+        </Form.Item>
+        <Form.Item
           label={t("personnelCode")}
           name="personnelCode"
           rules={[{ required: true }]}
         >
-          <Input />
+          <Input style={{ direction: "ltr" }} />
         </Form.Item>
-        <Form.Item<UserProps>
-          label={t("username")}
-          name="username"
-          rules={[{ required: true }]}
-        >
-          <Input />
-        </Form.Item>
+        {!isUpdate && (
+          <>
+            <Form.Item
+              label={t("password")}
+              name="password"
+              rules={[{ required: true }]}
+            >
+              <Input.Password styles={{ input: { direction: "ltr" } }} />
+            </Form.Item>
+            <Form.Item
+              dependencies={["password"]}
+              label={t("confirmPass")}
+              name="confirmPassword"
+              rules={[
+                { required: true },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue("password") === value) {
+                      return Promise.resolve();
+                    }
+
+                    return Promise.reject(new Error(t("passsMismatch")));
+                  },
+                }),
+              ]}
+            >
+              <Input.Password styles={{ input: { direction: "ltr" } }} />
+            </Form.Item>
+          </>
+        )}
       </Form>
     </Drawer>
   );

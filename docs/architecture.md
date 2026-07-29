@@ -43,8 +43,8 @@ The app uses two layouts:
 The starter pages are:
 
 - Login
+- Account profile and credentials
 - Empty dashboard
-- Password change
 - Roles and permissions
 - Users
 - Not found
@@ -55,7 +55,11 @@ Route-level logic should stay in `src/pages`. Shared presentation and reusable v
 
 The app keeps lightweight UI preferences in local storage through helpers in `src/storage`.
 
-Authentication uses a token cookie. API requests read the token key from `VITE_AUTH_TOKEN_KEY` through `src/config/constants.ts`.
+Access tokens remain in frontend memory and are attached to protected API
+requests as bearer tokens. The backend owns the refresh token in an HttpOnly
+cookie. On application startup, a protected account request can trigger one
+refresh request to restore an access token without exposing the refresh token
+to JavaScript.
 
 ## Styling
 

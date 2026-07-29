@@ -1,20 +1,17 @@
-import { Flex, theme } from "antd";
+import { Flex } from "antd";
+import { useAntdToken } from "antd-style";
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 
-import { authTokenKey } from "@/config";
+import { clearAccessToken } from "@/api/token";
 import { useCore } from "@/hooks";
-import { delCookie } from "@/utils";
-
-const { useToken } = theme;
 
 export const AuthLayout = () => {
   const { setUser } = useCore();
-  const { token } = useToken();
+  const token = useAntdToken();
 
   useEffect(() => {
-    delCookie(authTokenKey);
-
+    clearAccessToken();
     setUser();
   }, [setUser]);
 

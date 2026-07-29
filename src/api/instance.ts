@@ -1,17 +1,65 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { AxiosRequestConfig, InternalAxiosRequestConfig } from "axios";
 
-import { apiUrl, authTokenKey } from "@/config";
-import { getCookie, toCamelCase, toSnakeCase } from "@/utils";
+import { apiUrl } from "@/config";
+import { AccessTokenProps } from "@/types";
+import { toCamelCase, toSnakeCase } from "@/utils";
 
-const api = axios.create({ baseURL: apiUrl });
+import { clearAccessToken, getAccessToken, setAccessToken } from "./token";
+const api = axios.create({ baseURL: apiUrl, withCredentials: true });
+const refreshUrl = "/auth/refresh-token";
+const publicAuthUrls = new Set([
+  "/auth/forgot-password",
+  "/auth/login",
+  "/auth/otp-request",
+  "/auth/register",
+  refreshUrl,
+]);
 
 let onUnauthorized: (() => void) | null = null;
+let isHandlingUnauthorized = false;
+let refreshPromise: Promise<AccessTokenProps> | null = null;
+
+type RetryableRequestConfig = InternalAxiosRequestConfig & {
+  _retried?: boolean;
+};
+
+const handleUnauthorized = () => {
+  if (isHandlingUnauthorized) return;
+
+  isHandlingUnauthorized = true;
+  clearAccessToken();
+  onUnauthorized?.();
+};
+
+const refreshAccessToken = (): Promise<AccessTokenProps> => {
+  if (!refreshPromise) {
+    refreshPromise = axios
+      .post<AccessTokenProps>(refreshUrl, undefined, {
+        baseURL: apiUrl,
+        withCredentials: true,
+      })
+      .then(({ data }) => {
+        const result = toCamelCase(data);
+
+        setAccessToken(result.accessToken);
+
+        return result;
+      })
+      .finally(() => {
+        refreshPromise = null;
+      });
+  }
+
+  return refreshPromise;
+};
 
 api.interceptors.request.use(
   (config) => {
-    const authToken = getCookie(authTokenKey);
+    const authToken = getAccessToken();
 
     if (!authToken) return config;
+
+    isHandlingUnauthorized = false;
 
     return {
       ...config,
@@ -23,15 +71,36 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     if (
       axios.isAxiosError<{ errors: Record<string, string>; message: string }>(
         error,
       )
     ) {
-      if (error.response) {
-        if (error.response.status === 401 && onUnauthorized) onUnauthorized();
+      if (error.response?.status === 401) {
+        const requestConfig = error.config as
+          RetryableRequestConfig | undefined;
+        const isPublicAuthRequest = publicAuthUrls.has(
+          requestConfig?.url ?? "",
+        );
+        const canRefresh =
+          requestConfig && !requestConfig._retried && !isPublicAuthRequest;
 
+        if (canRefresh) {
+          requestConfig._retried = true;
+
+          try {
+            await refreshAccessToken();
+            return api.request(requestConfig);
+          } catch {
+            handleUnauthorized();
+          }
+        } else if (!isPublicAuthRequest) {
+          handleUnauthorized();
+        }
+      }
+
+      if (error.response) {
         return Promise.reject(
           new Error(error.response.data.message, {
             cause: error.response.data.errors,
@@ -101,6 +170,6 @@ const put = async <T>(
 
 export const apiClient = { blob, del, get, patch, post, put };
 
-export const setUnauthorizedHandler = (fn: () => void) => {
+export const setUnauthorizedHandler = (fn: (() => void) | null) => {
   onUnauthorized = fn;
 };

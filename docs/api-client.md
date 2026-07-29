@@ -5,7 +5,9 @@ The API layer uses `src/api/instance.ts` as a small Axios wrapper around the con
 ## Features
 
 - Backend base URL from `VITE_API_BASE_URL`
-- Bearer token injection from the cookie key configured by `VITE_AUTH_TOKEN_KEY`
+- In-memory bearer token injection
+- Backend-owned HttpOnly refresh-cookie support
+- Single-flight refresh and one-time request retry after protected `401` responses
 - Automatic camelCase response conversion
 - Automatic snake_case request body conversion
 - Manual snake_case query parameter conversion where endpoints pass `params`
@@ -25,36 +27,44 @@ apiClient.blob(url, config);
 
 ## Starter Modules
 
-| File | Purpose |
-| --- | --- |
-| `auth.ts` | Login, current user, and current-user password change |
-| `role.ts` | Role CRUD and permission list helpers |
-| `user.ts` | User CRUD, role assignment, status, and password helpers |
+| File         | Purpose                                                  |
+| ------------ | -------------------------------------------------------- |
+| `auth.ts`    | Registration, login, OTP, password, and logout helpers   |
+| `account.ts` | Current-account and profile helpers                      |
+| `role.ts`    | Role CRUD and permission list helpers                    |
+| `user.ts`    | User CRUD, role assignment, status, and password helpers |
 
 ## Endpoint Examples
 
-| Helper | Method | Endpoint |
-| --- | --- | --- |
-| `login` | `POST` | `/api/v1/auth/login` |
-| `me` | `GET` | `/api/v1/auth/me` |
-| `changePassword` | `PUT` | `/api/v1/auth/password` |
-| `fetchUsers` | `GET` | `/api/v1/users` |
-| `createUser` | `POST` | `/api/v1/users` |
-| `updateUser` | `PATCH` | `/api/v1/users/:id` |
-| `updateUserRoles` | `PUT` | `/api/v1/users/:id/roles` |
-| `updateUserPassword` | `PUT` | `/api/v1/users/:id/password` |
-| `updateUserStatus` | `PUT` | `/api/v1/users/:id/status` |
-| `fetchRoles` | `GET` | `/api/v1/roles` |
-| `createRole` | `POST` | `/api/v1/roles` |
-| `updateRole` | `PUT` | `/api/v1/roles/:id` |
-| `deleteRole` | `DELETE` | `/api/v1/roles/:id` |
-| `fetchPermissions` | `GET` | `/api/v1/permissions` |
+| Helper                      | Method   | Endpoint                  |
+| --------------------------- | -------- | ------------------------- |
+| `login`                     | `POST`   | `/auth/login`             |
+| `getAccount`                | `GET`    | `/account/me`             |
+| `changePassword`            | `POST`   | `/auth/change-password`   |
+| `fetchUsers`                | `GET`    | `/users`                  |
+| `fetchUser`                 | `GET`    | `/users/:id`              |
+| `createUser`                | `POST`   | `/users`                  |
+| `updateUser`                | `PATCH`  | `/users/:id`              |
+| `deleteUser`                | `DELETE` | `/users/:id`              |
+| `updateUserRoles`           | `PUT`    | `/users/:id/roles`        |
+| `updateUserWorkspaces`      | `PUT`    | `/users/:id/workspaces`   |
+| `updateUserPassword`        | `PUT`    | `/users/:id/password`     |
+| `updateUserStatus`          | `PATCH`  | `/users/:id/status`       |
+| `updateUserSystemAdmin`     | `PATCH`  | `/users/:id/system-admin` |
+| `fetchUserRoleOptions`      | `GET`    | `/roles`                  |
+| `fetchUserWorkspaceOptions` | `GET`    | `/workspaces`             |
+| `fetchRoles`                | `GET`    | `/roles`                  |
+| `fetchRole`                 | `GET`    | `/roles/:id`              |
+| `createRole`                | `POST`   | `/roles`                  |
+| `updateRole`                | `PATCH`  | `/roles/:id`              |
+| `deleteRole`                | `DELETE` | `/roles/:id`              |
+| `fetchPermissions`          | `GET`    | `/permissions`            |
 
 ## Data Shape Notes
 
 - User names are split into `firstName` and `lastName`.
-- Permissions use `PermissionKey` values from `src/types/permission.ts`.
-- `PermissionProps` uses `groupName` for grouping permissions in forms.
+- Permission identifiers are server-provided dotted strings.
+- `GET /permissions` returns resource groups containing display-ready permissions.
 - User password reset is an authenticated action and does not have a dedicated permission key.
 
 ## Adding Modules

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import {
   Button,
   Checkbox,
@@ -8,110 +9,71 @@ import {
   FormProps,
   Input,
   Space,
-  Tooltip,
 } from "antd";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 
 import { createRole, updateRole } from "@/api";
 import { modalKeys } from "@/config";
 import { useAntd, useGoBack } from "@/hooks";
-import { PermissionProps, RoleProps } from "@/types";
-
-type StateProps = {
-  open?: boolean;
-  submitting?: boolean;
-};
+import { PermissionGroupProps, RoleMutationParams, RoleProps } from "@/types";
 
 export const RoleForm: FC<{
   data?: RoleProps;
   onFinish: () => void;
-  options: { permissions: PermissionProps[] };
+  options: { permissions: PermissionGroupProps[] };
 }> = ({ data, onFinish, options: { permissions } }) => {
   const { t } = useTranslation();
-  const [state, setState] = useState<StateProps>({});
-  const { open, submitting } = state;
+  const [open, setOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const { messageAPI } = useAntd();
   const { hash } = useLocation();
-  const [form] = Form.useForm<RoleProps>();
+  const [form] = Form.useForm<RoleMutationParams>();
   const goBack = useGoBack();
   const isUpdate = hash === modalKeys.update && !!data;
 
-  const groups = useMemo(() => {
-    return Object.values(
-      permissions.reduce(
-        (acc, { description, groupName, groupTitle, name, title }) => {
-          if (!acc[groupName]) {
-            acc[groupName] = { label: groupTitle, options: [] };
-          }
-
-          acc[groupName].options.push({ description, name, title });
-
-          return acc;
-        },
-        {} as Record<
-          string,
-          {
-            label: string;
-            options: Pick<PermissionProps, "description" | "name" | "title">[];
-          }
-        >,
-      ),
-    );
-  }, [permissions]);
-
-  const handleSubmit: FormProps<RoleProps>["onFinish"] = async (values) => {
+  const handleSubmit: FormProps<RoleMutationParams>["onFinish"] = async (
+    values,
+  ) => {
     if (submitting) return;
 
     try {
-      setState((prevState) => ({ ...prevState, submitting: true }));
-
-      const { message } = isUpdate
-        ? await updateRole(data.id, values)
-        : await createRole(values);
-
-      messageAPI.success(message);
-
+      setSubmitting(true);
+      if (isUpdate) await updateRole(data.id, values);
+      else await createRole(values);
+      messageAPI.success(t(isUpdate ? "roleUpdated" : "roleCreated"));
       goBack();
-
       onFinish();
     } catch (error) {
       if (error instanceof Error) messageAPI.error(error.message);
       else console.error(error);
     } finally {
-      setState((prevState) => ({ ...prevState, submitting: false }));
+      setSubmitting(false);
     }
   };
 
   useEffect(() => {
-    void (() => {
-      switch (hash) {
-        case modalKeys.create: {
-          setState((prevState) => ({ ...prevState, open: true }));
-
-          break;
+    switch (hash) {
+      case modalKeys.create:
+        setOpen(true);
+        break;
+      case modalKeys.update:
+        if (data) {
+          setOpen(true);
+          form.setFieldsValue({
+            name: data.name,
+            permissions: data.permissions,
+          });
+        } else {
+          goBack();
         }
-        case modalKeys.update: {
-          if (data) {
-            setState((prevState) => ({ ...prevState, open: true }));
-
-            form.setFieldsValue(data);
-          } else {
-            goBack();
-          }
-
-          break;
-        }
-        default: {
-          if (open) form.resetFields();
-
-          setState({});
-
-          break;
-        }
-      }
-    })();
+        break;
+      default:
+        if (open) form.resetFields();
+        setOpen(false);
+        setSubmitting(false);
+    }
   }, [data, form, goBack, hash, open]);
 
   return (
@@ -134,40 +96,38 @@ export const RoleForm: FC<{
       mask={{ closable: false }}
       onClose={() => goBack()}
       open={open}
-      title={t(isUpdate ? "update" : "create")}
       styles={{ footer: { textAlign: "end" } }}
+      title={t(isUpdate ? "update" : "create")}
     >
-      <Form<RoleProps> form={form} layout="vertical" onFinish={handleSubmit}>
-        <Form.Item<RoleProps>
-          label={t("name")}
-          name="name"
-          rules={[{ required: true }]}
-        >
+      <Form<RoleMutationParams>
+        form={form}
+        initialValues={{ permissions: [] }}
+        layout="vertical"
+        onFinish={handleSubmit}
+      >
+        <Form.Item label={t("name")} name="name" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item<RoleProps> label={t("description")} name="description">
-          <Input.TextArea rows={3} />
-        </Form.Item>
-        <Form.Item<RoleProps> label={t("permissions")} name="permissions">
+        <Form.Item label={t("permissions")} name="permissions">
           <Checkbox.Group
             style={{ display: "flex", flexDirection: "column", gap: 16 }}
           >
-            {groups.map(({ label, options }, index) => (
-              <Flex gap={8} key={index} vertical>
+            {permissions.map((group) => (
+              <Flex gap={8} key={group.name} vertical>
                 <Divider
-                  titlePlacement="start"
-                  variant="dashed"
                   styles={{
                     content: { fontSize: 14, fontWeight: 400 },
                     root: { margin: 0 },
                   }}
+                  titlePlacement="start"
+                  variant="dashed"
                 >
-                  {label}
+                  {group.title}
                 </Divider>
-                {options.map(({ description, name, title }) => (
-                  <Tooltip key={name} title={description}>
-                    <Checkbox value={name}>{title}</Checkbox>
-                  </Tooltip>
+                {group.permissions.map((permission) => (
+                  <Checkbox key={permission.name} value={permission.name}>
+                    {permission.title}
+                  </Checkbox>
                 ))}
               </Flex>
             ))}

@@ -1,6 +1,8 @@
 # Testing
 
-This starter does not currently include a test runner. Do not add one just because a change could be tested.
+Kernel uses Vitest for unit and integration tests, React Testing Library with
+user-event for components, MSW for API mocking, and Playwright for critical
+browser journeys.
 
 ## Existing checks
 
@@ -9,11 +11,13 @@ Use the configured project checks first:
 ```bash
 npm run typecheck
 npm run lint
+npm run test:coverage
+npm run test:e2e
 npm run build
 npm run knip
 ```
 
-## When adding tests later
+## Choosing a test layer
 
 If the project gains a test setup, use this decision tree:
 
@@ -30,3 +34,4 @@ If the project gains a test setup, use this decision tree:
 - Use small test data factories for repeated domain objects.
 - Keep tests isolated and deterministic.
 - Mock external APIs; do not depend on production services.
+- Use the shared utilities in `src/test` and follow `docs/testing.md`.

@@ -1,30 +1,65 @@
-﻿import { PermissionKey } from "./permission";
-import { RoleProps } from "./role";
+type UserStatus = "active" | "inactive";
 
-export type UserParams = {
-  firstName: string;
-  lastName: string;
-  isActive: string;
-  page: string;
-  pageSize: string;
-  personnelCode: string;
-  roleId: string;
-  username: string;
+export type UserListParams = {
+  email?: string;
+  mobile?: string;
+  name?: string;
+  offset?: string;
+  size?: string;
+  status?: UserStatus;
+  username?: string;
 };
 
-export type UserProps = {
-  createdAt: number;
+export type UserSummaryProps = {
+  email: null | string;
   firstName: string;
-  lastName: string;
   id: string;
-  isActive: boolean;
-  password?: string;
-  permissions: PermissionKey[];
+  isSystemAdmin: boolean;
+  lastName: string;
+  mobile: string;
   personnelCode: string;
-  roles: Pick<RoleProps, "id" | "name">[];
-  username: string;
+  status: UserStatus;
+  username: null | string;
 };
+
+export type UserProps = Omit<UserSummaryProps, "status"> & {
+  roleIds: string[];
+  workspaceIds: string[];
+};
+
+export type CreateUserParams = {
+  firstName: string;
+  lastName: string;
+  mobile: string;
+  password: string;
+  personnelCode: string;
+};
+
+export type UpdateUserParams = Partial<
+  Pick<CreateUserParams, "firstName" | "lastName" | "mobile" | "personnelCode">
+>;
 
 export type UserRoleParams = {
   roleIds: string[];
+};
+
+export type UserWorkspaceParams = {
+  workspaceIds: string[];
+};
+
+export type UserSystemAdminParams = {
+  isSystemAdmin: boolean;
+};
+
+export type UserPasswordParams = {
+  password: string;
+};
+
+export type UserStatusParams = {
+  status: UserStatus;
+};
+
+export type UserOptionProps = {
+  id: string;
+  name: string;
 };

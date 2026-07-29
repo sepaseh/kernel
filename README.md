@@ -4,17 +4,17 @@ React starter kit upgraded as a dashboard-ready foundation under the `kernel` pr
 
 ## Stack
 
-| Layer | Library |
-| --- | --- |
-| UI framework | React 19 + TypeScript |
-| Build tool | Vite |
-| Component library | Ant Design 6 |
-| Routing | `react-router-dom` 7 |
+| Layer                | Library                     |
+| -------------------- | --------------------------- |
+| UI framework         | React 19 + TypeScript       |
+| Build tool           | Vite                        |
+| Component library    | Ant Design 6                |
+| Routing              | `react-router-dom` 7        |
 | Internationalization | `i18next` + `react-i18next` |
-| HTTP | Axios |
-| Date handling | Day.js + Jalaliday |
-| Linting | ESLint + simple import sort |
-| Cleanup checks | Knip |
+| HTTP                 | Axios                       |
+| Date handling        | Day.js + Jalaliday          |
+| Linting              | ESLint + simple import sort |
+| Cleanup checks       | Knip                        |
 
 ## Getting Started
 
@@ -50,42 +50,60 @@ npm run knip       # detect unused files, exports, and dependencies
 
 ## Environment
 
-| Variable | Description | Fallback |
-| --- | --- | --- |
-| `VITE_API_BASE_URL` | Backend HTTP API base URL | `http://<current-host>` |
-| `VITE_APP_BASE_URL` | Router basename / deployed base path | empty string |
-| `VITE_AUTH_TOKEN_KEY` | Cookie key used for the bearer token | `kernel_auth_token` |
+| Variable            | Description                          | Fallback                |
+| ------------------- | ------------------------------------ | ----------------------- |
+| `VITE_API_BASE_URL` | Backend HTTP API base URL            | `http://<current-host>` |
+| `VITE_APP_BASE_URL` | Router basename / deployed base path | empty string            |
 
 Example values are available in `.env.example`.
 
 ## Routes
 
-| Path | Page | Access |
-| --- | --- | --- |
-| `/auth` | Login | public |
-| `/` | Empty dashboard starter page | authenticated |
-| `/password` | Change current user password | authenticated |
-| `/roles` | Roles and permissions | `role_read` |
-| `/users` | Users | `user_read` |
-| `*` | Not found | public fallback |
+| Path                    | Page                                   | Access          |
+| ----------------------- | -------------------------------------- | --------------- |
+| `/auth`                 | Login                                  | public          |
+| `/auth/forgot-password` | Forgot password                        | public          |
+| `/auth/register`        | Registration                           | public          |
+| `/`                     | Empty dashboard starter page           | authenticated   |
+| `/account`              | Profile, username, email, and password | authenticated   |
+| `/roles`                | Roles and permissions                  | `role_read`     |
+| `/users`                | Users                                  | `users.read`    |
+| `*`                     | Not found                              | public fallback |
 
 ## API Examples
 
-The API layer intentionally uses generic starter endpoints so it can be wired to a real backend later.
+The API layer includes reusable authentication and account endpoints alongside generic administration examples.
 
-| Area | Endpoint examples |
-| --- | --- |
-| Auth | `/api/v1/auth/login`, `/api/v1/auth/me`, `/api/v1/auth/password` |
-| Users | `/api/v1/users`, `/api/v1/users/:id`, `/api/v1/users/:id/roles`, `/api/v1/users/:id/password`, `/api/v1/users/:id/status` |
-| Roles | `/api/v1/roles`, `/api/v1/roles/:id`, `/api/v1/permissions` |
+| Area    | Endpoint examples                                                                                                                             |
+| ------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Auth    | `/auth/register`, `/auth/login`, `/auth/otp-request`, `/auth/forgot-password`, `/auth/refresh-token`, `/auth/change-password`, `/auth/logout` |
+| Account | `/account/me`, `/account/update-profile`, `/account/update-username`, `/account/request-email-verification`, `/account/verify-email`          |
+| Users   | `/users`, `/users/:id`, `/users/:id/roles`, `/users/:id/workspaces`, `/users/:id/password`, `/users/:id/status`, `/users/:id/system-admin`    |
+| Roles   | `/roles`, `/roles/:id`, `/permissions`                                                                                                        |
+
+Protected API requests automatically make one refresh attempt after a `401`.
+Concurrent failures share the same `/auth/refresh-token` request, whose
+backend-managed HttpOnly refresh cookie is sent with browser credentials.
+
+Run the test suite once with `npm test`, or use `npm run test:watch` during
+development. See [Testing](docs/testing.md) for the complete unit, component,
+API-mocking, coverage, and browser testing strategy.
+Access tokens are kept in frontend memory only and are never written to cookies
+or local storage. If refresh fails, authentication state is cleared and the
+user returns to the login page.
 
 ## Permissions
 
 Starter permission keys live in `src/types/permission.ts` and cover basic CRUD-style access:
 
 ```ts
-role_create | role_delete | role_read | role_update
-user_create | user_delete | user_read | user_roles_update | user_status_update | user_update
+role_create | role_delete | role_read | role_update;
+user_create |
+  user_delete |
+  user_read |
+  user_roles_update |
+  user_status_update |
+  user_update;
 ```
 
 Password pages/actions only require a valid auth token.
@@ -112,7 +130,7 @@ src/
 
 ## AI Guidance
 
-Provider-neutral AI assistant guidance lives in `.ai/`. It documents project rules for code quality, imports, React, TypeScript, styling, testing, safety, and git workflow.
+Provider-neutral AI assistant guidance lives in `.agents/`. It documents project rules for code quality, imports, React, TypeScript, styling, testing, safety, and git workflow.
 
 ## Icons
 

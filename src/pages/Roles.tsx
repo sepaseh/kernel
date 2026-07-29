@@ -1,107 +1,118 @@
-﻿import {
+/* eslint-disable react-hooks/set-state-in-effect */
+import {
   Button,
   ConfigProvider,
   Flex,
   FloatButton,
   Table,
   TableProps,
-  theme,
   Tooltip,
 } from "antd";
-import { debounce } from "lodash";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useAntdToken } from "antd-style";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { deleteRole, fetchPermissions, fetchRoles } from "@/api";
+import { deleteRole, fetchPermissions, fetchRole, fetchRoles } from "@/api";
 import { Icon } from "@/components/Icon";
-import { defaultPageSize, modalKeys } from "@/config";
+import { modalKeys } from "@/config";
 import { RoleForm } from "@/forms/Role";
-import { useAntd, useCore, useFilterParams } from "@/hooks";
-import { PermissionProps, RoleParams, RoleProps } from "@/types";
-
-const { useToken } = theme;
-
-type StateProps = {
-  data: RoleProps[];
-  loading?: boolean;
-  permissions: PermissionProps[];
-  selectedData?: RoleProps;
-  total: number;
-};
+import { useActionPermissions, useAntd } from "@/hooks";
+import { PermissionGroupProps, RoleProps } from "@/types";
 
 export const RolesPage = () => {
   const { t } = useTranslation();
-  const [state, setState] = useState<StateProps>({
-    data: [],
-    permissions: [],
-    total: 0,
-  });
-  const { data, loading, permissions, selectedData, total } = state;
+  const [data, setData] = useState<RoleProps[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [permissions, setPermissions] = useState<PermissionGroupProps[]>([]);
+  const [selectedData, setSelectedData] = useState<RoleProps>();
   const { messageAPI, modalAPI } = useAntd();
-  const { user } = useCore();
-  const { filters, setFilters } = useFilterParams<RoleParams>();
+  const { canCreateRoles, canDeleteRoles, canUpdateRoles } =
+    useActionPermissions();
   const { pathname, search } = useLocation();
-  const { token } = useToken();
+  const token = useAntdToken();
   const navigate = useNavigate();
-  const current = Number(filters.page ?? "1");
-  const canCreate = user?.permissions.includes("role_create") ?? false;
-  const canDelete = user?.permissions.includes("role_delete") ?? false;
-  const canUpdate = user?.permissions.includes("role_update") ?? false;
+
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true);
+      setData(await fetchRoles());
+    } catch (error) {
+      if (error instanceof Error) messageAPI.error(error.message);
+      else console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }, [messageAPI]);
+
+  const handleUpdate = async (id: string) => {
+    try {
+      setLoading(true);
+      setSelectedData(await fetchRole(id));
+      navigate({ hash: modalKeys.update, pathname, search }, { state: true });
+    } catch (error) {
+      if (error instanceof Error) messageAPI.error(error.message);
+      else console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = (id: string) => {
+    modalAPI.confirm({
+      cancelText: t("no"),
+      okButtonProps: { danger: true },
+      okText: t("yes"),
+      onOk: async () => {
+        try {
+          await deleteRole(id);
+          messageAPI.success(t("roleDeleted"));
+          await fetchData();
+        } catch (error) {
+          if (error instanceof Error) messageAPI.error(error.message);
+          else console.error(error);
+        }
+      },
+      title: t("deleteRoleConfirm"),
+    });
+  };
 
   const tableColumns: TableProps<RoleProps>["columns"] = [
     {
       align: "center",
-      dataIndex: "id",
       key: "index",
-      render: (_, _record, index) =>
-        (current - 1) * defaultPageSize + index + 1,
+      render: (_, _record, index) => index + 1,
       title: t("row"),
       width: 60,
     },
     {
       dataIndex: "name",
-      key: "name",
       title: t("name"),
     },
     {
       align: "center",
-      dataIndex: "description",
-      key: "description",
-      title: t("description"),
-    },
-    {
-      align: "center",
       dataIndex: "permissions",
-      key: "permissions",
-      render: (_, { permissions }) => permissions.length,
+      render: (values: string[]) => values.length,
       title: t("permissions"),
     },
     {
       align: "center",
-      dataIndex: "id",
-      key: "id",
+      key: "actions",
       render: (_, record) => (
-        <Flex>
-          {canUpdate && (
+        <Flex justify="center">
+          {canUpdateRoles && (
             <Tooltip title={t("update")}>
               <Button
                 icon={<Icon name="edit" />}
-                onClick={() => {
-                  setState((prev) => ({ ...prev, selectedData: record }));
-
-                  navigate(
-                    { hash: modalKeys.update, pathname, search },
-                    { state: true },
-                  );
-                }}
+                onClick={() => void handleUpdate(record.id)}
                 type="text"
               />
             </Tooltip>
           )}
-          {canDelete && (
+          {canDeleteRoles && (
             <Tooltip title={t("delete")}>
               <Button
+                danger
                 icon={<Icon name="delete" size={14} />}
                 onClick={() => handleDelete(record.id)}
                 type="text"
@@ -111,79 +122,26 @@ export const RolesPage = () => {
         </Flex>
       ),
       title: t("action"),
-      width: 80,
+      width: 100,
     },
   ];
 
-  const fetchData = useCallback(async () => {
-    try {
-      setState((prev) => ({ ...prev, loading: true }));
-
-      const { data, total } = await fetchRoles({
-        ...filters,
-        page: filters.page ?? "1",
-        pageSize: String(defaultPageSize),
-      });
-
-      setState((prev) => ({ ...prev, data, loading: false, total }));
-    } catch (error) {
-      if (error instanceof Error) messageAPI.error(error.message);
-      else console.error(error);
-
-      setState((prev) => ({ ...prev, loading: false }));
-    }
-  }, [filters, messageAPI]);
-
-  const handleDelete = (id: string) => {
-    modalAPI.confirm({
-      title: t("deleteConfirm"),
-      okText: t("yes"),
-      okType: "danger",
-      cancelText: t("no"),
-      onOk: async () => {
-        try {
-          await deleteRole(id);
-
-          fetchData();
-        } catch (error) {
-          if (error instanceof Error) messageAPI.error(error.message);
-          else console.error(error);
-        }
-      },
-    });
-  };
-
-  const debouncedHandleFilter = useMemo(
-    () => debounce(setFilters, 500),
-    [setFilters],
-  );
-
-  const handleTable: TableProps<RoleProps>["onChange"] = ({ current }) => {
-    debouncedHandleFilter({ page: current ? String(current) : undefined });
-  };
-
   useEffect(() => {
-    return () => debouncedHandleFilter.cancel();
-  }, [debouncedHandleFilter]);
-
-  useEffect(() => {
-    void (() => {
-      fetchData();
-    })();
+    void fetchData();
   }, [fetchData]);
 
   useEffect(() => {
+    if (!canCreateRoles && !canUpdateRoles) return;
+
     void (async () => {
       try {
-        const permissions = await fetchPermissions();
-
-        setState((prev) => ({ ...prev, permissions }));
+        setPermissions(await fetchPermissions());
       } catch (error) {
         if (error instanceof Error) messageAPI.error(error.message);
         else console.error(error);
       }
     })();
-  }, [messageAPI]);
+  }, [canCreateRoles, canUpdateRoles, messageAPI]);
 
   return (
     <>
@@ -198,19 +156,13 @@ export const RolesPage = () => {
           columns={tableColumns}
           dataSource={data}
           loading={loading}
-          onChange={handleTable}
-          pagination={{
-            current,
-            pageSize: defaultPageSize,
-            showSizeChanger: false,
-            total,
-          }}
+          pagination={false}
           rowKey="id"
           scroll={{ x: token.screenMD }}
           size="small"
         />
       </div>
-      {canCreate && (
+      {canCreateRoles && (
         <ConfigProvider theme={{ token: { colorPrimary: token.colorSuccess } }}>
           <FloatButton
             icon={<Icon name="add" />}

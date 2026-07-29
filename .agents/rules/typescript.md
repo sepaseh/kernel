@@ -9,7 +9,10 @@ Use `type` for object shapes.
 type User = { id: string; name: string };
 
 // Avoid
-interface User { id: string; name: string }
+interface User {
+  id: string;
+  name: string;
+}
 ```
 
 Reserve `interface` for class contracts or external declaration merging.

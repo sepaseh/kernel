@@ -8,28 +8,27 @@ import {
   Grid,
   Menu,
   Spin,
-  theme,
   Typography,
 } from "antd";
+import { useAntdToken } from "antd-style";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 
-import { me, setUnauthorizedHandler } from "@/api";
+import { getAccount, logout, setUnauthorizedHandler } from "@/api";
+import { clearAccessToken } from "@/api/token";
 import { Icon } from "@/components/Icon";
-import { authTokenKey, RouteKey, routeTree } from "@/config";
+import { RouteKey, routeTree } from "@/config";
 import { useAllowedRoutes, useCore } from "@/hooks";
-import { delCookie, getCookie } from "@/utils";
 
 const { useBreakpoint } = Grid;
-const { useToken } = theme;
 
 export const DefaultLayout = () => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const { lg } = useBreakpoint();
   const { currentRoute, setTheme, setUser, theme: coreTheme, user } = useCore();
-  const { token } = useToken();
+  const token = useAntdToken();
   const navigate = useNavigate();
   const allowedRoutes = useAllowedRoutes();
   const darkMode = coreTheme === "dark";
@@ -47,31 +46,34 @@ export const DefaultLayout = () => {
       label: <Link to={routeTree[key].path}>{label}</Link>,
     }));
 
-  const handleLogout = useCallback(() => {
-    delCookie(authTokenKey);
-
+  const clearSession = useCallback(() => {
+    clearAccessToken();
     setUser();
 
     navigate(routeTree.auth.path, { replace: true });
   }, [navigate, setUser]);
 
+  const handleLogout = async () => {
+    await logout().catch(() => undefined);
+
+    clearSession();
+  };
+
   useEffect(() => {
     void (async () => {
       try {
-        const authToken = getCookie(authTokenKey);
-
-        if (!authToken) throw new Error();
-
-        const user = await me();
+        const user = await getAccount();
 
         setUser(user);
       } catch {
-        handleLogout();
+        clearSession();
       }
     })();
 
-    setUnauthorizedHandler(handleLogout);
-  }, [handleLogout, setUser]);
+    setUnauthorizedHandler(clearSession);
+
+    return () => setUnauthorizedHandler(null);
+  }, [clearSession, setUser]);
 
   if (!user) return <Spin fullscreen />;
 
@@ -113,11 +115,11 @@ export const DefaultLayout = () => {
           menu={{
             items: [
               {
-                icon: <Icon name="lock" />,
+                icon: <Icon name="user" />,
                 key: "1",
-                label: t("changePassword"),
+                label: t("account"),
                 onClick: () =>
-                  navigate(routeTree.password.path, { replace: true }),
+                  navigate(routeTree.account.path, { replace: true }),
               },
               {
                 icon: <Icon name={darkMode ? "lightMode" : "moon"} />,
@@ -130,7 +132,7 @@ export const DefaultLayout = () => {
                 icon: <Icon name="logout" />,
                 key: "3",
                 label: t("logout"),
-                onClick: handleLogout,
+                onClick: () => void handleLogout(),
               },
             ],
           }}

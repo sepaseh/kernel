@@ -1,31 +1,32 @@
-﻿import { ActionResult, PermissionProps, RoleParams, RoleProps } from "@/types";
-import { toSnakeCase } from "@/utils";
+import { PermissionGroupProps, RoleMutationParams, RoleProps } from "@/types";
 
 import { apiClient } from "./instance";
 
-export const createRole = async (params: RoleProps): Promise<ActionResult> => {
-  return apiClient.post<ActionResult>("/api/v1/roles", params);
+export const createRole = async (
+  params: RoleMutationParams,
+): Promise<RoleProps> => {
+  return apiClient.post<RoleProps>("/roles", params);
 };
 
-export const deleteRole = async (id: string): Promise<ActionResult> => {
-  return apiClient.del<ActionResult>(`/api/v1/roles/${id}`);
+export const deleteRole = async (id: string): Promise<void> => {
+  return apiClient.del<void>(`/roles/${id}`);
 };
 
-export const fetchPermissions = async (): Promise<PermissionProps[]> => {
-  return apiClient.get<PermissionProps[]>("/api/v1/permissions");
+export const fetchPermissions = async (): Promise<PermissionGroupProps[]> => {
+  return apiClient.get<PermissionGroupProps[]>("/permissions");
 };
 
-export const fetchRoles = async (
-  params: RoleParams,
-): Promise<{ data: RoleProps[]; total: number }> => {
-  return apiClient.get<{ data: RoleProps[]; total: number }>("/api/v1/roles", {
-    params: toSnakeCase(params),
-  });
+export const fetchRole = async (id: string): Promise<RoleProps> => {
+  return apiClient.get<RoleProps>(`/roles/${id}`);
+};
+
+export const fetchRoles = async (): Promise<RoleProps[]> => {
+  return apiClient.get<RoleProps[]>("/roles");
 };
 
 export const updateRole = async (
   id: string,
-  params: RoleProps,
-): Promise<ActionResult> => {
-  return apiClient.put<ActionResult>(`/api/v1/roles/${id}`, params);
+  params: RoleMutationParams,
+): Promise<RoleProps> => {
+  return apiClient.patch<RoleProps>(`/roles/${id}`, params);
 };

@@ -1,14 +1,13 @@
 ﻿import { Button, Flex, Form, FormProps, Input, Typography } from "antd";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { login } from "@/api";
 import { Icon } from "@/components/Icon";
-import { authTokenKey, routeTree } from "@/config";
+import { routeTree } from "@/config";
 import { useAntd } from "@/hooks";
 import { LoginParams } from "@/types";
-import { setCookie } from "@/utils";
 
 export const LoginPage = () => {
   const { t } = useTranslation();
@@ -23,9 +22,7 @@ export const LoginPage = () => {
     setSubmitting(true);
 
     try {
-      const { sessionToken } = await login(values);
-
-      setCookie(authTokenKey, sessionToken);
+      await login(values);
 
       navigate(routeTree.root.path, { replace: true });
     } catch (error) {
@@ -54,14 +51,15 @@ export const LoginPage = () => {
         scrollToFirstError
       >
         <Form.Item<LoginParams>
-          label={t("username")}
-          name="username"
+          label={t("identifier")}
+          name="identifier"
           rules={[{ required: true }]}
         >
           <Input
             onPressEnter={handleSubmitTrigger}
-            placeholder={t("username")}
+            placeholder={t("identifier")}
             size="large"
+            style={{ direction: "ltr" }}
           />
         </Form.Item>
         <Form.Item<LoginParams>
@@ -73,9 +71,14 @@ export const LoginPage = () => {
             onPressEnter={handleSubmitTrigger}
             placeholder={t("password")}
             size="large"
+            styles={{ input: { direction: "ltr" } }}
             type="password"
           />
         </Form.Item>
+        <Flex justify="space-between">
+          <Link to={routeTree.register.path}>{t("createAccount")}</Link>
+          <Link to={routeTree.forgotPassword.path}>{t("forgotPassword")}</Link>
+        </Flex>
       </Form>
       <Button
         type="primary"
