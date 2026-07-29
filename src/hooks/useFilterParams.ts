@@ -10,21 +10,21 @@ export const useFilterParams = <T extends Record<string, string>>() => {
         Object.entries(Object.fromEntries(searchParams)).map(([key, value]) => [
           key,
           value ?? "",
-        ])
+        ]),
       ) as T,
-    [searchParams]
+    [searchParams],
   );
 
   const setFilters = useCallback(
     (newFilters: Partial<T>) => {
       const sanitized = Object.fromEntries(
         Object.entries(newFilters).filter(
-          ([, v]) => v !== undefined && v !== null && v !== ""
-        )
+          ([, v]) => v !== undefined && v !== null && v !== "",
+        ),
       );
       setSearchParams(sanitized);
     },
-    [setSearchParams]
+    [setSearchParams],
   );
 
   return { filters, setFilters };

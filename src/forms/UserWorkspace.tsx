@@ -4,39 +4,39 @@ import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 
-import { updateUserRoles } from "@/api";
+import { updateUserWorkspaces } from "@/api";
 import { modalKeys } from "@/config";
 import { useAntd, useGoBack } from "@/hooks";
-import { UserOptionProps, UserProps, UserRoleParams } from "@/types";
+import { UserOptionProps, UserProps, UserWorkspaceParams } from "@/types";
 
-type UserFormRoleProps = {
+type UserWorkspaceFormProps = {
   data?: UserProps;
   onFinish: () => void;
-  options: { roles: UserOptionProps[] };
+  options: { workspaces: UserOptionProps[] };
 };
 
-export const UserFormRole: FC<UserFormRoleProps> = ({
+export const UserWorkspaceForm: FC<UserWorkspaceFormProps> = ({
   data,
   onFinish,
-  options: { roles },
+  options: { workspaces },
 }) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const { messageAPI } = useAntd();
   const { hash } = useLocation();
-  const [form] = Form.useForm<UserRoleParams>();
+  const [form] = Form.useForm<UserWorkspaceParams>();
   const goBack = useGoBack();
 
-  const handleSubmit: FormProps<UserRoleParams>["onFinish"] = async (
+  const handleSubmit: FormProps<UserWorkspaceParams>["onFinish"] = async (
     values,
   ) => {
     if (submitting || !data) return;
 
     try {
       setSubmitting(true);
-      await updateUserRoles(data.id, values);
-      messageAPI.success(t("rolesUpdated"));
+      await updateUserWorkspaces(data.id, values);
+      messageAPI.success(t("workspacesUpdated"));
       goBack();
       onFinish();
     } catch (error) {
@@ -48,10 +48,10 @@ export const UserFormRole: FC<UserFormRoleProps> = ({
   };
 
   useEffect(() => {
-    if (hash === modalKeys.roles) {
+    if (hash === modalKeys.workspaces) {
       if (data) {
         setOpen(true);
-        form.setFieldsValue({ roleIds: data.roleIds });
+        form.setFieldsValue({ workspaceIds: data.workspaceIds });
       } else {
         goBack();
       }
@@ -82,18 +82,18 @@ export const UserFormRole: FC<UserFormRoleProps> = ({
       mask={{ closable: false }}
       onClose={() => goBack()}
       open={open}
-      title={t("roles")}
+      title={t("workspaces")}
       styles={{ footer: { textAlign: "end" } }}
     >
-      <Form<UserRoleParams>
+      <Form<UserWorkspaceParams>
         form={form}
         layout="vertical"
         onFinish={handleSubmit}
       >
-        <Form.Item label={t("roles")} name="roleIds">
+        <Form.Item label={t("workspaces")} name="workspaceIds">
           <Select
             mode="multiple"
-            options={roles.map(({ id, name }) => ({
+            options={workspaces.map(({ id, name }) => ({
               label: name,
               value: id,
             }))}

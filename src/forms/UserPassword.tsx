@@ -1,44 +1,37 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { Button, Drawer, Form, FormProps, Select, Space } from "antd";
+import { Button, Drawer, Form, FormProps, Input, Space } from "antd";
 import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 
-import { updateUserRoles } from "@/api";
+import { updateUserPassword } from "@/api";
 import { modalKeys } from "@/config";
 import { useAntd, useGoBack } from "@/hooks";
-import { UserOptionProps, UserProps, UserRoleParams } from "@/types";
+import { UserPasswordParams, UserProps } from "@/types";
 
-type UserFormRoleProps = {
-  data?: UserProps;
-  onFinish: () => void;
-  options: { roles: UserOptionProps[] };
+type UserPasswordFormParams = UserPasswordParams & {
+  confirmPassword: string;
 };
 
-export const UserFormRole: FC<UserFormRoleProps> = ({
-  data,
-  onFinish,
-  options: { roles },
-}) => {
+export const UserPasswordForm: FC<{ data?: UserProps }> = ({ data }) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const { messageAPI } = useAntd();
   const { hash } = useLocation();
-  const [form] = Form.useForm<UserRoleParams>();
+  const [form] = Form.useForm<UserPasswordFormParams>();
   const goBack = useGoBack();
 
-  const handleSubmit: FormProps<UserRoleParams>["onFinish"] = async (
-    values,
-  ) => {
+  const handleSubmit: FormProps<UserPasswordFormParams>["onFinish"] = async ({
+    password,
+  }) => {
     if (submitting || !data) return;
 
     try {
       setSubmitting(true);
-      await updateUserRoles(data.id, values);
-      messageAPI.success(t("rolesUpdated"));
+      await updateUserPassword(data.id, { password });
+      messageAPI.success(t("passwordUpdated"));
       goBack();
-      onFinish();
     } catch (error) {
       if (error instanceof Error) messageAPI.error(error.message);
       else console.error(error);
@@ -48,13 +41,9 @@ export const UserFormRole: FC<UserFormRoleProps> = ({
   };
 
   useEffect(() => {
-    if (hash === modalKeys.roles) {
-      if (data) {
-        setOpen(true);
-        form.setFieldsValue({ roleIds: data.roleIds });
-      } else {
-        goBack();
-      }
+    if (hash === modalKeys.password) {
+      if (data) setOpen(true);
+      else goBack();
     } else {
       if (open) form.resetFields();
       setOpen(false);
@@ -82,22 +71,39 @@ export const UserFormRole: FC<UserFormRoleProps> = ({
       mask={{ closable: false }}
       onClose={() => goBack()}
       open={open}
-      title={t("roles")}
       styles={{ footer: { textAlign: "end" } }}
+      title={t("changePassword")}
     >
-      <Form<UserRoleParams>
+      <Form<UserPasswordFormParams>
         form={form}
         layout="vertical"
         onFinish={handleSubmit}
       >
-        <Form.Item label={t("roles")} name="roleIds">
-          <Select
-            mode="multiple"
-            options={roles.map(({ id, name }) => ({
-              label: name,
-              value: id,
-            }))}
-          />
+        <Form.Item
+          label={t("newPass")}
+          name="password"
+          rules={[{ required: true }]}
+        >
+          <Input.Password styles={{ input: { direction: "ltr" } }} />
+        </Form.Item>
+        <Form.Item
+          dependencies={["password"]}
+          label={t("confirmPass")}
+          name="confirmPassword"
+          rules={[
+            { required: true },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue("password") === value) {
+                  return Promise.resolve();
+                }
+
+                return Promise.reject(new Error(t("passsMismatch")));
+              },
+            }),
+          ]}
+        >
+          <Input.Password styles={{ input: { direction: "ltr" } }} />
         </Form.Item>
       </Form>
     </Drawer>

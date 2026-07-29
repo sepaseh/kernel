@@ -1,9 +1,7 @@
-import { theme } from "antd";
-
-const { useToken } = theme;
+import { useAntdToken } from "antd-style";
 
 export const DashboardPage = () => {
-  const { token } = useToken();
+  const token = useAntdToken();
 
   return (
     <div

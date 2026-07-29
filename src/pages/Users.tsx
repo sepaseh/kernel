@@ -1,4 +1,5 @@
-﻿import {
+/* eslint-disable react-hooks/set-state-in-effect */
+import {
   Button,
   Col,
   ConfigProvider,
@@ -10,178 +11,63 @@
   Select,
   Table,
   TableProps,
-  theme,
   Tooltip,
 } from "antd";
+import { useAntdToken } from "antd-style";
 import { debounce } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import {
-  fetchRoles,
+  deleteUser,
+  fetchUser,
+  fetchUserRoleOptions,
   fetchUsers,
-  updateUserPassword,
+  fetchUserWorkspaceOptions,
   updateUserStatus,
+  updateUserSystemAdmin,
 } from "@/api";
-import { DateView } from "@/components/DateView";
 import { DigitsInput } from "@/components/DigitsInput";
 import { Icon } from "@/components/Icon";
 import { defaultPageSize, modalKeys } from "@/config";
 import { UserForm } from "@/forms/User";
+import { UserPasswordForm } from "@/forms/UserPassword";
 import { UserFormRole } from "@/forms/UserRole";
-import { useAntd, useCore, useFilterParams } from "@/hooks";
-import { RoleProps, UserParams, UserProps } from "@/types";
-import { tinyId } from "@/utils";
-
-const { useToken } = theme;
-
-type StateProps = {
-  data: UserProps[];
-  loading?: boolean;
-  roles: RoleProps[];
-  selectedData?: UserProps;
-  total: number;
-};
+import { UserWorkspaceForm } from "@/forms/UserWorkspace";
+import {
+  useActionPermissions,
+  useAntd,
+  useCore,
+  useFilterParams,
+} from "@/hooks";
+import {
+  UserListParams,
+  UserOptionProps,
+  UserProps,
+  UserSummaryProps,
+} from "@/types";
 
 export const UsersPage = () => {
   const { t } = useTranslation();
-  const [state, setState] = useState<StateProps>({
-    data: [],
-    total: 0,
-    roles: [],
-  });
-  const { data, loading, roles, selectedData, total } = state;
-  const { messageAPI, modalAPI, notificationAPI } = useAntd();
+  const [data, setData] = useState<UserSummaryProps[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [roles, setRoles] = useState<UserOptionProps[]>([]);
+  const [selectedData, setSelectedData] = useState<UserProps>();
+  const [total, setTotal] = useState(0);
+  const [workspaces, setWorkspaces] = useState<UserOptionProps[]>([]);
+  const { messageAPI, modalAPI } = useAntd();
+  const { canCreateUsers, canDeleteUsers, canUpdateUsers } =
+    useActionPermissions();
   const { user } = useCore();
-  const { filters, setFilters } = useFilterParams<UserParams>();
+  const { filters, setFilters } = useFilterParams<UserListParams>();
   const { pathname, search } = useLocation();
-  const { token } = useToken();
-  const [form] = Form.useForm<UserParams>();
+  const token = useAntdToken();
+  const [form] = Form.useForm<UserListParams>();
   const navigate = useNavigate();
-  const current = Number(filters.page ?? "1");
-  const canCreate = user?.permissions.includes("user_create") ?? false;
-  const canUpdate = user?.permissions.includes("user_update") ?? false;
-  const canUpdateRoles = user?.permissions.includes("user_roles_update") ?? false;
-  const canUpdateStatus =
-    user?.permissions.includes("user_status_update") ?? false;
-
-  const tableColumns: TableProps<UserProps>["columns"] = [
-    {
-      align: "center",
-      dataIndex: "id",
-      key: "index",
-      render: (_, _record, index) =>
-        (current - 1) * defaultPageSize + index + 1,
-      title: t("row"),
-      width: 60,
-    },
-    {
-      dataIndex: "firstName",
-      key: "firstName",
-      title: t("firstName"),
-    },
-    {
-      dataIndex: "lastName",
-      key: "lastName",
-      title: t("lastName"),
-    },
-    {
-      align: "center",
-      dataIndex: "personnelCode",
-      key: "personnelCode",
-      title: t("personnelCode"),
-    },
-    {
-      align: "center",
-      dataIndex: "username",
-      key: "username",
-      title: t("username"),
-    },
-    {
-      align: "center",
-      dataIndex: "roles",
-      key: "roles",
-      render: (_, { roles }) =>
-        roles.length > 0 ? roles.map(({ name }) => name).join(", ") : "-",
-      title: t("roles"),
-    },
-    {
-      align: "center",
-      dataIndex: "isActive",
-      key: "status",
-      render: (_, { id, isActive }) =>
-        canUpdateStatus ? (
-          <Button
-            color={isActive ? "green" : "red"}
-            onClick={() => handleStatus(id, isActive)}
-            variant="link"
-          >
-            {t(isActive ? "active" : "inactive")}
-          </Button>
-        ) : (
-          t(isActive ? "active" : "inactive")
-        ),
-      title: t("status"),
-    },
-    {
-      align: "center",
-      dataIndex: "createdAt",
-      key: "date",
-      render: (_, { createdAt }) => <DateView date={createdAt} />,
-      title: t("date"),
-    },
-    {
-      align: "center",
-      dataIndex: "id",
-      key: "id",
-      render: (_, record) => (
-        <>
-          {canUpdate && (
-            <Tooltip title={t("update")}>
-              <Button
-                icon={<Icon name="edit" />}
-                onClick={() => {
-                  setState((prev) => ({ ...prev, selectedData: record }));
-
-                  navigate(
-                    { hash: modalKeys.update, pathname, search },
-                    { state: true },
-                  );
-                }}
-                type="text"
-              />
-            </Tooltip>
-          )}
-          {canUpdateRoles && (
-            <Tooltip title={t("roles")}>
-              <Button
-                icon={<Icon name="key" />}
-                onClick={() => {
-                  setState((prev) => ({ ...prev, selectedData: record }));
-
-                  navigate(
-                    { hash: modalKeys.roles, pathname, search },
-                    { state: true },
-                  );
-                }}
-                type="text"
-              />
-            </Tooltip>
-          )}
-          <Tooltip title={t("password")}>
-            <Button
-              icon={<Icon name="lock" />}
-              onClick={() => handlePassword(record.id)}
-              type="text"
-            />
-          </Tooltip>
-        </>
-      ),
-      title: t("action"),
-      width: 120,
-    },
-  ];
+  const offset = Number(filters.offset ?? "0");
+  const current = Math.floor(offset / defaultPageSize) + 1;
+  const isSystemAdmin = user?.isSystemAdmin ?? false;
 
   const debouncedHandleFilter = useMemo(
     () => debounce(setFilters, 500),
@@ -190,78 +76,232 @@ export const UsersPage = () => {
 
   const fetchData = useCallback(async () => {
     try {
-      setState((prev) => ({ ...prev, loading: true }));
-
+      setLoading(true);
       form.setFieldsValue(filters);
-
-      const { data, total } = await fetchUsers({
+      const response = await fetchUsers({
         ...filters,
-        page: filters.page ?? "1",
-        pageSize: String(defaultPageSize),
+        offset: String(offset),
+        size: String(defaultPageSize),
       });
-
-      setState((prev) => ({ ...prev, data, loading: false, total }));
+      setData(response.items);
+      setTotal(response.total);
     } catch (error) {
       if (error instanceof Error) messageAPI.error(error.message);
       else console.error(error);
-
-      setState((prev) => ({ ...prev, loading: false }));
+    } finally {
+      setLoading(false);
     }
-  }, [filters, form, messageAPI]);
+  }, [filters, form, messageAPI, offset]);
 
-  const handleFilter: FormProps["onValuesChange"] = (_, values) => {
-    debouncedHandleFilter(values);
+  const openUserDrawer = async (id: string, hash: string) => {
+    try {
+      setLoading(true);
+      const details = await fetchUser(id);
+      setSelectedData(details);
+      navigate({ hash, pathname, search }, { state: true });
+    } catch (error) {
+      if (error instanceof Error) messageAPI.error(error.message);
+      else console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handlePassword = (id: string) => {
+  const handleStatus = (record: UserSummaryProps) => {
     modalAPI.confirm({
-      title: t("passwordConfirm"),
-      okText: t("yes"),
-      okType: "default",
       cancelText: t("no"),
+      okText: t("yes"),
       onOk: async () => {
         try {
-          const password = tinyId();
-
-          await updateUserPassword(id, password);
-
-          navigator.clipboard.writeText(password);
-
-          notificationAPI.success({
-            title: t("password"),
-            description: password,
+          await updateUserStatus(record.id, {
+            status: record.status === "active" ? "inactive" : "active",
           });
+          messageAPI.success(t("statusUpdated"));
+          await fetchData();
         } catch (error) {
           if (error instanceof Error) messageAPI.error(error.message);
           else console.error(error);
         }
       },
+      title: t("statusConfirm"),
     });
   };
 
-  const handleStatus = (id: string, isActive: boolean) => {
+  const handleSystemAdmin = (record: UserSummaryProps) => {
     modalAPI.confirm({
-      title: t("statusConfirm"),
-      okText: t("yes"),
-      okType: "default",
       cancelText: t("no"),
+      okText: t("yes"),
       onOk: async () => {
         try {
-          const { message } = await updateUserStatus(id, !isActive);
-
-          messageAPI.success(message);
-
-          fetchData();
+          await updateUserSystemAdmin(record.id, {
+            isSystemAdmin: !record.isSystemAdmin,
+          });
+          messageAPI.success(t("systemAdminUpdated"));
+          await fetchData();
         } catch (error) {
           if (error instanceof Error) messageAPI.error(error.message);
           else console.error(error);
         }
       },
+      title: t("systemAdminConfirm"),
     });
   };
 
-  const handleTable: TableProps<UserProps>["onChange"] = ({ current }) => {
-    debouncedHandleFilter({ page: current ? String(current) : undefined });
+  const handleDelete = (id: string) => {
+    modalAPI.confirm({
+      cancelText: t("no"),
+      okButtonProps: { danger: true },
+      okText: t("yes"),
+      onOk: async () => {
+        try {
+          await deleteUser(id);
+          messageAPI.success(t("userDeleted"));
+          await fetchData();
+        } catch (error) {
+          if (error instanceof Error) messageAPI.error(error.message);
+          else console.error(error);
+        }
+      },
+      title: t("deleteUserConfirm"),
+    });
+  };
+
+  const tableColumns: TableProps<UserSummaryProps>["columns"] = [
+    {
+      align: "center",
+      key: "index",
+      render: (_, _record, index) => offset + index + 1,
+      title: t("row"),
+      width: 60,
+    },
+    {
+      key: "name",
+      render: (_, record) => `${record.firstName} ${record.lastName}`,
+      title: t("name"),
+    },
+    {
+      align: "center",
+      dataIndex: "mobile",
+      title: t("mobile"),
+    },
+    {
+      align: "center",
+      dataIndex: "email",
+      render: (value: string | null) => value ?? "-",
+      title: t("email"),
+    },
+    {
+      align: "center",
+      dataIndex: "username",
+      render: (value: string | null) => value ?? "-",
+      title: t("username"),
+    },
+    {
+      align: "center",
+      dataIndex: "personnelCode",
+      title: t("personnelCode"),
+    },
+    {
+      align: "center",
+      dataIndex: "isSystemAdmin",
+      render: (value: boolean) => t(value ? "yes" : "no"),
+      title: t("systemAdmin"),
+    },
+    {
+      align: "center",
+      dataIndex: "status",
+      render: (_, record) =>
+        canUpdateUsers ? (
+          <Button
+            color={record.status === "active" ? "green" : "red"}
+            onClick={() => handleStatus(record)}
+            variant="link"
+          >
+            {t(record.status)}
+          </Button>
+        ) : (
+          t(record.status)
+        ),
+      title: t("status"),
+    },
+    {
+      align: "center",
+      key: "actions",
+      render: (_, record) => (
+        <>
+          {canUpdateUsers && (
+            <>
+              <Tooltip title={t("update")}>
+                <Button
+                  icon={<Icon name="edit" />}
+                  onClick={() =>
+                    void openUserDrawer(record.id, modalKeys.update)
+                  }
+                  type="text"
+                />
+              </Tooltip>
+              <Tooltip title={t("roles")}>
+                <Button
+                  icon={<Icon name="key" />}
+                  onClick={() =>
+                    void openUserDrawer(record.id, modalKeys.roles)
+                  }
+                  type="text"
+                />
+              </Tooltip>
+              <Tooltip title={t("workspaces")}>
+                <Button
+                  icon={<Icon name="home" />}
+                  onClick={() =>
+                    void openUserDrawer(record.id, modalKeys.workspaces)
+                  }
+                  type="text"
+                />
+              </Tooltip>
+            </>
+          )}
+          {isSystemAdmin && (
+            <>
+              <Tooltip title={t("password")}>
+                <Button
+                  icon={<Icon name="lock" />}
+                  onClick={() =>
+                    void openUserDrawer(record.id, modalKeys.password)
+                  }
+                  type="text"
+                />
+              </Tooltip>
+              <Tooltip title={t("systemAdmin")}>
+                <Button
+                  icon={<Icon name="bolt" />}
+                  onClick={() => handleSystemAdmin(record)}
+                  type="text"
+                />
+              </Tooltip>
+            </>
+          )}
+          {canDeleteUsers && (
+            <Tooltip title={t("delete")}>
+              <Button
+                danger
+                icon={<Icon name="delete" />}
+                onClick={() => handleDelete(record.id)}
+                type="text"
+              />
+            </Tooltip>
+          )}
+        </>
+      ),
+      title: t("action"),
+      width: 220,
+    },
+  ];
+
+  const handleFilter: FormProps<UserListParams>["onValuesChange"] = (
+    _,
+    values,
+  ) => {
+    debouncedHandleFilter({ ...values, offset: undefined });
   };
 
   useEffect(() => {
@@ -269,26 +309,26 @@ export const UsersPage = () => {
   }, [debouncedHandleFilter]);
 
   useEffect(() => {
-    void (() => {
-      fetchData();
-    })();
+    void fetchData();
   }, [fetchData]);
 
   useEffect(() => {
+    if (!canUpdateUsers) return;
+
     void (async () => {
       try {
-        const { data } = await fetchRoles({
-          page: "1",
-          pageSize: String(defaultPageSize * 10),
-        });
-
-        setState((prev) => ({ ...prev, roles: data }));
+        const [roleOptions, workspaceOptions] = await Promise.all([
+          fetchUserRoleOptions(),
+          fetchUserWorkspaceOptions(),
+        ]);
+        setRoles(roleOptions);
+        setWorkspaces(workspaceOptions);
       } catch (error) {
         if (error instanceof Error) messageAPI.error(error.message);
         else console.error(error);
       }
     })();
-  }, [messageAPI]);
+  }, [canUpdateUsers, messageAPI]);
 
   return (
     <>
@@ -299,59 +339,64 @@ export const UsersPage = () => {
           flexGrow: 1,
         }}
       >
-        <Form<UserParams> form={form} onValuesChange={handleFilter}>
+        <Form<UserListParams> form={form} onValuesChange={handleFilter}>
           <Row gutter={24}>
-            <Col xs={24} sm={12} md={8} lg={6} xxl={4} xxxl={3}>
-              <Form.Item<UserParams> name="firstName">
-                <Input placeholder={t("firstName")} allowClear />
+            <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
+              <Form.Item name="name">
+                <Input allowClear placeholder={t("name")} />
               </Form.Item>
             </Col>
-            <Col xs={24} sm={12} md={8} lg={6} xxl={4} xxxl={3}>
-              <Form.Item<UserParams> name="lastName">
-                <Input placeholder={t("lastName")} allowClear />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} md={8} lg={6} xxl={4} xxxl={3}>
-              <Form.Item<UserParams> name="username">
-                <Input placeholder={t("username")} allowClear />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} md={8} lg={6} xxl={4} xxxl={3}>
-              <Form.Item<UserParams> name="personnelCode">
-                <DigitsInput placeholder={t("personnelCode")} allowClear />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} md={8} lg={6} xxl={4} xxxl={3}>
-              <Form.Item<UserParams> name="isActive">
-                <Select
-                  options={[
-                    { label: t("active"), value: "1" },
-                    { label: t("inactive"), value: "0" },
-                  ]}
-                  placeholder={t("status")}
+            <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
+              <Form.Item name="email">
+                <Input
                   allowClear
+                  placeholder={t("email")}
+                  style={{ direction: "ltr" }}
                 />
               </Form.Item>
             </Col>
-            <Col xs={24} sm={12} md={8} lg={6} xxl={4} xxxl={3}>
-              <Form.Item<UserParams> name="roleId">
-                <Select
-                  options={roles.map(({ id, name }) => ({
-                    label: name,
-                    value: id,
-                  }))}
-                  placeholder={t("role")}
+            <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
+              <Form.Item name="mobile">
+                <DigitsInput
                   allowClear
+                  placeholder={t("mobile")}
+                  style={{ direction: "ltr" }}
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
+              <Form.Item name="username">
+                <Input
+                  allowClear
+                  placeholder={t("username")}
+                  style={{ direction: "ltr" }}
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
+              <Form.Item name="status">
+                <Select
+                  allowClear
+                  options={[
+                    { label: t("active"), value: "active" },
+                    { label: t("inactive"), value: "inactive" },
+                  ]}
+                  placeholder={t("status")}
                 />
               </Form.Item>
             </Col>
           </Row>
         </Form>
-        <Table<UserProps>
+        <Table<UserSummaryProps>
           columns={tableColumns}
           dataSource={data}
           loading={loading}
-          onChange={handleTable}
+          onChange={({ current: page }) =>
+            setFilters({
+              ...filters,
+              offset: String(((page ?? 1) - 1) * defaultPageSize),
+            })
+          }
           pagination={{
             current,
             pageSize: defaultPageSize,
@@ -363,7 +408,7 @@ export const UsersPage = () => {
           size="small"
         />
       </div>
-      {canCreate && (
+      {canCreateUsers && (
         <ConfigProvider theme={{ token: { colorPrimary: token.colorSuccess } }}>
           <FloatButton
             icon={<Icon name="add" />}
@@ -384,6 +429,12 @@ export const UsersPage = () => {
         onFinish={fetchData}
         options={{ roles }}
       />
+      <UserWorkspaceForm
+        data={selectedData}
+        onFinish={fetchData}
+        options={{ workspaces }}
+      />
+      <UserPasswordForm data={selectedData} />
     </>
   );
 };

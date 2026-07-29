@@ -20,7 +20,7 @@ export const useGoBack = (): ((to?: To, options?: NavigateOptions) => void) => {
         navigate(pathname, { replace: true });
       }
     },
-    [navigate, pathname, state]
+    [navigate, pathname, state],
   );
 
   return goBack;

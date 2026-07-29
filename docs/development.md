@@ -27,7 +27,6 @@ Update `.env.local` for your backend:
 ```env
 VITE_API_BASE_URL=https://localhost:8080
 VITE_APP_BASE_URL=/
-VITE_AUTH_TOKEN_KEY=auth_token
 ```
 
 Start the app:

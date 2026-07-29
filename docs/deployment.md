@@ -27,7 +27,6 @@ Required values usually include:
 ```env
 VITE_API_BASE_URL=https://api.example.com
 VITE_APP_BASE_URL=/
-VITE_AUTH_TOKEN_KEY=kernel_auth_token
 ```
 
 `VITE_APP_BASE_URL` must match the path where the app is served. For example, if the app is hosted under `/app/`, set:

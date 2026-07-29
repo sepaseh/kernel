@@ -1,19 +1,12 @@
-﻿export type PermissionKey =
-  | "role_create"
-  | "role_delete"
-  | "role_read"
-  | "role_update"
-  | "user_create"
-  | "user_delete"
-  | "user_read"
-  | "user_roles_update"
-  | "user_status_update"
-  | "user_update";
+export type PermissionKey = string;
 
-export type PermissionProps = {
-  description: string;
-  groupName: string;
-  groupTitle: string;
+type PermissionProps = {
   name: PermissionKey;
+  title: string;
+};
+
+export type PermissionGroupProps = {
+  name: string;
+  permissions: PermissionProps[];
   title: string;
 };

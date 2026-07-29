@@ -1,3 +1,4 @@
+export * from "./useActionPermissions";
 export * from "./useAllowedRoutes";
 export * from "./useAntd";
 export * from "./useCore";

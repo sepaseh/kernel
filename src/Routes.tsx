@@ -9,10 +9,12 @@ import { baseUrl, RouteKey, routeTree } from "@/config";
 import { useAllowedRoutes, useCore } from "@/hooks";
 import { AuthLayout } from "@/layouts/Auth";
 import { DefaultLayout } from "@/layouts/Default";
+import { AccountPage } from "@/pages/Account";
 import { DashboardPage } from "@/pages/Dashboard";
+import { ForgotPassPage } from "@/pages/ForgotPass";
 import { LoginPage } from "@/pages/Login";
 import { NotFoundPage } from "@/pages/NotFound";
-import { PasswordPage } from "@/pages/Password";
+import { RegisterPage } from "@/pages/Register";
 import { RolesPage } from "@/pages/Roles";
 import { UsersPage } from "@/pages/Users";
 
@@ -46,6 +48,14 @@ const router = createBrowserRouter(
           index: true,
           element: wrapRoute("auth", <LoginPage />),
         },
+        {
+          path: routeTree.forgotPassword.path,
+          element: wrapRoute("forgotPassword", <ForgotPassPage />),
+        },
+        {
+          path: routeTree.register.path,
+          element: wrapRoute("register", <RegisterPage />),
+        },
       ],
     },
     {
@@ -65,8 +75,8 @@ const router = createBrowserRouter(
           element: wrapRoute("roles", <RolesPage />),
         },
         {
-          path: routeTree.password.path,
-          element: wrapRoute("password", <PasswordPage />),
+          path: routeTree.account.path,
+          element: wrapRoute("account", <AccountPage />),
         },
       ],
     },

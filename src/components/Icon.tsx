@@ -1,7 +1,7 @@
 import { FC } from "react";
 
 const iconMap = {
-  add: "+",
+  add: "➕",
   bolt: "⚡",
   delete: "🗑️",
   edit: "✎",

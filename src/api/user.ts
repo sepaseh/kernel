@@ -1,48 +1,90 @@
-﻿import { ActionResult, UserParams, UserProps, UserRoleParams } from "@/types";
+import {
+  CreateUserParams,
+  UpdateUserParams,
+  UserListParams,
+  UserOptionProps,
+  UserPasswordParams,
+  UserProps,
+  UserRoleParams,
+  UserStatusParams,
+  UserSummaryProps,
+  UserSystemAdminParams,
+  UserWorkspaceParams,
+} from "@/types";
 import { toSnakeCase } from "@/utils";
 
 import { apiClient } from "./instance";
 
-export const createUser = async (params: UserProps): Promise<ActionResult> => {
-  return apiClient.post<ActionResult>("/api/v1/users", params);
+export const createUser = async (
+  params: CreateUserParams,
+): Promise<UserProps> => {
+  return apiClient.post<UserProps>("/users", params);
+};
+
+export const deleteUser = async (id: string): Promise<void> => {
+  return apiClient.del<void>(`/users/${id}`);
+};
+
+export const fetchUser = async (id: string): Promise<UserProps> => {
+  return apiClient.get<UserProps>(`/users/${id}`);
+};
+
+export const fetchUserRoleOptions = async (): Promise<UserOptionProps[]> => {
+  return apiClient.get<UserOptionProps[]>("/roles");
 };
 
 export const fetchUsers = async (
-  params: UserParams,
-): Promise<{ data: UserProps[]; total: number }> => {
-  return apiClient.get<{ data: UserProps[]; total: number }>("/api/v1/users", {
+  params: UserListParams,
+): Promise<{ items: UserSummaryProps[]; total: number }> => {
+  return apiClient.get<{ items: UserSummaryProps[]; total: number }>("/users", {
     params: toSnakeCase(params),
   });
 };
 
+export const fetchUserWorkspaceOptions = async (): Promise<
+  UserOptionProps[]
+> => {
+  return apiClient.get<UserOptionProps[]>("/workspaces");
+};
+
 export const updateUser = async (
   id: string,
-  params: UserProps,
-): Promise<ActionResult> => {
-  return apiClient.patch<ActionResult>(`/api/v1/users/${id}`, params);
+  params: UpdateUserParams,
+): Promise<UserProps> => {
+  return apiClient.patch<UserProps>(`/users/${id}`, params);
+};
+
+export const updateUserPassword = async (
+  id: string,
+  params: UserPasswordParams,
+): Promise<void> => {
+  return apiClient.put<void>(`/users/${id}/password`, params);
 };
 
 export const updateUserRoles = async (
   id: string,
   params: UserRoleParams,
-): Promise<ActionResult> => {
-  return apiClient.put<ActionResult>(`/api/v1/users/${id}/roles`, params);
-};
-
-export const updateUserPassword = async (
-  id: string,
-  newPassword: string,
-): Promise<ActionResult> => {
-  return apiClient.put<ActionResult>(`/api/v1/users/${id}/password`, {
-    newPassword,
-  });
+): Promise<void> => {
+  return apiClient.put<void>(`/users/${id}/roles`, params);
 };
 
 export const updateUserStatus = async (
   id: string,
-  isActive: boolean,
-): Promise<ActionResult> => {
-  return apiClient.put<ActionResult>(`/api/v1/users/${id}/status`, {
-    isActive,
-  });
+  params: UserStatusParams,
+): Promise<void> => {
+  return apiClient.patch<void>(`/users/${id}/status`, params);
+};
+
+export const updateUserSystemAdmin = async (
+  id: string,
+  params: UserSystemAdminParams,
+): Promise<void> => {
+  return apiClient.patch<void>(`/users/${id}/system-admin`, params);
+};
+
+export const updateUserWorkspaces = async (
+  id: string,
+  params: UserWorkspaceParams,
+): Promise<void> => {
+  return apiClient.put<void>(`/users/${id}/workspaces`, params);
 };

@@ -1,14 +1,12 @@
-﻿import { PermissionKey } from "./permission";
-
-export type RoleParams = {
-  page: string;
-  pageSize: string;
-};
+import { PermissionKey } from "./permission";
 
 export type RoleProps = {
-  createdAt: number;
-  description: string;
   id: string;
+  name: string;
+  permissions: PermissionKey[];
+};
+
+export type RoleMutationParams = {
   name: string;
   permissions: PermissionKey[];
 };
