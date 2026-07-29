@@ -1,0 +1,5 @@
+dist
+dist-ssr
+node_modules
+*.local
+.vitest-cache
