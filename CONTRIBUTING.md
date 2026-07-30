@@ -27,9 +27,10 @@ manager or shell.
    output.
 5. Update documentation when behavior, configuration, or public APIs change.
 
-Use clear commit messages that describe the intent of the change. The existing
-history follows a Conventional Commits-style format such as `feat:`, `fix:`,
-`test:`, `docs:`, and `chore:`.
+Use Conventional Commits such as `feat:`, `fix:`, `test:`, `docs:`, and
+`chore:`. These messages drive semantic versioning and automated release notes,
+so pull request titles must also follow the format when squash merging. See
+[docs/releasing.md](docs/releasing.md) for the versioning and release policy.
 
 ## Required checks
 
