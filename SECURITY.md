@@ -34,3 +34,15 @@ disclosure until that process is complete.
 Contributors must not commit credentials, tokens, private keys, production
 data, or populated environment files. Use `.env.example` for documented
 configuration and rotate any secret that may have been exposed.
+
+## Security assurance
+
+The maintained security program includes:
+
+- The [application threat model](docs/security/threat-model.md).
+- The [authentication and session review](docs/security/authentication-review.md).
+- The [security testing and review schedule](docs/security/reviews.md).
+- Monthly active DAST against an explicitly authorized staging environment.
+
+Security scan artifacts and unresolved vulnerability details are private.
+Automated results require human triage and do not replace manual review.

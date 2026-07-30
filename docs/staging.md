@@ -67,3 +67,7 @@ A release is eligible for production only when:
 
 Failed staging checks block promotion. Fix the issue through a reviewed change,
 create a new candidate artifact, and repeat the complete staging gate.
+
+The separate active DAST workflow also targets staging on the
+[security review schedule](security/reviews.md). Its authorization, isolation,
+and side-effect controls must be satisfied before enabling scheduled scans.

@@ -32,6 +32,8 @@ the release manager must verify:
 - CodeQL and the configured SonarQube quality gate pass.
 - Dependency audit, performance budgets, and production security-header tests
   pass.
+- Required DAST and manual security reviews have no unresolved release-blocking
+  findings.
 - Required configuration or data migrations have a tested rollback path.
 - The previous production artifact and its configuration remain available.
 - A deployment operator and incident lead are available for the release window.
