@@ -4,7 +4,7 @@ This project is a Vite React application written in TypeScript.
 
 ## Prerequisites
 
-- Node.js compatible with the versions required by the dependencies in `package-lock.json`
+- Node.js 22
 - npm
 - Access to the backend API
 
@@ -56,6 +56,10 @@ Build the app:
 ```bash
 npm run build
 ```
+
+Production builds require `VITE_API_BASE_URL` and `VITE_APP_BASE_URL` from
+`.env.local` or the build environment. See [Deployment](deployment.md) for
+their validation rules.
 
 Check unused files, exports, and dependencies:
 

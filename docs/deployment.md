@@ -20,7 +20,8 @@ npm run preview
 
 ## Environment Variables
 
-Vite reads environment variables at build time. Make sure production values are present before building the image or static bundle.
+Vite reads environment variables at build time. Production builds fail when
+either required value is missing or invalid.
 
 Required values usually include:
 
@@ -34,6 +35,10 @@ VITE_APP_BASE_URL=/
 ```env
 VITE_APP_BASE_URL=/app/
 ```
+
+`VITE_API_BASE_URL` must be an absolute HTTPS URL. `VITE_APP_BASE_URL` must
+start and end with `/`; use `/` when the application is served at the domain
+root.
 
 ## Docker
 
