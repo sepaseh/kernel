@@ -43,6 +43,15 @@ jobs:
 
       - run: npm run test:coverage
 
+      - run: npm run test:contract
+
+      - if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: consumer-contracts-${{ github.sha }}
+          path: pacts
+          retention-days: 14
+
       - name: Check SonarQube configuration
         id: sonarqube
         env:

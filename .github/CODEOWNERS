@@ -23,3 +23,10 @@
 /.github/workflows/dast.yml @sepaseh
 /docs/security/ @sepaseh
 /SECURITY.md @sepaseh
+
+# Test-effectiveness and frontend/backend compatibility gates.
+/.github/workflows/mutation.yml @sepaseh
+/contract/ @sepaseh
+/docs/contract-testing.md @sepaseh
+/stryker.config.json @sepaseh
+/vitest.contract.config.ts @sepaseh

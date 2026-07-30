@@ -25,4 +25,13 @@ describe("storage state", () => {
     expect(localStorage.getItem("settings")).toBe(JSON.stringify(value));
     expect(getState("settings", {})).toEqual(value);
   });
+
+  it("falls back to browser string conversion for circular values", () => {
+    const value: { self?: unknown } = {};
+    value.self = value;
+
+    setState("circular", value);
+
+    expect(localStorage.getItem("circular")).toBe("[object Object]");
+  });
 });

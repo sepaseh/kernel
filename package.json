@@ -6,6 +6,9 @@
   "engines": {
     "node": ">=24.15.0 <25 || >=26.0.0"
   },
+  "overrides": {
+    "qs": "^6.15.3"
+  },
   "scripts": {
     "audit": "npm audit --audit-level=high",
     "bundle:size": "node scripts/check-bundle-size.mjs",
@@ -20,6 +23,7 @@
     "performance": "npm run build && npm run bundle:size && npm run lighthouse",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:contract": "vitest run --config=vitest.contract.config.ts",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "test:e2e:report": "playwright show-report",
@@ -27,6 +31,7 @@
     "test:e2e:update-snapshots": "playwright test --project=visual-chromium --update-snapshots",
     "test:smoke": "playwright test --config=smoke.config.ts",
     "test:staging": "playwright test --config=staging.config.ts",
+    "test:mutation": "stryker run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
   },
@@ -45,6 +50,9 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "4.12.1",
+    "@pact-foundation/pact": "^17.0.1",
+    "@stryker-mutator/core": "^9.6.1",
+    "@stryker-mutator/vitest-runner": "^9.6.1",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.62.0",
     "@testing-library/dom": "^10.4.1",

@@ -123,6 +123,13 @@ Coverage is a guardrail, not a quality score. Critical authentication, token
 refresh, authorization, and account-management branches should receive direct
 behavioral tests even when the global threshold is already satisfied.
 
+## Test effectiveness and API compatibility
+
+Mutation testing measures whether focused unit tests detect injected faults,
+while Pact consumer contracts protect the request and response boundary with
+the backend. See [Mutation and contract testing](contract-testing.md) for local
+commands, CI behavior, thresholds, and provider verification requirements.
+
 ## SonarQube
 
 CI sends the existing LCOV report to SonarQube when the repository has a
