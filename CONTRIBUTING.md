@@ -5,8 +5,8 @@ review.
 
 ## Development setup
 
-Kernel uses Node.js 22.22.0 or newer. If you use `nvm`, select the repository
-version before installing dependencies:
+Kernel uses Node.js 24.15.0 or newer in the Node.js 24 LTS line. If you use
+`nvm`, select the repository version before installing dependencies:
 
 ```bash
 nvm use
