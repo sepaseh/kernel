@@ -170,7 +170,9 @@ export const DefaultLayout = () => {
           </Dropdown>
         </Flex>
       </header>
-      <main style={{ display: "flex", flexGrow: 1 }}>
+      <main
+        style={{ display: "flex", width: "100%", minWidth: 0, flexGrow: 1 }}
+      >
         <Outlet />
       </main>
       <Drawer

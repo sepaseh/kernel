@@ -16,7 +16,7 @@ import {
 } from "antd";
 import { useAntdToken } from "antd-style";
 import { debounce } from "lodash";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router";
 
@@ -65,6 +65,7 @@ export const UsersPage = () => {
   const { filters, setFilters } = useFilterParams<UserListParams>();
   const { pathname, search } = useLocation();
   const token = useAntdToken();
+  const tableContainerRef = useRef<HTMLDivElement>(null);
   const [form] = Form.useForm<UserListParams>();
   const navigate = useNavigate();
   const offset = Number(filters.offset ?? "0");
@@ -332,14 +333,25 @@ export const UsersPage = () => {
     })();
   }, [canUpdateUsers, messageAPI]);
 
+  useEffect(() => {
+    const scrollRegion =
+      tableContainerRef.current?.querySelector<HTMLElement>(
+        ".ant-table-content",
+      );
+
+    if (scrollRegion) scrollRegion.tabIndex = 0;
+  }, [data]);
+
   return (
     <>
       <div
         style={{
+          minWidth: 0,
           paddingBlock: token.paddingMD,
           paddingInline: token.paddingSM,
           flexGrow: 1,
         }}
+        ref={tableContainerRef}
       >
         <Typography.Title level={1} style={{ fontSize: 20 }}>
           {t("users")}

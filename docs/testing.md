@@ -51,12 +51,13 @@ separate because they run against the built application.
 - `npm run test:e2e:ui` opens Playwright's interactive UI.
 - `npm run test:e2e:report` opens the most recent HTML report.
 
-Local E2E runs use the installed stable Chrome channel. GitHub CI installs and
-uses Playwright's pinned Chromium build for reproducibility. If you change the
-local project configuration to use bundled Chromium, install it once with:
+Local Chromium and mobile E2E runs use the installed stable Chrome channel.
+Firefox and WebKit use Playwright's pinned browser builds. GitHub CI installs
+all three pinned engines for reproducibility. Install the required local
+browsers once with:
 
 ```sh
-npx playwright install chromium
+npx playwright install firefox webkit
 ```
 
 ## Conventions

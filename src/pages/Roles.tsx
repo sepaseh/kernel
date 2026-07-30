@@ -10,7 +10,7 @@ import {
   Typography,
 } from "antd";
 import { useAntdToken } from "antd-style";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router";
 
@@ -33,6 +33,7 @@ export const RolesPage = () => {
     useActionPermissions();
   const { pathname, search } = useLocation();
   const token = useAntdToken();
+  const tableContainerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   const fetchData = useCallback(async () => {
@@ -143,14 +144,25 @@ export const RolesPage = () => {
     })();
   }, [canCreateRoles, canUpdateRoles, messageAPI]);
 
+  useEffect(() => {
+    const scrollRegion =
+      tableContainerRef.current?.querySelector<HTMLElement>(
+        ".ant-table-content",
+      );
+
+    if (scrollRegion) scrollRegion.tabIndex = 0;
+  }, [data]);
+
   return (
     <>
       <div
         style={{
+          minWidth: 0,
           paddingBlock: token.paddingMD,
           paddingInline: token.paddingSM,
           flexGrow: 1,
         }}
+        ref={tableContainerRef}
       >
         <Typography.Title level={1} style={{ fontSize: 20 }}>
           {t("roles")}

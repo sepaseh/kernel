@@ -17,6 +17,21 @@ export default defineConfig({
         ...(process.env.CI ? {} : { channel: "chrome" as const }),
       },
     },
+    {
+      name: "firefox",
+      use: devices["Desktop Firefox"],
+    },
+    {
+      name: "webkit",
+      use: devices["Desktop Safari"],
+    },
+    {
+      name: "mobile-chromium",
+      use: {
+        ...devices["Pixel 7"],
+        ...(process.env.CI ? {} : { channel: "chrome" as const }),
+      },
+    },
   ],
   reporter: process.env.CI
     ? [["line"], ["html", { open: "never" }]]
