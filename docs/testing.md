@@ -98,4 +98,5 @@ CI sends the existing LCOV report to SonarQube when the repository has a
 `SONAR_TOKEN` secret and `SONAR_PROJECT_KEY` variable. Set `SONAR_HOST_URL` as a
 repository variable when using SonarQube Server; SonarQube Cloud uses its
 default service URL. The scan waits for the configured quality gate, so a
-failed gate fails CI.
+failed gate fails CI. See [SonarQube Quality Gate](quality-gate.md) for the
+required new-code conditions and project setup.
