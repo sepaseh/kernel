@@ -21,6 +21,7 @@
     "test:e2e": "playwright test",
     "test:e2e:report": "playwright show-report",
     "test:e2e:ui": "playwright test --ui",
+    "test:e2e:update-snapshots": "playwright test --project=visual-chromium --update-snapshots",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
   },

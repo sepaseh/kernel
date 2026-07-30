@@ -50,6 +50,7 @@ separate because they run against the built application.
 - `npm run test:e2e` builds the application and runs Playwright.
 - `npm run test:e2e:ui` opens Playwright's interactive UI.
 - `npm run test:e2e:report` opens the most recent HTML report.
+- `npm run test:e2e:update-snapshots` reviews and updates visual baselines.
 
 Local Chromium and mobile E2E runs use the installed stable Chrome channel.
 Firefox and WebKit use Playwright's pinned browser builds. GitHub CI installs
@@ -59,6 +60,12 @@ browsers once with:
 ```sh
 npx playwright install firefox webkit
 ```
+
+Visual regression tests run in a dedicated Chromium project with stable mocked
+API responses. As with the functional Chromium project, local runs use stable
+Chrome and CI uses the pinned Playwright build. Review every changed image
+before accepting a baseline update. Generated diffs and actual screenshots
+remain available in `test-results/` when a comparison fails.
 
 ## Conventions
 
@@ -83,6 +90,8 @@ npx playwright install firefox webkit
   focus assertions.
 - Run critical browser journeys in English/LTR and Persian/RTL, asserting the
   document language and direction as well as translated controls.
+- Keep visual snapshots deterministic: use fixed test data, wait for visible
+  page content, and disable animations and carets during capture.
 - Add E2E tests only for high-value journeys. Cover permutations and error
   states lower in the test pyramid.
 
