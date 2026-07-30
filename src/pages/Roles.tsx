@@ -101,6 +101,7 @@ export const RolesPage = () => {
           {canUpdateRoles && (
             <Tooltip title={t("update")}>
               <Button
+                aria-label={t("update")}
                 icon={<Icon name="edit" />}
                 onClick={() => void handleUpdate(record.id)}
                 type="text"
@@ -110,6 +111,7 @@ export const RolesPage = () => {
           {canDeleteRoles && (
             <Tooltip title={t("delete")}>
               <Button
+                aria-label={t("delete")}
                 danger
                 icon={<Icon name="delete" size={14} />}
                 onClick={() => handleDelete(record.id)}
@@ -162,6 +164,7 @@ export const RolesPage = () => {
       {canCreateRoles && (
         <ConfigProvider theme={{ token: { colorPrimary: token.colorSuccess } }}>
           <FloatButton
+            aria-label={t("create")}
             icon={<Icon name="add" />}
             onClick={() =>
               navigate(

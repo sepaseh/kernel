@@ -229,6 +229,7 @@ export const UsersPage = () => {
             <>
               <Tooltip title={t("update")}>
                 <Button
+                  aria-label={t("update")}
                   icon={<Icon name="edit" />}
                   onClick={() =>
                     void openUserDrawer(record.id, modalKeys.update)
@@ -238,6 +239,7 @@ export const UsersPage = () => {
               </Tooltip>
               <Tooltip title={t("roles")}>
                 <Button
+                  aria-label={t("roles")}
                   icon={<Icon name="key" />}
                   onClick={() =>
                     void openUserDrawer(record.id, modalKeys.roles)
@@ -247,6 +249,7 @@ export const UsersPage = () => {
               </Tooltip>
               <Tooltip title={t("workspaces")}>
                 <Button
+                  aria-label={t("workspaces")}
                   icon={<Icon name="home" />}
                   onClick={() =>
                     void openUserDrawer(record.id, modalKeys.workspaces)
@@ -260,6 +263,7 @@ export const UsersPage = () => {
             <>
               <Tooltip title={t("password")}>
                 <Button
+                  aria-label={t("password")}
                   icon={<Icon name="lock" />}
                   onClick={() =>
                     void openUserDrawer(record.id, modalKeys.password)
@@ -269,6 +273,7 @@ export const UsersPage = () => {
               </Tooltip>
               <Tooltip title={t("systemAdmin")}>
                 <Button
+                  aria-label={t("systemAdmin")}
                   icon={<Icon name="bolt" />}
                   onClick={() => handleSystemAdmin(record)}
                   type="text"
@@ -279,6 +284,7 @@ export const UsersPage = () => {
           {canDeleteUsers && (
             <Tooltip title={t("delete")}>
               <Button
+                aria-label={t("delete")}
                 danger
                 icon={<Icon name="delete" />}
                 onClick={() => handleDelete(record.id)}
@@ -406,6 +412,7 @@ export const UsersPage = () => {
       {canCreateUsers && (
         <ConfigProvider theme={{ token: { colorPrimary: token.colorSuccess } }}>
           <FloatButton
+            aria-label={t("create")}
             icon={<Icon name="add" />}
             onClick={() =>
               navigate(
