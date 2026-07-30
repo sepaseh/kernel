@@ -103,6 +103,11 @@ export const AntdProvider: FC<{ children?: ReactNode }> = ({ children }) => {
     document.body.style.color = token?.colorTextBase ?? "";
   }, [token]);
 
+  useEffect(() => {
+    document.documentElement.dir = direction;
+    document.documentElement.lang = language;
+  }, [direction, language]);
+
   return (
     <ConfigProvider
       direction={direction}

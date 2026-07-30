@@ -80,6 +80,8 @@ npx playwright install chromium
 - Run axe against public forms, authenticated pages, and open dialogs. Keep
   color-contrast checks enabled and pair automated scans with keyboard and
   focus assertions.
+- Run critical browser journeys in English/LTR and Persian/RTL, asserting the
+  document language and direction as well as translated controls.
 - Add E2E tests only for high-value journeys. Cover permutations and error
   states lower in the test pyramid.
 
