@@ -9,6 +9,7 @@ import { DigitsInput } from "@/components/DigitsInput";
 import { modalKeys } from "@/config";
 import { useAntd, useGoBack } from "@/hooks";
 import { CreateUserParams, UpdateUserParams, UserProps } from "@/types";
+import { getErrorMessage } from "@/utils";
 
 type UserFormParams = CreateUserParams & {
   confirmPassword: string;
@@ -51,8 +52,7 @@ export const UserForm: FC<{ data?: UserProps; onFinish: () => void }> = ({
       goBack();
       onFinish();
     } catch (error) {
-      if (error instanceof Error) messageAPI.error(error.message);
-      else console.error(error);
+      messageAPI.error(getErrorMessage(error));
     } finally {
       setSubmitting(false);
     }

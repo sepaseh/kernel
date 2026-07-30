@@ -19,6 +19,7 @@ import { modalKeys } from "@/config";
 import { RoleForm } from "@/forms/Role";
 import { useActionPermissions, useAntd } from "@/hooks";
 import { PermissionGroupProps, RoleProps } from "@/types";
+import { getErrorMessage } from "@/utils";
 
 export const RolesPage = () => {
   const { t } = useTranslation();
@@ -38,8 +39,7 @@ export const RolesPage = () => {
       setLoading(true);
       setData(await fetchRoles());
     } catch (error) {
-      if (error instanceof Error) messageAPI.error(error.message);
-      else console.error(error);
+      messageAPI.error(getErrorMessage(error));
     } finally {
       setLoading(false);
     }
@@ -51,8 +51,7 @@ export const RolesPage = () => {
       setSelectedData(await fetchRole(id));
       navigate({ hash: modalKeys.update, pathname, search }, { state: true });
     } catch (error) {
-      if (error instanceof Error) messageAPI.error(error.message);
-      else console.error(error);
+      messageAPI.error(getErrorMessage(error));
     } finally {
       setLoading(false);
     }
@@ -69,8 +68,7 @@ export const RolesPage = () => {
           messageAPI.success(t("roleDeleted"));
           await fetchData();
         } catch (error) {
-          if (error instanceof Error) messageAPI.error(error.message);
-          else console.error(error);
+          messageAPI.error(getErrorMessage(error));
         }
       },
       title: t("deleteRoleConfirm"),
@@ -137,8 +135,7 @@ export const RolesPage = () => {
       try {
         setPermissions(await fetchPermissions());
       } catch (error) {
-        if (error instanceof Error) messageAPI.error(error.message);
-        else console.error(error);
+        messageAPI.error(getErrorMessage(error));
       }
     })();
   }, [canCreateRoles, canUpdateRoles, messageAPI]);

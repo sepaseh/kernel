@@ -47,6 +47,7 @@ import {
   UserProps,
   UserSummaryProps,
 } from "@/types";
+import { getErrorMessage } from "@/utils";
 
 export const UsersPage = () => {
   const { t } = useTranslation();
@@ -86,8 +87,7 @@ export const UsersPage = () => {
       setData(response.items);
       setTotal(response.total);
     } catch (error) {
-      if (error instanceof Error) messageAPI.error(error.message);
-      else console.error(error);
+      messageAPI.error(getErrorMessage(error));
     } finally {
       setLoading(false);
     }
@@ -100,8 +100,7 @@ export const UsersPage = () => {
       setSelectedData(details);
       navigate({ hash, pathname, search }, { state: true });
     } catch (error) {
-      if (error instanceof Error) messageAPI.error(error.message);
-      else console.error(error);
+      messageAPI.error(getErrorMessage(error));
     } finally {
       setLoading(false);
     }
@@ -119,8 +118,7 @@ export const UsersPage = () => {
           messageAPI.success(t("statusUpdated"));
           await fetchData();
         } catch (error) {
-          if (error instanceof Error) messageAPI.error(error.message);
-          else console.error(error);
+          messageAPI.error(getErrorMessage(error));
         }
       },
       title: t("statusConfirm"),
@@ -139,8 +137,7 @@ export const UsersPage = () => {
           messageAPI.success(t("systemAdminUpdated"));
           await fetchData();
         } catch (error) {
-          if (error instanceof Error) messageAPI.error(error.message);
-          else console.error(error);
+          messageAPI.error(getErrorMessage(error));
         }
       },
       title: t("systemAdminConfirm"),
@@ -158,8 +155,7 @@ export const UsersPage = () => {
           messageAPI.success(t("userDeleted"));
           await fetchData();
         } catch (error) {
-          if (error instanceof Error) messageAPI.error(error.message);
-          else console.error(error);
+          messageAPI.error(getErrorMessage(error));
         }
       },
       title: t("deleteUserConfirm"),
@@ -324,8 +320,7 @@ export const UsersPage = () => {
         setRoles(roleOptions);
         setWorkspaces(workspaceOptions);
       } catch (error) {
-        if (error instanceof Error) messageAPI.error(error.message);
-        else console.error(error);
+        messageAPI.error(getErrorMessage(error));
       }
     })();
   }, [canUpdateUsers, messageAPI]);

@@ -18,6 +18,7 @@ import { createRole, updateRole } from "@/api";
 import { modalKeys } from "@/config";
 import { useAntd, useGoBack } from "@/hooks";
 import { PermissionGroupProps, RoleMutationParams, RoleProps } from "@/types";
+import { getErrorMessage } from "@/utils";
 
 export const RoleForm: FC<{
   data?: RoleProps;
@@ -46,8 +47,7 @@ export const RoleForm: FC<{
       goBack();
       onFinish();
     } catch (error) {
-      if (error instanceof Error) messageAPI.error(error.message);
-      else console.error(error);
+      messageAPI.error(getErrorMessage(error));
     } finally {
       setSubmitting(false);
     }

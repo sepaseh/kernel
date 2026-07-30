@@ -28,6 +28,7 @@ import {
   UpdateUsernameParams,
   VerifyEmailParams,
 } from "@/types";
+import { getErrorMessage } from "@/utils";
 
 type PasswordFormParams = ChangePasswordParams & {
   confirmPassword: string;
@@ -63,8 +64,7 @@ export const AccountPage = () => {
   if (!user) return null;
 
   const showError = (error: unknown) => {
-    if (error instanceof Error) messageAPI.error(error.message);
-    else console.error(error);
+    messageAPI.error(getErrorMessage(error));
   };
 
   const handleProfileSubmit: FormProps<UpdateProfileParams>["onFinish"] =

@@ -8,6 +8,7 @@ import { updateUserPassword } from "@/api";
 import { modalKeys } from "@/config";
 import { useAntd, useGoBack } from "@/hooks";
 import { UserPasswordParams, UserProps } from "@/types";
+import { getErrorMessage } from "@/utils";
 
 type UserPasswordFormParams = UserPasswordParams & {
   confirmPassword: string;
@@ -33,8 +34,7 @@ export const UserPasswordForm: FC<{ data?: UserProps }> = ({ data }) => {
       messageAPI.success(t("passwordUpdated"));
       goBack();
     } catch (error) {
-      if (error instanceof Error) messageAPI.error(error.message);
-      else console.error(error);
+      messageAPI.error(getErrorMessage(error));
     } finally {
       setSubmitting(false);
     }

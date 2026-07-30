@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig, InternalAxiosRequestConfig } from "axios";
 
 import { apiUrl } from "@/config";
+import { i18nInstance } from "@/i18n";
 import { AccessTokenProps } from "@/types";
 import { toCamelCase, toSnakeCase } from "@/utils";
 
@@ -73,7 +74,7 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (
-      axios.isAxiosError<{ errors: Record<string, string>; message: string }>(
+      axios.isAxiosError<{ cause: Record<string, string>; message: string }>(
         error,
       )
     ) {
@@ -101,21 +102,26 @@ api.interceptors.response.use(
       }
 
       if (error.response) {
-        return Promise.reject(
-          new Error(error.response.data.message, {
-            cause: error.response.data.errors,
-          }),
-        );
+        const { data } = error.response;
+
+        if (
+          typeof data !== "object" ||
+          data === null ||
+          typeof data.message !== "string" ||
+          !data.message
+        ) {
+          return Promise.reject(new Error(i18nInstance.t("unexpectedError")));
+        }
+
+        return Promise.reject(new Error(data.message, { cause: data.cause }));
       }
 
       if (error.request) {
-        return Promise.reject(
-          new Error("Network error - please check your connection"),
-        );
+        return Promise.reject(new Error(i18nInstance.t("networkError")));
       }
     }
 
-    return Promise.reject(error);
+    return Promise.reject(new Error(i18nInstance.t("unexpectedError")));
   },
 );
 

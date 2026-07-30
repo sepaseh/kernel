@@ -8,6 +8,7 @@ import { updateUserRoles } from "@/api";
 import { modalKeys } from "@/config";
 import { useAntd, useGoBack } from "@/hooks";
 import { UserOptionProps, UserProps, UserRoleParams } from "@/types";
+import { getErrorMessage } from "@/utils";
 
 type UserFormRoleProps = {
   data?: UserProps;
@@ -40,8 +41,7 @@ export const UserFormRole: FC<UserFormRoleProps> = ({
       goBack();
       onFinish();
     } catch (error) {
-      if (error instanceof Error) messageAPI.error(error.message);
-      else console.error(error);
+      messageAPI.error(getErrorMessage(error));
     } finally {
       setSubmitting(false);
     }

@@ -8,6 +8,7 @@ import { Icon } from "@/components/Icon";
 import { routeTree } from "@/config";
 import { useAntd } from "@/hooks";
 import { LoginParams } from "@/types";
+import { getErrorMessage } from "@/utils";
 
 export const LoginPage = () => {
   const { t } = useTranslation();
@@ -26,8 +27,7 @@ export const LoginPage = () => {
 
       navigate(routeTree.root.path, { replace: true });
     } catch (error) {
-      if (error instanceof Error) messageAPI.error(error.message);
-      else console.error(error);
+      messageAPI.error(getErrorMessage(error));
     } finally {
       setSubmitting(false);
     }

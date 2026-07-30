@@ -9,6 +9,7 @@ import { Icon } from "@/components/Icon";
 import { routeTree } from "@/config";
 import { useAntd } from "@/hooks";
 import { ForgotPasswordParams } from "@/types";
+import { getErrorMessage } from "@/utils";
 
 type ForgotPasswordFormParams = ForgotPasswordParams & {
   confirmPassword: string;
@@ -50,8 +51,7 @@ export const ForgotPassPage = () => {
       setRemainingSeconds(response.remainingSeconds);
       messageAPI.success(t("otpSent"));
     } catch (error) {
-      if (error instanceof Error) messageAPI.error(error.message);
-      else console.error(error);
+      messageAPI.error(getErrorMessage(error));
     } finally {
       setRequestingOtp(false);
     }
@@ -72,8 +72,7 @@ export const ForgotPassPage = () => {
       messageAPI.success(t("passwordReset"));
       navigate(routeTree.auth.path, { replace: true });
     } catch (error) {
-      if (error instanceof Error) messageAPI.error(error.message);
-      else console.error(error);
+      messageAPI.error(getErrorMessage(error));
     } finally {
       setSubmitting(false);
     }

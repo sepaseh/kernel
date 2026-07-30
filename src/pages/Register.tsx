@@ -9,6 +9,7 @@ import { Icon } from "@/components/Icon";
 import { routeTree } from "@/config";
 import { useAntd } from "@/hooks";
 import { RegisterParams } from "@/types";
+import { getErrorMessage } from "@/utils";
 
 type RegisterFormParams = RegisterParams & {
   confirmPassword: string;
@@ -47,8 +48,7 @@ export const RegisterPage = () => {
       setRemainingSeconds(response.remainingSeconds);
       messageAPI.success(t("otpSent"));
     } catch (error) {
-      if (error instanceof Error) messageAPI.error(error.message);
-      else console.error(error);
+      messageAPI.error(getErrorMessage(error));
     } finally {
       setRequestingOtp(false);
     }
@@ -70,8 +70,7 @@ export const RegisterPage = () => {
 
       navigate(routeTree.root.path, { replace: true });
     } catch (error) {
-      if (error instanceof Error) messageAPI.error(error.message);
-      else console.error(error);
+      messageAPI.error(getErrorMessage(error));
     } finally {
       setSubmitting(false);
     }
