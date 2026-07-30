@@ -35,6 +35,8 @@ the release manager must verify:
 - Required configuration or data migrations have a tested rollback path.
 - The previous production artifact and its configuration remain available.
 - A deployment operator and incident lead are available for the release window.
+- The exact candidate artifact passes the
+  [staging validation gate](staging.md).
 
 Approval is recorded by approving and merging the release pull request. Never
 publish a tag or deploy from an unreviewed commit. The generated GitHub Release,

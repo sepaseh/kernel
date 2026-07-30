@@ -12,3 +12,9 @@
 /docs/release-operations.md @sepaseh
 /docs/releasing.md @sepaseh
 /release-please-config.json @sepaseh
+
+# Production-like staging gate.
+/.github/workflows/staging.yml @sepaseh
+/docs/staging.md @sepaseh
+/staging.config.ts @sepaseh
+/staging/ @sepaseh

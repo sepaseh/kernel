@@ -4,6 +4,9 @@ This repository includes an nginx configuration for serving the built frontend
 with client-side routing, long-lived asset caching, and required security
 headers.
 
+Release candidates must pass the production-like
+[staging environment](staging.md) before production promotion.
+
 ## Production Build
 
 Create a production build:
