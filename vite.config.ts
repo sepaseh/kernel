@@ -8,6 +8,34 @@ export default defineConfig(({ mode }) => {
 
   return {
     base: env.VITE_APP_BASE_URL,
+    build: {
+      rolldownOptions: {
+        output: {
+          codeSplitting: {
+            groups: [
+              {
+                name: "react",
+                priority: 30,
+                test: /node_modules[\\/](?:react|react-dom|react-router|scheduler)[\\/]/,
+              },
+              {
+                maxSize: 450_000,
+                name: "ui",
+                priority: 20,
+                test: /node_modules[\\/](?:@ant-design|@emotion|@rc-component|antd|antd-style|rc-[^\\/]+)[\\/]/,
+              },
+              {
+                maxSize: 450_000,
+                name: "vendor",
+                priority: 10,
+                test: /node_modules[\\/]/,
+              },
+            ],
+          },
+          strictExecutionOrder: true,
+        },
+      },
+    },
     plugins: [react(), basicSsl()],
     resolve: {
       alias: {

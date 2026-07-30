@@ -8,6 +8,6 @@ describe("application routes", () => {
 
     render(<Routes />);
 
-    expect(screen.getByText("404")).toBeInTheDocument();
+    expect(await screen.findByText("404")).toBeInTheDocument();
   });
 });
