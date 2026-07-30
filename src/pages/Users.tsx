@@ -12,6 +12,7 @@ import {
   Table,
   TableProps,
   Tooltip,
+  Typography,
 } from "antd";
 import { useAntdToken } from "antd-style";
 import { debounce } from "lodash";
@@ -340,6 +341,9 @@ export const UsersPage = () => {
           flexGrow: 1,
         }}
       >
+        <Typography.Title level={1} style={{ fontSize: 20 }}>
+          {t("users")}
+        </Typography.Title>
         <Form<UserListParams> form={form} onValuesChange={handleFilter}>
           <Row gutter={24}>
             <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
@@ -377,6 +381,7 @@ export const UsersPage = () => {
             <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
               <Form.Item name="status">
                 <Select
+                  aria-label={t("status")}
                   allowClear
                   options={[
                     { label: t("active"), value: "active" },

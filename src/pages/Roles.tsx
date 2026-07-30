@@ -7,6 +7,7 @@ import {
   Table,
   TableProps,
   Tooltip,
+  Typography,
 } from "antd";
 import { useAntdToken } from "antd-style";
 import { useCallback, useEffect, useState } from "react";
@@ -151,6 +152,9 @@ export const RolesPage = () => {
           flexGrow: 1,
         }}
       >
+        <Typography.Title level={1} style={{ fontSize: 20 }}>
+          {t("roles")}
+        </Typography.Title>
         <Table<RoleProps>
           columns={tableColumns}
           dataSource={data}

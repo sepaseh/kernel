@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router";
 import { register, requestOtp } from "@/api";
 import { DigitsInput } from "@/components/DigitsInput";
 import { Icon } from "@/components/Icon";
+import { OtpInput } from "@/components/OtpInput";
 import { routeTree } from "@/config";
 import { useAntd } from "@/hooks";
 import { RegisterParams } from "@/types";
@@ -80,7 +81,9 @@ export const RegisterPage = () => {
     <Flex gap={32} vertical>
       <Flex align="center" gap={8} vertical>
         <Icon name="user" size={28} />
-        <Typography.Title level={5}>{t("register")}</Typography.Title>
+        <Typography.Title level={1} style={{ fontSize: 16 }}>
+          {t("register")}
+        </Typography.Title>
       </Flex>
       <Form
         form={form}
@@ -125,7 +128,7 @@ export const RegisterPage = () => {
               noStyle
               rules={[{ required: true }]}
             >
-              <Input.OTP length={6} size="large" style={{ direction: "ltr" }} />
+              <OtpInput length={6} size="large" style={{ direction: "ltr" }} />
             </Form.Item>
             <Button
               disabled={Boolean(remainingSeconds)}

@@ -28,6 +28,7 @@ export const en = {
   lightMode: "Light mode",
   login: "Login",
   logout: "Logout",
+  menu: "Menu",
   mobile: "Mobile",
   name: "Name",
   networkError: "Network error. Please check your connection.",

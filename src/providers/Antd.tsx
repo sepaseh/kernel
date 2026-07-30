@@ -23,11 +23,12 @@ type Palette = Pick<
   | "colorBorder"
   | "colorTextBase"
   | "colorTextDescription"
+  | "colorTextPlaceholder"
 >;
 
 const token: Partial<GlobalToken> = {
   colorLink: "#0a84ff",
-  colorPrimary: "#ff2b2b",
+  colorPrimary: "#d70015",
 };
 
 const palettes: Record<Theme, Palette> = {
@@ -37,6 +38,7 @@ const palettes: Record<Theme, Palette> = {
     colorBorder: "#e5e5ea",
     colorTextBase: "#2c2c2e",
     colorTextDescription: "#48484a",
+    colorTextPlaceholder: "#6b6b70",
   },
   dark: {
     colorBgBase: "#1c1c1e",
@@ -44,6 +46,7 @@ const palettes: Record<Theme, Palette> = {
     colorBorder: "#3a3a3c",
     colorTextBase: "#ffffff",
     colorTextDescription: "#aeaeb2",
+    colorTextPlaceholder: "#aeaeb2",
   },
 };
 

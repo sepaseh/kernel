@@ -21,6 +21,7 @@ import {
   updateUsername,
   verifyEmail,
 } from "@/api";
+import { OtpInput } from "@/components/OtpInput";
 import { useAntd, useCore } from "@/hooks";
 import {
   ChangePasswordParams,
@@ -171,7 +172,9 @@ export const AccountPage = () => {
       }}
       vertical
     >
-      <Typography.Title level={4}>{t("account")}</Typography.Title>
+      <Typography.Title level={1} style={{ fontSize: 20 }}>
+        {t("account")}
+      </Typography.Title>
       <Row gutter={[token.marginMD, token.marginMD]}>
         <Col xs={24} lg={12}>
           <Card title={t("basicInfo")} variant="borderless">
@@ -265,7 +268,7 @@ export const AccountPage = () => {
                 <Form.Item label={t("otp")} required>
                   <Flex gap={token.marginXS}>
                     <Form.Item name="otp" noStyle rules={[{ required: true }]}>
-                      <Input.OTP length={6} style={{ direction: "ltr" }} />
+                      <OtpInput length={6} style={{ direction: "ltr" }} />
                     </Form.Item>
                     <Button
                       disabled={Boolean(otpRemainingSeconds)}

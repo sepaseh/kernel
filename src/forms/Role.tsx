@@ -78,6 +78,9 @@ export const RoleForm: FC<{
 
   return (
     <Drawer
+      afterOpenChange={(isOpen) => {
+        if (isOpen) form.focusField("name");
+      }}
       closeIcon={false}
       footer={
         <Space>

@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router";
 import { forgotPassword, requestOtp } from "@/api";
 import { DigitsInput } from "@/components/DigitsInput";
 import { Icon } from "@/components/Icon";
+import { OtpInput } from "@/components/OtpInput";
 import { routeTree } from "@/config";
 import { useAntd } from "@/hooks";
 import { ForgotPasswordParams } from "@/types";
@@ -82,7 +83,9 @@ export const ForgotPassPage = () => {
     <Flex gap={32} vertical>
       <Flex align="center" gap={8} vertical>
         <Icon name="lock" size={28} />
-        <Typography.Title level={5}>{t("forgotPassword")}</Typography.Title>
+        <Typography.Title level={1} style={{ fontSize: 16 }}>
+          {t("forgotPassword")}
+        </Typography.Title>
       </Flex>
       <Form
         form={form}
@@ -109,7 +112,7 @@ export const ForgotPassPage = () => {
               noStyle
               rules={[{ required: true }]}
             >
-              <Input.OTP length={6} size="large" style={{ direction: "ltr" }} />
+              <OtpInput length={6} size="large" style={{ direction: "ltr" }} />
             </Form.Item>
             <Button
               disabled={Boolean(remainingSeconds)}

@@ -39,6 +39,7 @@ export const fa = {
   lightMode: "حالت روشن",
   login: "ورود به سیستم",
   logout: "خروج",
+  menu: "منو",
   name: "نام",
   networkError: "خطای شبکه. لطفاً اتصال اینترنت خود را بررسی کنید.",
   newPass: "رمز عبور جدید",

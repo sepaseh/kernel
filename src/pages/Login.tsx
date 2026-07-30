@@ -41,7 +41,9 @@ export const LoginPage = () => {
     <Flex gap={32} vertical>
       <Flex align="center" gap={8} vertical>
         <Icon name="bolt" size={28} />
-        <Typography.Title level={5}>{t("login")}</Typography.Title>
+        <Typography.Title level={1} style={{ fontSize: 16 }}>
+          {t("login")}
+        </Typography.Title>
       </Flex>
       <Form
         form={form}

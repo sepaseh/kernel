@@ -79,95 +79,100 @@ export const DefaultLayout = () => {
 
   return (
     <>
-      <Flex
-        align="center"
-        gap={16}
-        justify="space-between"
-        style={{
-          height: 64,
-          paddingInline: token.paddingSM,
-          backgroundColor: token.colorBgContainer,
-        }}
-      >
-        <Link to={routeTree.root.path}>
-          <Typography.Text strong style={{ color: token.colorTextBase }}>
-            kernel
-          </Typography.Text>
-        </Link>
-        {lg ? (
-          <Menu
-            builtinPlacements={{ bottomLeft: { points: ["tr", "br"] } }}
-            items={menuItems}
-            mode="horizontal"
-            selectedKeys={[currentRoute]}
-            style={{ flexGrow: 1, lineHeight: "64px" }}
-          />
-        ) : (
-          <Flex style={{ flexGrow: 1 }}>
+      <header>
+        <Flex
+          align="center"
+          gap={16}
+          justify="space-between"
+          style={{
+            height: 64,
+            paddingInline: token.paddingSM,
+            backgroundColor: token.colorBgContainer,
+          }}
+        >
+          <Link to={routeTree.root.path}>
+            <Typography.Text strong style={{ color: token.colorTextBase }}>
+              kernel
+            </Typography.Text>
+          </Link>
+          {lg ? (
+            <Menu
+              builtinPlacements={{ bottomLeft: { points: ["tr", "br"] } }}
+              items={menuItems}
+              mode="horizontal"
+              selectedKeys={[currentRoute]}
+              style={{ flexGrow: 1, lineHeight: "64px" }}
+            />
+          ) : (
+            <Flex style={{ flexGrow: 1 }}>
+              <Button
+                aria-label={t("menu")}
+                icon={<Icon name="menu" />}
+                onClick={() => setOpen(true)}
+                type="text"
+              />
+            </Flex>
+          )}
+          <Dropdown
+            menu={{
+              items: [
+                {
+                  icon: <Icon name="user" />,
+                  key: "1",
+                  label: t("account"),
+                  onClick: () =>
+                    navigate(routeTree.account.path, { replace: true }),
+                },
+                {
+                  icon: <Icon name={darkMode ? "lightMode" : "moon"} />,
+                  key: "2",
+                  label: t(darkMode ? "lightMode" : "darkMode"),
+                  onClick: () => setTheme(darkMode ? "light" : "dark"),
+                },
+                {
+                  danger: true,
+                  icon: <Icon name="logout" />,
+                  key: "3",
+                  label: t("logout"),
+                  onClick: () => void handleLogout(),
+                },
+              ],
+            }}
+            popupRender={(menu) => (
+              <>
+                <Flex
+                  style={{
+                    minWidth: 200,
+                    paddingBlock: 8,
+                    paddingInline: 16,
+                    gap: 4,
+                    backgroundColor: token.colorBgContainer,
+                  }}
+                  vertical
+                >
+                  <Typography.Text
+                    style={{ display: "flex", alignItems: "center", gap: 8 }}
+                  >
+                    <Icon name="user" size={14} />
+                    {`${user.firstName} ${user.lastName}`.trim()}
+                  </Typography.Text>
+                </Flex>
+                <Divider variant="dashed" />
+                {menu}
+              </>
+            )}
+          >
             <Button
-              icon={<Icon name="menu" />}
-              onClick={() => setOpen(true)}
+              aria-label={t("account")}
+              icon={<Avatar icon={<Icon name="user" />} />}
               type="text"
             />
-          </Flex>
-        )}
-        <Dropdown
-          menu={{
-            items: [
-              {
-                icon: <Icon name="user" />,
-                key: "1",
-                label: t("account"),
-                onClick: () =>
-                  navigate(routeTree.account.path, { replace: true }),
-              },
-              {
-                icon: <Icon name={darkMode ? "lightMode" : "moon"} />,
-                key: "2",
-                label: t(darkMode ? "lightMode" : "darkMode"),
-                onClick: () => setTheme(darkMode ? "light" : "dark"),
-              },
-              {
-                danger: true,
-                icon: <Icon name="logout" />,
-                key: "3",
-                label: t("logout"),
-                onClick: () => void handleLogout(),
-              },
-            ],
-          }}
-          popupRender={(menu) => (
-            <>
-              <Flex
-                style={{
-                  minWidth: 200,
-                  paddingBlock: 8,
-                  paddingInline: 16,
-                  gap: 4,
-                  backgroundColor: token.colorBgContainer,
-                }}
-                vertical
-              >
-                <Typography.Text
-                  style={{ display: "flex", alignItems: "center", gap: 8 }}
-                >
-                  <Icon name="user" size={14} />
-                  {`${user.firstName} ${user.lastName}`.trim()}
-                </Typography.Text>
-              </Flex>
-              <Divider variant="dashed" />
-              {menu}
-            </>
-          )}
-        >
-          <Button
-            aria-label={t("account")}
-            icon={<Avatar icon={<Icon name="user" />} />}
-            type="text"
-          />
-        </Dropdown>
-      </Flex>
-      <Outlet />
+          </Dropdown>
+        </Flex>
+      </header>
+      <main style={{ display: "flex", flexGrow: 1 }}>
+        <Outlet />
+      </main>
       <Drawer
         closeIcon={false}
         onClose={() => setOpen(false)}
@@ -175,7 +180,9 @@ export const DefaultLayout = () => {
         title={false}
         styles={{ body: { padding: 8 } }}
       >
-        <Menu items={menuItems} mode="inline" selectedKeys={[currentRoute]} />
+        <nav aria-label={t("menu")}>
+          <Menu items={menuItems} mode="inline" selectedKeys={[currentRoute]} />
+        </nav>
       </Drawer>
     </>
   );

@@ -1,4 +1,3 @@
-import { Flex } from "antd";
 import { useAntdToken } from "antd-style";
 import { useEffect } from "react";
 import { Outlet } from "react-router";
@@ -16,8 +15,9 @@ export const AuthLayout = () => {
   }, [setUser]);
 
   return (
-    <Flex
+    <main
       style={{
+        display: "flex",
         padding: token.paddingSM,
         flexGrow: 1,
         alignItems: "center",
@@ -36,6 +36,6 @@ export const AuthLayout = () => {
       >
         <Outlet />
       </div>
-    </Flex>
+    </main>
   );
 };

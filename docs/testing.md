@@ -10,7 +10,7 @@ fast and maintainable.
 | Unit            | Vitest                               | Pure functions, hooks, reducers, and isolated logic        |
 | Component       | React Testing Library and user-event | User-visible rendering and interactions                    |
 | API integration | MSW                                  | Request serialization, response handling, and error states |
-| End-to-end      | Playwright                           | A small set of critical journeys in a real browser         |
+| End-to-end      | Playwright and axe-core              | Critical journeys and automated accessibility checks       |
 
 Vitest is the best unit runner for this project because it shares Vite's
 TypeScript and module resolution model. React Testing Library encourages tests
@@ -77,6 +77,9 @@ npx playwright install chromium
   automatically after each test.
 - Use Playwright locators and web-first assertions. Do not select by CSS class
   or XPath.
+- Run axe against public forms, authenticated pages, and open dialogs. Keep
+  color-contrast checks enabled and pair automated scans with keyboard and
+  focus assertions.
 - Add E2E tests only for high-value journeys. Cover permutations and error
   states lower in the test pyramid.
 
