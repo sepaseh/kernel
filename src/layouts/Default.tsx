@@ -13,7 +13,7 @@ import {
 import { useAntdToken } from "antd-style";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router";
 
 import { getAccount, logout, setUnauthorizedHandler } from "@/api";
 import { clearAccessToken } from "@/api/token";

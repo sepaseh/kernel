@@ -11,7 +11,7 @@ import {
 import { useAntdToken } from "antd-style";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 
 import { deleteRole, fetchPermissions, fetchRole, fetchRoles } from "@/api";
 import { Icon } from "@/components/Icon";

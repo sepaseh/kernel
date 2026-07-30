@@ -1,10 +1,5 @@
 import { useCallback } from "react";
-import {
-  NavigateOptions,
-  To,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { NavigateOptions, To, useLocation, useNavigate } from "react-router";
 
 export const useGoBack = (): ((to?: To, options?: NavigateOptions) => void) => {
   const { pathname, state } = useLocation();

@@ -44,6 +44,7 @@ npm run build      # typecheck and build for production
 npm run preview    # preview production build
 npm run lint       # run ESLint
 npm run lint:fix   # run ESLint with auto-fix
+npm run audit      # check dependencies for high-severity vulnerabilities
 npm run typecheck  # typecheck only
 npm run knip       # detect unused files, exports, and dependencies
 ```

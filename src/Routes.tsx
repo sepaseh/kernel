@@ -1,9 +1,6 @@
 import { FC, ReactNode, useEffect } from "react";
-import {
-  createBrowserRouter,
-  Navigate,
-  RouterProvider,
-} from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router";
+import { RouterProvider } from "react-router/dom";
 
 import { baseUrl, RouteKey, routeTree } from "@/config";
 import { useAllowedRoutes, useCore } from "@/hooks";

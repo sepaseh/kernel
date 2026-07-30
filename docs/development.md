@@ -4,7 +4,7 @@ This project is a Vite React application written in TypeScript.
 
 ## Prerequisites
 
-- Node.js 22
+- Node.js 22.22.0 or newer
 - npm
 - Access to the backend API
 

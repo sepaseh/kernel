@@ -1,7 +1,7 @@
 import { Flex } from "antd";
 import { useAntdToken } from "antd-style";
 import { useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet } from "react-router";
 
 import { clearAccessToken } from "@/api/token";
 import { useCore } from "@/hooks";

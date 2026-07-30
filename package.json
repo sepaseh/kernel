@@ -3,7 +3,11 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=22.22.0"
+  },
   "scripts": {
+    "audit": "npm audit --audit-level=high",
     "dev": "vite --host",
     "build": "node scripts/validate-production-env.mjs && tsc -b && vite build",
     "format": "prettier . --write",
@@ -31,7 +35,7 @@
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-i18next": "^17.0.8",
-    "react-router-dom": "^7.18.0"
+    "react-router": "^8.3.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

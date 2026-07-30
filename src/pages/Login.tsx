@@ -1,7 +1,7 @@
 ﻿import { Button, Flex, Form, FormProps, Input, Typography } from "antd";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 
 import { login } from "@/api";
 import { Icon } from "@/components/Icon";

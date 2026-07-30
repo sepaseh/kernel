@@ -2,7 +2,7 @@
 import { Button, Drawer, Form, FormProps, Input, Space } from "antd";
 import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 
 import { updateUserPassword } from "@/api";
 import { modalKeys } from "@/config";
