@@ -1,4 +1,5 @@
 export const fa = {
+  reload: "بارگذاری مجدد",
   account: "حساب کاربری",
   backHome: "بازگشت به خانه",
   backToLogin: "بازگشت به ورود",

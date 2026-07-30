@@ -42,6 +42,18 @@ VITE_APP_BASE_URL=/app/
 start and end with `/`; use `/` when the application is served at the domain
 root.
 
+## Observability
+
+Set `VITE_RELEASE_ID` to an immutable deployment identifier, such as the Git
+commit SHA. This release is included with every error and performance event.
+
+To deliver events, set `VITE_OBSERVABILITY_URL` to an HTTPS endpoint that
+accepts JSON `POST` requests. If it is omitted, instrumentation remains active
+but no events leave the browser. Reports include sanitized application errors,
+unhandled failures, React component failures, largest contentful paint,
+cumulative layout shift, and long tasks. Credential-like values, email
+addresses, and URL query values are redacted before delivery.
+
 ## nginx
 
 Build the application, copy `dist/` to `/usr/share/nginx/html`, and install

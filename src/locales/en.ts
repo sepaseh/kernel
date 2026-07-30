@@ -1,4 +1,5 @@
 export const en = {
+  reload: "Reload",
   action: "Action",
   active: "Active",
   account: "Account",
