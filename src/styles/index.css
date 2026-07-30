@@ -11,9 +11,6 @@ a {
 
 button {
   font-family: inherit;
-  -moz-font-feature-settings: inherit;
-  -webkit-font-feature-settings: inherit;
-  font-feature-settings: inherit;
 }
 
 img {
@@ -21,9 +18,7 @@ img {
 }
 
 input {
-  -moz-font-feature-settings: inherit;
-  -webkit-font-feature-settings: inherit;
-  font-feature-settings: inherit;
+  font-family: inherit;
 }
 
 li {
@@ -31,12 +26,14 @@ li {
 }
 
 html {
-  font-family: "IRANSansX", Tahoma, Geneva, Verdana, sans-serif;
-  -moz-font-feature-settings: "ss01";
-  -webkit-font-feature-settings: "ss01";
-  font-feature-settings: "ss01";
+  font-family: "Vazirmatn", system-ui, sans-serif;
   min-width: 320px;
   overflow-x: hidden;
+}
+
+select,
+textarea {
+  font-family: inherit;
 }
 
 #root {

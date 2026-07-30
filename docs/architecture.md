@@ -63,6 +63,9 @@ to JavaScript.
 
 ## Styling
 
-Global styles live in `src/styles`. The app keeps `IRANSansX` first in the font stack, but font binaries are not committed because their public redistribution license is unclear. Copy licensed files into `public/fonts/iransans` locally and add matching `@font-face` rules in `src/styles/iransans.css` when needed.
+Global styles live in `src/styles`. The application bundles the Vazirmatn
+variable WOFF2 from `src/assets/fonts/vazirmatn` and uses weights 100–900 with
+`font-display: swap`. Vite fingerprints the local asset during production
+builds; the application does not depend on an external font provider.
 
 Prefer Ant Design components and theme tokens for new UI so layout, spacing, RTL behavior, and dark/light themes stay consistent.
