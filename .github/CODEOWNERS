@@ -1,0 +1,7 @@
+# Default reviewer for all repository changes.
+* @sepaseh
+
+# Require explicit review for automation and dependency policy changes.
+/.github/ @sepaseh
+/package.json @sepaseh
+/package-lock.json @sepaseh
