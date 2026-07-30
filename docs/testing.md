@@ -91,3 +91,11 @@ a change pass.
 Coverage is a guardrail, not a quality score. Critical authentication, token
 refresh, authorization, and account-management branches should receive direct
 behavioral tests even when the global threshold is already satisfied.
+
+## SonarQube
+
+CI sends the existing LCOV report to SonarQube when the repository has a
+`SONAR_TOKEN` secret and `SONAR_PROJECT_KEY` variable. Set `SONAR_HOST_URL` as a
+repository variable when using SonarQube Server; SonarQube Cloud uses its
+default service URL. The scan waits for the configured quality gate, so a
+failed gate fails CI.
