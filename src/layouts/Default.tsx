@@ -160,7 +160,11 @@ export const DefaultLayout = () => {
             </>
           )}
         >
-          <Avatar icon={<Icon name="user" />} style={{ cursor: "pointer" }} />
+          <Button
+            aria-label={t("account")}
+            icon={<Avatar icon={<Icon name="user" />} />}
+            type="text"
+          />
         </Dropdown>
       </Flex>
       <Outlet />
