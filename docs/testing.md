@@ -51,6 +51,8 @@ separate because they run against the built application.
 - `npm run test:e2e:ui` opens Playwright's interactive UI.
 - `npm run test:e2e:report` opens the most recent HTML report.
 - `npm run test:e2e:update-snapshots` reviews and updates visual baselines.
+- `npm run performance` builds the app, checks bundle budgets, and runs
+  Lighthouse.
 
 Local Chromium and mobile E2E runs use the installed stable Chrome channel.
 Firefox and WebKit use Playwright's pinned browser builds. GitHub CI installs
@@ -66,6 +68,20 @@ API responses. As with the functional Chromium project, local runs use stable
 Chrome and CI uses the pinned Playwright build. Review every changed image
 before accepting a baseline update. Generated diffs and actual screenshots
 remain available in `test-results/` when a comparison fails.
+
+## Performance budgets
+
+The production build enforces two JavaScript size limits:
+
+- No individual JavaScript chunk may exceed 450 KB.
+- All emitted JavaScript chunks combined may not exceed 1.6 MB.
+
+Lighthouse audits the production login page and requires a performance score of
+at least 80, first contentful paint within 3.5 seconds, largest contentful paint
+within 4 seconds, time to interactive within 4 seconds, total blocking time
+below 300 milliseconds, and cumulative layout shift no greater than 0.1.
+Reports are written to `.lighthouseci/` and uploaded by CI for 14 days,
+including when the performance job fails.
 
 ## Conventions
 
