@@ -73,6 +73,8 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
+    if (axios.isCancel(error)) return Promise.reject(error);
+
     if (
       axios.isAxiosError<{ cause: Record<string, string>; message: string }>(
         error,

@@ -1,6 +1,8 @@
+import axios, { AxiosError } from "axios";
 import { delay, http, HttpResponse } from "msw";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { i18nInstance } from "@/i18n";
 import { server } from "@/test/mocks/server";
 
 import { apiClient, setUnauthorizedHandler } from "./instance";
@@ -112,5 +114,84 @@ describe("API client authentication", () => {
     expect(results.every(({ status }) => status === "rejected")).toBe(true);
     expect(getAccessToken()).toBeNull();
     expect(onUnauthorized).toHaveBeenCalledOnce();
+  });
+});
+
+describe("API client errors", () => {
+  it("transforms structured API errors and preserves their cause", async () => {
+    server.use(
+      http.get("http://localhost/invalid-request", () =>
+        HttpResponse.json(
+          {
+            cause: { email: "Email is invalid" },
+            message: "Validation failed",
+          },
+          { status: 422 },
+        ),
+      ),
+    );
+
+    await expect(apiClient.get("/invalid-request")).rejects.toMatchObject({
+      cause: { email: "Email is invalid" },
+      message: "Validation failed",
+    });
+  });
+
+  it("uses the unexpected-error message for malformed error responses", async () => {
+    server.use(
+      http.get("http://localhost/malformed-error", () =>
+        HttpResponse.json({ message: null }, { status: 500 }),
+      ),
+    );
+
+    await expect(apiClient.get("/malformed-error")).rejects.toThrow(
+      i18nInstance.t("unexpectedError"),
+    );
+  });
+
+  it("preserves request cancellation", async () => {
+    const controller = new AbortController();
+
+    server.use(
+      http.get("http://localhost/cancelled", async () => {
+        await delay(100);
+        return HttpResponse.json({ status: "ready" });
+      }),
+    );
+
+    const request = apiClient.get("/cancelled", {
+      signal: controller.signal,
+    });
+    controller.abort();
+
+    await expect(request).rejects.toSatisfy((error: unknown) =>
+      axios.isCancel(error),
+    );
+  });
+
+  it("uses the network-error message when a request times out", async () => {
+    await expect(
+      apiClient.get("/slow", {
+        adapter: (config) =>
+          Promise.reject(
+            new AxiosError(
+              "timeout exceeded",
+              AxiosError.ETIMEDOUT,
+              config,
+              {},
+            ),
+          ),
+      }),
+    ).rejects.toThrow(i18nInstance.t("networkError"));
+  });
+
+  it("uses the network-error message for network failures", async () => {
+    server.use(
+      http.get("http://localhost/network-failure", () => HttpResponse.error()),
+    );
+
+    await expect(apiClient.get("/network-failure")).rejects.toThrow(
+      i18nInstance.t("networkError"),
+    );
   });
 });
