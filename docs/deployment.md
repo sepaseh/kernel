@@ -1,6 +1,8 @@
 # Deployment
 
-This repository includes Docker, nginx, and Docker Compose example files for serving the built frontend.
+This repository includes an nginx configuration for serving the built frontend
+with client-side routing, long-lived asset caching, and required security
+headers.
 
 ## Production Build
 
@@ -40,32 +42,26 @@ VITE_APP_BASE_URL=/app/
 start and end with `/`; use `/` when the application is served at the domain
 root.
 
-## Docker
-
-Build the image:
-
-```bash
-docker build -t kernel .
-```
-
-Run the image:
-
-```bash
-docker run --rm -p 8080:80 kernel
-```
-
-## Docker Compose
-
-Use the example compose file as a starting point:
-
-```bash
-docker compose -f docker-compose.example.yml up --build
-```
-
-Review environment values and service names before using it outside local development.
-
 ## nginx
 
-`nginx.conf` serves the static build and supports client-side routing by falling back to `index.html`.
+Build the application, copy `dist/` to `/usr/share/nginx/html`, and install
+`nginx.conf` as the server configuration. It supports client-side routing by
+falling back to `index.html`.
 
 When adding routes in React, no nginx route changes are normally required as long as the fallback remains in place.
+
+## Security headers
+
+The nginx configuration applies:
+
+- Content Security Policy restricted to same-origin application resources and
+  HTTPS API connections
+- HTTP Strict Transport Security for one year, including subdomains
+- Denial of framing through CSP and `X-Frame-Options`
+- MIME sniffing protection
+- Strict-origin referrer behavior
+- Disabled camera, geolocation, microphone, payment, and USB browser features
+
+HSTS is honored by browsers only over HTTPS. When TLS terminates at a CDN or
+load balancer, configure that edge to preserve these response headers. Run the
+Playwright suite against the production build to verify the complete policy.

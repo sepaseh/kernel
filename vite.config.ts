@@ -3,6 +3,17 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import { defineConfig, loadEnv } from "vite";
 
+const securityHeaders = {
+  "Content-Security-Policy":
+    "default-src 'self'; base-uri 'self'; connect-src 'self' https:; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; img-src 'self' data:; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; upgrade-insecure-requests",
+  "Permissions-Policy":
+    "camera=(), geolocation=(), microphone=(), payment=(), usb=()",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+};
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
@@ -37,6 +48,9 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins: [react(), basicSsl()],
+    preview: {
+      headers: securityHeaders,
+    },
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "src"),
