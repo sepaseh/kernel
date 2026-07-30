@@ -90,6 +90,7 @@ describe("API client authentication", () => {
 
   it("clears authentication once when a shared token refresh fails", async () => {
     const onUnauthorized = vi.fn();
+    let refreshRequestCount = 0;
 
     setAccessToken("expired-token");
     setUnauthorizedHandler(onUnauthorized);
@@ -98,6 +99,7 @@ describe("API client authentication", () => {
         HttpResponse.json({ message: "Unauthorized" }, { status: 401 }),
       ),
       http.post("http://localhost/auth/refresh-token", async () => {
+        refreshRequestCount += 1;
         await delay(10);
         return HttpResponse.json(
           { message: "Refresh rejected" },
@@ -112,6 +114,60 @@ describe("API client authentication", () => {
     ]);
 
     expect(results.every(({ status }) => status === "rejected")).toBe(true);
+    expect(getAccessToken()).toBeNull();
+    expect(onUnauthorized).toHaveBeenCalledOnce();
+    expect(refreshRequestCount).toBe(1);
+  });
+
+  it("clears authentication when a single token refresh fails", async () => {
+    const onUnauthorized = vi.fn();
+    let protectedRequestCount = 0;
+    let refreshRequestCount = 0;
+
+    setAccessToken("expired-token");
+    setUnauthorizedHandler(onUnauthorized);
+    server.use(
+      http.get("http://localhost/protected", () => {
+        protectedRequestCount += 1;
+        return HttpResponse.json({ message: "Unauthorized" }, { status: 401 });
+      }),
+      http.post("http://localhost/auth/refresh-token", () => {
+        refreshRequestCount += 1;
+        return HttpResponse.json(
+          { message: "Refresh rejected" },
+          { status: 401 },
+        );
+      }),
+    );
+
+    await expect(apiClient.get("/protected")).rejects.toThrow("Unauthorized");
+    expect(protectedRequestCount).toBe(1);
+    expect(refreshRequestCount).toBe(1);
+    expect(getAccessToken()).toBeNull();
+    expect(onUnauthorized).toHaveBeenCalledOnce();
+  });
+
+  it("does not start another refresh when the retried request is unauthorized", async () => {
+    const onUnauthorized = vi.fn();
+    let protectedRequestCount = 0;
+    let refreshRequestCount = 0;
+
+    setAccessToken("expired-token");
+    setUnauthorizedHandler(onUnauthorized);
+    server.use(
+      http.get("http://localhost/protected", () => {
+        protectedRequestCount += 1;
+        return HttpResponse.json({ message: "Unauthorized" }, { status: 401 });
+      }),
+      http.post("http://localhost/auth/refresh-token", () => {
+        refreshRequestCount += 1;
+        return HttpResponse.json({ access_token: "fresh-token" });
+      }),
+    );
+
+    await expect(apiClient.get("/protected")).rejects.toThrow("Unauthorized");
+    expect(protectedRequestCount).toBe(2);
+    expect(refreshRequestCount).toBe(1);
     expect(getAccessToken()).toBeNull();
     expect(onUnauthorized).toHaveBeenCalledOnce();
   });
