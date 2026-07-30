@@ -65,3 +65,26 @@ The nginx configuration applies:
 HSTS is honored by browsers only over HTTPS. When TLS terminates at a CDN or
 load balancer, configure that edge to preserve these response headers. Run the
 Playwright suite against the production build to verify the complete policy.
+
+## Post-deployment smoke tests
+
+The deployment smoke workflow runs after a successful GitHub deployment status
+or can be started manually. It checks that:
+
+- The deployed HTML and application root load.
+- Same-origin scripts, stylesheets, and fonts resolve successfully.
+- Direct navigation to `/auth/register` reaches the client-side route.
+- The configured public API health endpoint returns a successful status.
+
+Set the repository variable `SMOKE_API_HEALTH_URL` to the public HTTPS health
+endpoint used by automatic deployment runs. The deployment provider must
+include its application URL in the successful deployment status. For a manual
+run, provide both URLs as workflow inputs.
+
+To run the same checks locally against a deployed environment:
+
+```bash
+SMOKE_BASE_URL=https://app.example.com/ \
+SMOKE_API_HEALTH_URL=https://api.example.com/health \
+npm run test:smoke
+```

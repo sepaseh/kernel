@@ -1,0 +1,67 @@
+name: Deployment smoke tests
+
+on:
+  deployment_status:
+  workflow_dispatch:
+    inputs:
+      application_url:
+        description: Deployed application base URL
+        required: true
+        type: string
+      api_health_url:
+        description: Public API health endpoint
+        required: true
+        type: string
+
+concurrency:
+  cancel-in-progress: true
+  group: deployment-smoke-${{ github.event.deployment.environment || inputs.application_url }}
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.deployment_status.state == 'success'
+    runs-on: ubuntu-latest
+    env:
+      NODE_VERSION: 24.18.0
+      SMOKE_API_HEALTH_URL: >-
+        ${{ github.event_name == 'workflow_dispatch' &&
+        inputs.api_health_url || vars.SMOKE_API_HEALTH_URL }}
+      SMOKE_BASE_URL: >-
+        ${{ github.event_name == 'workflow_dispatch' &&
+        inputs.application_url ||
+        github.event.deployment_status.environment_url }}
+
+    steps:
+      - name: Validate smoke-test targets
+        run: |
+          if [[ -z "$SMOKE_BASE_URL" || -z "$SMOKE_API_HEALTH_URL" ]]; then
+            echo "SMOKE_BASE_URL and SMOKE_API_HEALTH_URL are required."
+            exit 1
+          fi
+
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          cache: npm
+          node-version: ${{ env.NODE_VERSION }}
+
+      - run: npm ci
+
+      - run: npx playwright install --with-deps chromium
+
+      - run: npm run test:smoke
+
+      - if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: deployment-smoke-${{ github.run_id }}
+          path: |
+            playwright-report/smoke
+            test-results/smoke
+          retention-days: 14
