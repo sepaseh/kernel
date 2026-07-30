@@ -39,6 +39,9 @@ The next workflow run then creates the `vMAJOR.MINOR.PATCH` tag and GitHub
 Release with generated notes. This application is private and is not published
 to npm.
 
+Every production release must follow the approval, verification, rollback, and
+follow-up steps in the [release operations runbook](release-operations.md).
+
 The workflow uses the repository `GITHUB_TOKEN` by default. If repository policy
 requires release pull requests to trigger other workflows, configure a
 fine-grained token or GitHub App token as the `RELEASE_PLEASE_TOKEN` repository

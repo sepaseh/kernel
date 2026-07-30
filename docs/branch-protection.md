@@ -17,9 +17,16 @@ Protection also:
 - Prevents force-pushes.
 - Prevents deletion of `main`.
 
-An approving review is not required while the repository has only one active
-maintainer. Enable at least one approval and Code Owner review when another
-maintainer can review pull requests without blocking all development.
+An approving review is not required for ordinary changes while the repository
+has only one active maintainer. Release pull requests follow the explicit
+approval process in the
+[release operations runbook](release-operations.md). Enable at least one
+approval and Code Owner review when another maintainer can review pull requests
+without blocking all development.
+
+Configure the GitHub `production` environment separately with required
+reviewers. Production deployment jobs must reference that environment so its
+approval gate applies after merge and before deployment.
 
 The SonarQube scan is part of the required `check` job. Configure the repository
 settings described in [Testing](testing.md#sonarqube) before treating the

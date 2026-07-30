@@ -100,3 +100,13 @@ SMOKE_BASE_URL=https://app.example.com/ \
 SMOKE_API_HEALTH_URL=https://api.example.com/health \
 npm run test:smoke
 ```
+
+## Release control and rollback
+
+Production deployments must use the immutable artifact associated with the
+approved GitHub Release. Keep at least the current and previous production
+artifacts available so recovery does not require rebuilding old source.
+
+Follow the [release operations runbook](release-operations.md) for approval
+evidence, observation windows, rollback triggers, recovery steps, and incident
+follow-up.

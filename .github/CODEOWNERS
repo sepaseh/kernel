@@ -5,3 +5,10 @@
 /.github/ @sepaseh
 /package.json @sepaseh
 /package-lock.json @sepaseh
+
+# Release policy, version state, and generated release notes.
+/.release-please-manifest.json @sepaseh
+/CHANGELOG.md @sepaseh
+/docs/release-operations.md @sepaseh
+/docs/releasing.md @sepaseh
+/release-please-config.json @sepaseh
