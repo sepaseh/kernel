@@ -27,8 +27,8 @@
 
 All user-visible text should go through `react-i18next`.
 
-- Add English strings to `src/app/i18n/locales/en.ts`.
-- Add Persian strings to `src/app/i18n/locales/fa.ts` when the translation is known.
+- Add English strings to `src/shared/i18n/locales/en.ts`.
+- Add Persian strings to `src/shared/i18n/locales/fa.ts` when the translation is known.
 - Keep locale keys alphabetized.
 - Use i18next pluralization for count-based strings.
 

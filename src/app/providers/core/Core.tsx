@@ -5,9 +5,9 @@ import { FC, ReactNode, useCallback, useEffect, useState } from "react";
 
 import { RouteKey } from "@/app/config";
 import { CoreContext, CoreContextProps } from "@/app/contexts";
-import { i18nInstance } from "@/app/i18n";
-import { faDayjs } from "@/app/i18n/locales";
 import { Language, storageKeys, Theme } from "@/shared/config";
+import { i18nInstance } from "@/shared/i18n";
+import { faDayjs } from "@/shared/i18n/locales";
 import {
   getLanguage,
   getTheme,

@@ -16,7 +16,7 @@ const mocks = vi.hoisted(() => ({
   watchers: new Map<string, () => void>(),
 }));
 
-vi.mock("@/app/i18n", () => ({
+vi.mock("@/shared/i18n", () => ({
   i18nInstance: {
     changeLanguage: mocks.changeLanguage,
   },

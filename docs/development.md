@@ -86,6 +86,6 @@ Keep feature code close to the existing structure:
 
 ## Localization
 
-The application currently ships with English (`en`) and Persian (`fa`). Translation strings live in `src/app/i18n/locales/en.ts` and `src/app/i18n/locales/fa.ts`.
+The application currently ships with English (`en`) and Persian (`fa`). Translation strings live in `src/shared/i18n/locales/en.ts` and `src/shared/i18n/locales/fa.ts`.
 
 Ant Design direction and locale are selected in `src/providers/antd/Antd.tsx`. Day.js locale/calendar setup is handled in `src/providers/core/Core.tsx`, using the Jalali calendar for Persian.

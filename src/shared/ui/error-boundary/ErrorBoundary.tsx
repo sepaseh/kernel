@@ -6,7 +6,7 @@ import {
   type ReactNode,
 } from "react";
 
-import { i18nInstance } from "@/app/i18n";
+import { i18nInstance } from "@/shared/i18n";
 import { reportError } from "@/shared/lib";
 
 type ErrorBoundaryProps = {

@@ -5,7 +5,7 @@ import axios, {
   InternalAxiosRequestConfig,
 } from "axios";
 
-import { i18nInstance } from "@/app/i18n";
+import { i18nInstance } from "@/shared/i18n";
 import { toCamelCase, toSnakeCase } from "@/shared/lib";
 
 import { apiUrl } from "./config";
