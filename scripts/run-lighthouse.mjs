@@ -1,13 +1,22 @@
 import console from "node:console";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
+import process from "node:process";
+import { URL } from "node:url";
 
 import * as chromeLauncher from "chrome-launcher";
 import lighthouse from "lighthouse";
 import { preview } from "vite";
 
 const reportDirectory = path.resolve(".lighthouseci");
-const url = "https://127.0.0.1:4174/auth";
+const appBasePath = (process.env.VITE_APP_BASE_URL ?? "/").replace(
+  /^\/+|\/+$/g,
+  "",
+);
+const url = new URL(
+  `/${[appBasePath, "auth"].filter(Boolean).join("/")}`,
+  "https://127.0.0.1:4174",
+).href;
 const thresholds = {
   "cumulative-layout-shift": 0.1,
   "first-contentful-paint": 4_000,
