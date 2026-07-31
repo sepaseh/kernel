@@ -1,1 +1,1 @@
-export { RoleForm, type RoleFormProps } from "./Role";
+export { RoleForm } from "./Role";

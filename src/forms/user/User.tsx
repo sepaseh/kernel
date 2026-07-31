@@ -1,11 +1,13 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { Button, Drawer, Form, Input, Space } from "antd";
+import { Form, Input } from "antd";
 import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 
 import { createUser, updateUser } from "@/api";
 import { DigitsInput } from "@/components/digits-input";
+import { FormDrawer } from "@/components/form-drawer";
+import { PasswordFields } from "@/components/password-fields";
 import { modalKeys } from "@/config";
 import { useAntd, useGoBack } from "@/hooks";
 import { CreateUserParams, UpdateUserParams, UserProps } from "@/types";
@@ -15,7 +17,7 @@ type UserFormParams = CreateUserParams & {
   confirmPassword: string;
 };
 
-export type UserFormProps = {
+type UserFormProps = {
   data?: UserProps;
   onFinish: () => void;
 };
@@ -84,27 +86,12 @@ export const UserForm: FC<UserFormProps> = ({ data, onFinish }) => {
   }, [data, form, goBack, hash, open]);
 
   return (
-    <Drawer
-      closeIcon={false}
-      footer={
-        <Space>
-          <Button loading={submitting} onClick={() => goBack()}>
-            {t("cancel")}
-          </Button>
-          <Button
-            loading={submitting}
-            onClick={() => form.submit()}
-            type="primary"
-          >
-            {t("submit")}
-          </Button>
-        </Space>
-      }
-      mask={{ closable: false }}
-      onClose={() => goBack()}
+    <FormDrawer
+      onClose={goBack}
+      onSubmit={() => form.submit()}
       open={open}
+      submitting={submitting}
       title={t(isUpdate ? "update" : "create")}
-      styles={{ footer: { textAlign: "end" } }}
     >
       <Form<UserFormParams>
         form={form}
@@ -141,35 +128,10 @@ export const UserForm: FC<UserFormProps> = ({ data, onFinish }) => {
         </Form.Item>
         {!isUpdate && (
           <>
-            <Form.Item
-              label={t("password")}
-              name="password"
-              rules={[{ required: true }]}
-            >
-              <Input.Password styles={{ input: { direction: "ltr" } }} />
-            </Form.Item>
-            <Form.Item
-              dependencies={["password"]}
-              label={t("confirmPass")}
-              name="confirmPassword"
-              rules={[
-                { required: true },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue("password") === value) {
-                      return Promise.resolve();
-                    }
-
-                    return Promise.reject(new Error(t("passsMismatch")));
-                  },
-                }),
-              ]}
-            >
-              <Input.Password styles={{ input: { direction: "ltr" } }} />
-            </Form.Item>
+            <PasswordFields />
           </>
         )}
       </Form>
-    </Drawer>
+    </FormDrawer>
   );
 };

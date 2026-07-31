@@ -1,1 +1,1 @@
-export { OtpInput, type OtpInputProps } from "./OtpInput";
+export { OtpInput } from "./OtpInput";

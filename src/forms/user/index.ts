@@ -1,1 +1,1 @@
-export { UserForm, type UserFormProps } from "./User";
+export { UserForm } from "./User";

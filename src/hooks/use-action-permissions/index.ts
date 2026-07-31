@@ -1,4 +1,1 @@
-export {
-  type ActionPermissions,
-  useActionPermissions,
-} from "./useActionPermissions";
+export { useActionPermissions } from "./useActionPermissions";

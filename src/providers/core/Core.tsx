@@ -20,7 +20,7 @@ dayjs.extend(jalaliday);
 dayjs.locale(faDayjs, undefined, true);
 dayjs.locale("fa");
 
-export type CoreProviderProps = {
+type CoreProviderProps = {
   children: ReactNode;
 };
 

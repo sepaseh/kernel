@@ -7,6 +7,7 @@ import { register, requestOtp } from "@/api";
 import { DigitsInput } from "@/components/digits-input";
 import { Icon } from "@/components/icon";
 import { OtpInput } from "@/components/otp-input";
+import { PasswordFields } from "@/components/password-fields";
 import { routeTree } from "@/config";
 import { useAntd } from "@/hooks";
 import { RegisterParams } from "@/types";
@@ -146,40 +147,7 @@ export const RegisterPage = () => {
             </Button>
           </Flex>
         </Form.Item>
-        <Form.Item<RegisterFormParams>
-          label={t("password")}
-          name="password"
-          rules={[{ required: true }]}
-        >
-          <Input.Password
-            placeholder={t("password")}
-            size="large"
-            styles={{ input: { direction: "ltr" } }}
-          />
-        </Form.Item>
-        <Form.Item<RegisterFormParams>
-          dependencies={["password"]}
-          label={t("confirmPass")}
-          name="confirmPassword"
-          rules={[
-            { required: true },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue("password") === value) {
-                  return Promise.resolve();
-                }
-
-                return Promise.reject(new Error(t("passsMismatch")));
-              },
-            }),
-          ]}
-        >
-          <Input.Password
-            placeholder={t("confirmPass")}
-            size="large"
-            styles={{ input: { direction: "ltr" } }}
-          />
-        </Form.Item>
+        <PasswordFields size="large" />
       </Form>
       <Button
         block

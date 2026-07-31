@@ -1,1 +1,1 @@
-export { AntdProvider, type AntdProviderProps } from "./Antd";
+export { AntdProvider } from "./Antd";

@@ -9,7 +9,7 @@ import {
 import { i18nInstance } from "@/i18n";
 import { reportError } from "@/utils";
 
-export type ErrorBoundaryProps = {
+type ErrorBoundaryProps = {
   children: ReactNode;
 };
 

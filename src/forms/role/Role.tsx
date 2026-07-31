@@ -1,25 +1,17 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import {
-  Button,
-  Checkbox,
-  Divider,
-  Drawer,
-  Flex,
-  Form,
-  Input,
-  Space,
-} from "antd";
+import { Checkbox, Divider, Flex, Form, Input } from "antd";
 import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 
 import { createRole, updateRole } from "@/api";
+import { FormDrawer } from "@/components/form-drawer";
 import { modalKeys } from "@/config";
 import { useAntd, useGoBack } from "@/hooks";
 import { PermissionGroupProps, RoleMutationParams, RoleProps } from "@/types";
 import { getErrorMessage } from "@/utils";
 
-export type RoleFormProps = {
+type RoleFormProps = {
   data?: RoleProps;
   onFinish: () => void;
   options: { permissions: PermissionGroupProps[] };
@@ -80,29 +72,14 @@ export const RoleForm: FC<RoleFormProps> = ({
   }, [data, form, goBack, hash, open]);
 
   return (
-    <Drawer
+    <FormDrawer
       afterOpenChange={(isOpen) => {
         if (isOpen) form.focusField("name");
       }}
-      closeIcon={false}
-      footer={
-        <Space>
-          <Button loading={submitting} onClick={() => goBack()}>
-            {t("cancel")}
-          </Button>
-          <Button
-            loading={submitting}
-            onClick={() => form.submit()}
-            type="primary"
-          >
-            {t("submit")}
-          </Button>
-        </Space>
-      }
-      mask={{ closable: false }}
-      onClose={() => goBack()}
+      onClose={goBack}
+      onSubmit={() => form.submit()}
       open={open}
-      styles={{ footer: { textAlign: "end" } }}
+      submitting={submitting}
       title={t(isUpdate ? "update" : "create")}
     >
       <Form<RoleMutationParams>
@@ -140,6 +117,6 @@ export const RoleForm: FC<RoleFormProps> = ({
           </Checkbox.Group>
         </Form.Item>
       </Form>
-    </Drawer>
+    </FormDrawer>
   );
 };

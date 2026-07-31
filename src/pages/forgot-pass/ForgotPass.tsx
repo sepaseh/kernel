@@ -1,4 +1,4 @@
-import { Button, Flex, Form, FormProps, Input, Typography } from "antd";
+import { Button, Flex, Form, FormProps, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
@@ -7,6 +7,7 @@ import { forgotPassword, requestOtp } from "@/api";
 import { DigitsInput } from "@/components/digits-input";
 import { Icon } from "@/components/icon";
 import { OtpInput } from "@/components/otp-input";
+import { PasswordFields } from "@/components/password-fields";
 import { routeTree } from "@/config";
 import { useAntd } from "@/hooks";
 import { ForgotPasswordParams } from "@/types";
@@ -130,40 +131,7 @@ export const ForgotPassPage = () => {
             </Button>
           </Flex>
         </Form.Item>
-        <Form.Item<ForgotPasswordFormParams>
-          label={t("newPass")}
-          name="password"
-          rules={[{ required: true }]}
-        >
-          <Input.Password
-            placeholder={t("newPass")}
-            size="large"
-            styles={{ input: { direction: "ltr" } }}
-          />
-        </Form.Item>
-        <Form.Item<ForgotPasswordFormParams>
-          dependencies={["password"]}
-          label={t("confirmPass")}
-          name="confirmPassword"
-          rules={[
-            { required: true },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue("password") === value) {
-                  return Promise.resolve();
-                }
-
-                return Promise.reject(new Error(t("passsMismatch")));
-              },
-            }),
-          ]}
-        >
-          <Input.Password
-            placeholder={t("confirmPass")}
-            size="large"
-            styles={{ input: { direction: "ltr" } }}
-          />
-        </Form.Item>
+        <PasswordFields passwordLabel="newPass" size="large" />
       </Form>
       <Button
         block

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 
 import { useCore } from "@/hooks/use-core";
 
-export type ActionPermissions = {
+type ActionPermissions = {
   canCreateRoles: boolean;
   canCreateUsers: boolean;
   canDeleteRoles: boolean;

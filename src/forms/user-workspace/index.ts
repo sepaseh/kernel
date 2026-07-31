@@ -1,4 +1,1 @@
-export {
-  UserWorkspaceForm,
-  type UserWorkspaceFormProps,
-} from "./UserWorkspace";
+export { UserWorkspaceForm } from "./UserWorkspace";

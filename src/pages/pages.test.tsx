@@ -132,6 +132,10 @@ const renderPage = (page: React.ReactNode) =>
   );
 
 beforeEach(() => {
+  vi.clearAllMocks();
+  vi.mocked(api.changePassword).mockResolvedValue(undefined);
+  vi.mocked(api.forgotPassword).mockResolvedValue(undefined);
+  vi.mocked(api.getAccount).mockResolvedValue(mocks.account);
   vi.mocked(api.login).mockResolvedValue({
     accessToken: "access-token",
   });
@@ -139,7 +143,14 @@ beforeEach(() => {
     expiresIn: 300,
     remainingSeconds: 60,
   });
+  vi.mocked(api.register).mockResolvedValue(mocks.account);
+  vi.mocked(api.requestEmailVerification).mockResolvedValue({
+    expiresIn: 300,
+    remainingSeconds: 60,
+  });
   vi.mocked(api.updateProfile).mockResolvedValue(mocks.account);
+  vi.mocked(api.updateUsername).mockResolvedValue(mocks.account);
+  vi.mocked(api.verifyEmail).mockResolvedValue(undefined);
   vi.mocked(api.fetchRoles).mockResolvedValue([]);
   vi.mocked(api.fetchUsers).mockResolvedValue({ items: [], total: 0 });
 });
@@ -185,6 +196,45 @@ describe("priority pages", () => {
     expect(mocks.messageSuccess).toHaveBeenCalledWith("otpSent");
   });
 
+  it("completes password recovery", async () => {
+    const { user } = renderPage(<ForgotPassPage />);
+
+    await user.type(screen.getByLabelText("mobile"), "09120000000");
+    await user.type(screen.getByLabelText("OTP Input 1"), "123456");
+    await user.type(screen.getByLabelText("newPass"), "replacement-pass");
+    await user.type(screen.getByLabelText("confirmPass"), "replacement-pass");
+    await user.click(screen.getByRole("button", { name: "submit" }));
+
+    expect(api.forgotPassword).toHaveBeenCalledWith({
+      mobile: "09120000000",
+      otp: "123456",
+      password: "replacement-pass",
+    });
+    expect(mocks.messageSuccess).toHaveBeenCalledWith("passwordReset");
+    expect(screen.getByLabelText("location")).toHaveTextContent("/");
+  });
+
+  it("registers a verified user", async () => {
+    const { user } = renderPage(<RegisterPage />);
+
+    await user.type(screen.getByLabelText("firstName"), "Ada");
+    await user.type(screen.getByLabelText("lastName"), "Lovelace");
+    await user.type(screen.getByLabelText("mobile"), "09120000000");
+    await user.type(screen.getByLabelText("OTP Input 1"), "123456");
+    await user.type(screen.getByLabelText("password"), "registration-pass");
+    await user.type(screen.getByLabelText("confirmPass"), "registration-pass");
+    await user.click(screen.getByRole("button", { name: "register" }));
+
+    expect(api.register).toHaveBeenCalledWith({
+      firstName: "Ada",
+      lastName: "Lovelace",
+      mobile: "09120000000",
+      otp: "123456",
+      password: "registration-pass",
+    });
+    expect(screen.getByLabelText("location")).toHaveTextContent("/");
+  });
+
   it("updates the account profile", async () => {
     const updatedAccount = { ...mocks.account, firstName: "Augusta" };
     vi.mocked(api.updateProfile).mockResolvedValue(updatedAccount);
@@ -206,6 +256,48 @@ describe("priority pages", () => {
     });
     expect(mocks.setUser).toHaveBeenCalledWith(updatedAccount);
     expect(mocks.messageSuccess).toHaveBeenCalledWith("profileUpdated");
+  });
+
+  it("updates account credentials", async () => {
+    const updatedAccount = { ...mocks.account, username: "augusta" };
+    vi.mocked(api.updateUsername).mockResolvedValue(updatedAccount);
+    vi.mocked(api.getAccount).mockResolvedValue({
+      ...updatedAccount,
+      email: "augusta@example.com",
+    });
+    const { user } = renderPage(<AccountPage />);
+
+    const username = screen.getByLabelText("username");
+    await user.clear(username);
+    await user.type(username, "augusta");
+    await user.click(
+      within(username.closest("form")!).getByRole("button", { name: "update" }),
+    );
+
+    const email = screen.getByLabelText("email");
+    await user.clear(email);
+    await user.type(email, "augusta@example.com");
+    await user.click(screen.getByRole("button", { name: "requestOtp" }));
+    await user.type(screen.getByLabelText("OTP Input 1"), "123456");
+    await user.click(screen.getByRole("button", { name: "verifyEmail" }));
+
+    await user.type(screen.getByLabelText("currentPass"), "current-pass");
+    await user.type(screen.getByLabelText("newPass"), "new-password");
+    await user.type(screen.getByLabelText("confirmPass"), "new-password");
+    await user.click(screen.getByRole("button", { name: "changePassword" }));
+
+    expect(api.updateUsername).toHaveBeenCalledWith({ username: "augusta" });
+    expect(api.requestEmailVerification).toHaveBeenCalledWith({
+      email: "augusta@example.com",
+    });
+    expect(api.verifyEmail).toHaveBeenCalledWith({
+      email: "augusta@example.com",
+      otp: "123456",
+    });
+    expect(api.changePassword).toHaveBeenCalledWith({
+      currentPassword: "current-pass",
+      newPassword: "new-password",
+    });
   });
 
   it("loads and displays roles", async () => {

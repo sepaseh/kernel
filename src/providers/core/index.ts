@@ -1,1 +1,1 @@
-export { CoreProvider, type CoreProviderProps } from "./Core";
+export { CoreProvider } from "./Core";

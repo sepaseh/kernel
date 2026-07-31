@@ -1,16 +1,17 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { Button, Drawer, Form, Select, Space } from "antd";
+import { Form, Select } from "antd";
 import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 
 import { updateUserRoles } from "@/api";
+import { FormDrawer } from "@/components/form-drawer";
 import { modalKeys } from "@/config";
 import { useAntd, useGoBack } from "@/hooks";
 import { UserOptionProps, UserProps, UserRoleParams } from "@/types";
 import { getErrorMessage } from "@/utils";
 
-export type UserFormRoleProps = {
+type UserFormRoleProps = {
   data?: UserProps;
   onFinish: () => void;
   options: { roles: UserOptionProps[] };
@@ -61,27 +62,12 @@ export const UserFormRole: FC<UserFormRoleProps> = ({
   }, [data, form, goBack, hash, open]);
 
   return (
-    <Drawer
-      closeIcon={false}
-      footer={
-        <Space>
-          <Button loading={submitting} onClick={() => goBack()}>
-            {t("cancel")}
-          </Button>
-          <Button
-            loading={submitting}
-            onClick={() => form.submit()}
-            type="primary"
-          >
-            {t("submit")}
-          </Button>
-        </Space>
-      }
-      mask={{ closable: false }}
-      onClose={() => goBack()}
+    <FormDrawer
+      onClose={goBack}
+      onSubmit={() => form.submit()}
       open={open}
+      submitting={submitting}
       title={t("roles")}
-      styles={{ footer: { textAlign: "end" } }}
     >
       <Form<UserRoleParams>
         form={form}
@@ -98,6 +84,6 @@ export const UserFormRole: FC<UserFormRoleProps> = ({
           />
         </Form.Item>
       </Form>
-    </Drawer>
+    </FormDrawer>
   );
 };

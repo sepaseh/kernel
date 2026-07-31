@@ -1,7 +1,7 @@
 import { Input, InputProps } from "antd";
 import { FC } from "react";
 
-export type DigitsInputProps = InputProps;
+type DigitsInputProps = InputProps;
 
 export const DigitsInput: FC<DigitsInputProps> = ({ onChange, ...rest }) => (
   <Input

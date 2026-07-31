@@ -15,9 +15,9 @@ const iconMap = {
   user: "👤",
 } as const;
 
-export type IconName = keyof typeof iconMap;
+type IconName = keyof typeof iconMap;
 
-export type IconProps = {
+type IconProps = {
   name: IconName;
   size?: number;
 };

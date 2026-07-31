@@ -16,7 +16,7 @@ import { Language, Theme } from "@/config";
 import { AntdContext } from "@/contexts";
 import { useCore } from "@/hooks";
 
-export type AntdProviderProps = {
+type AntdProviderProps = {
   children?: ReactNode;
 };
 

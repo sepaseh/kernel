@@ -1,1 +1,1 @@
-export { DigitsInput, type DigitsInputProps } from "./DigitsInput";
+export { DigitsInput } from "./DigitsInput";
