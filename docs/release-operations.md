@@ -55,7 +55,11 @@ After deployment:
 
 1. Record the version, commit SHA, artifact identifier, operator, and start time
    in the deployment record.
-2. Manually run the deployment smoke workflow.
+2. Verify that the application and API health targets match the protected
+   authorized hosts, then manually run the deployment smoke workflow with its
+   required `application_url`, `api_health_url`, and immutable `deployment_id`
+   inputs. Add the workflow run and uploaded artifact identifiers to the
+   deployment record.
 3. Verify login, protected routing, and one read-only authenticated journey.
 4. Confirm security headers and API health checks succeed.
 5. Compare error rate, failed requests, latency, largest contentful paint,

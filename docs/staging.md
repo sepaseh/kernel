@@ -27,9 +27,11 @@ do not rebuild source specifically for production.
 
 ## Manual validation
 
-Start the `Staging validation` workflow manually and supply the application and
-API health URLs. It never runs on pull requests, schedules, or deployment
-events.
+Configure protected `STAGING_ALLOWED_APP_HOST` and
+`STAGING_ALLOWED_API_HOST` repository or environment variables with exact
+hostnames only. Start the `Staging validation` workflow manually and supply the
+application and API health URLs. It never runs on pull requests, schedules, or
+deployment events.
 
 The live suite verifies:
 

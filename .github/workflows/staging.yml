@@ -23,16 +23,63 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     env:
+      STAGING_ALLOWED_API_HOST: ${{ vars.STAGING_ALLOWED_API_HOST }}
+      STAGING_ALLOWED_APP_HOST: ${{ vars.STAGING_ALLOWED_APP_HOST }}
       STAGING_API_HEALTH_URL: ${{ inputs.api_health_url }}
       STAGING_BASE_URL: ${{ inputs.application_url }}
 
     steps:
       - name: Validate staging targets
+        shell: bash
         run: |
-          if [[ -z "$STAGING_BASE_URL" || -z "$STAGING_API_HEALTH_URL" ]]; then
-            echo "STAGING_BASE_URL and STAGING_API_HEALTH_URL are required."
-            exit 1
-          fi
+          node -e '
+            const parseConfiguredHostname = (name, rawValue) => {
+              if (!rawValue || rawValue !== rawValue.trim()) {
+                throw new Error(`${name} must be a hostname without whitespace`);
+              }
+              const normalized = rawValue.toLowerCase();
+              const hostnamePattern =
+                /^(?=.{1,253}$)(?!-)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)*[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
+              if (!hostnamePattern.test(normalized)) {
+                throw new Error(`${name} must contain a hostname only`);
+              }
+              const parsed = new URL(`https://${rawValue}`);
+              if (parsed.hostname !== normalized) {
+                throw new Error(`${name} must be a canonical hostname only`);
+              }
+              return parsed.hostname;
+            };
+            const parseTarget = (name, rawValue) => {
+              if (!rawValue) throw new Error(`${name} is required`);
+              const url = new URL(rawValue);
+              if (url.protocol !== "https:") {
+                throw new Error(`${name} must use HTTPS`);
+              }
+              if (url.username || url.password) {
+                throw new Error(`${name} must not contain credentials`);
+              }
+              return url;
+            };
+            const appUrl = parseTarget("STAGING_BASE_URL", process.env.STAGING_BASE_URL);
+            const apiUrl = parseTarget(
+              "STAGING_API_HEALTH_URL",
+              process.env.STAGING_API_HEALTH_URL,
+            );
+            const allowedAppHost = parseConfiguredHostname(
+              "STAGING_ALLOWED_APP_HOST",
+              process.env.STAGING_ALLOWED_APP_HOST,
+            );
+            const allowedApiHost = parseConfiguredHostname(
+              "STAGING_ALLOWED_API_HOST",
+              process.env.STAGING_ALLOWED_API_HOST,
+            );
+            if (appUrl.hostname !== allowedAppHost) {
+              throw new Error("STAGING_BASE_URL host is not explicitly allowed");
+            }
+            if (apiUrl.hostname !== allowedApiHost) {
+              throw new Error("STAGING_API_HEALTH_URL host is not explicitly allowed");
+            }
+          '
 
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:

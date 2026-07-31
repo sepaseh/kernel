@@ -7,10 +7,6 @@ on:
         description: Authorized staging application URL
         required: true
         type: string
-      allowed_host:
-        description: Exact hostname permitted for the scan
-        required: true
-        type: string
 concurrency:
   cancel-in-progress: false
   group: staging-dast
@@ -23,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
-      DAST_ALLOWED_HOST: ${{ inputs.allowed_host }}
+      DAST_ALLOWED_HOST: ${{ vars.STAGING_ALLOWED_APP_HOST }}
       DAST_PRODUCTION_HOST: ${{ vars.PRODUCTION_HOST }}
       DAST_TARGET: ${{ inputs.target_url }}
 
@@ -33,11 +29,31 @@ jobs:
         run: |
           node -e '
             const value = process.env.DAST_TARGET;
-            const allowedHost = process.env.DAST_ALLOWED_HOST?.toLowerCase();
-            const productionHost = process.env.DAST_PRODUCTION_HOST?.toLowerCase();
+            const parseConfiguredHostname = (name, rawValue) => {
+              if (!rawValue || rawValue !== rawValue.trim()) {
+                throw new Error(`${name} must be a hostname without whitespace`);
+              }
+              const normalized = rawValue.toLowerCase();
+              const hostnamePattern =
+                /^(?=.{1,253}$)(?!-)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)*[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
+              if (!hostnamePattern.test(normalized)) {
+                throw new Error(`${name} must contain a hostname only`);
+              }
+              const parsed = new URL(`https://${rawValue}`);
+              if (parsed.hostname !== normalized) {
+                throw new Error(`${name} must be a canonical hostname only`);
+              }
+              return parsed.hostname;
+            };
             if (!value) throw new Error("STAGING_BASE_URL is required");
-            if (!allowedHost) throw new Error("STAGING_ALLOWED_HOST is required");
-            if (!productionHost) throw new Error("PRODUCTION_HOST is required");
+            const allowedHost = parseConfiguredHostname(
+              "STAGING_ALLOWED_APP_HOST",
+              process.env.DAST_ALLOWED_HOST,
+            );
+            const productionHost = parseConfiguredHostname(
+              "PRODUCTION_HOST",
+              process.env.DAST_PRODUCTION_HOST,
+            );
             const url = new URL(value);
             if (url.protocol !== "https:") {
               throw new Error("STAGING_BASE_URL must use HTTPS");
