@@ -1,4 +1,12 @@
-import { FC, lazy, ReactNode, Suspense, useEffect } from "react";
+import {
+  FC,
+  Fragment,
+  lazy,
+  ReactElement,
+  ReactNode,
+  Suspense,
+  useEffect,
+} from "react";
 import { createBrowserRouter, Navigate } from "react-router";
 import { RouterProvider } from "react-router/dom";
 
@@ -46,7 +54,7 @@ const UsersPage = lazy(async () => {
 const RouteWrapper: FC<{ route: RouteKey; children: ReactNode }> = ({
   route,
   children,
-}) => {
+}): ReactElement => {
   const { setCurrentRoute } = useCore();
   const allowedRoutes = useAllowedRoutes();
 
@@ -54,7 +62,7 @@ const RouteWrapper: FC<{ route: RouteKey; children: ReactNode }> = ({
     setCurrentRoute(route);
   }, [route, setCurrentRoute]);
 
-  if (allowedRoutes.has(route)) return children;
+  if (allowedRoutes.has(route)) return <Fragment>{children}</Fragment>;
 
   return <Navigate to={routeTree.root.path} replace />;
 };
