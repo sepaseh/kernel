@@ -70,7 +70,7 @@ export const UserFormRole: FC<UserFormRoleProps> = ({
       closeIcon={false}
       footer={
         <Space>
-          <Button loading={submitting} onClick={goBack}>
+          <Button loading={submitting} onClick={() => goBack()}>
             {t("cancel")}
           </Button>
           <Button
@@ -83,7 +83,7 @@ export const UserFormRole: FC<UserFormRoleProps> = ({
         </Space>
       }
       mask={{ closable: false }}
-      onClose={goBack}
+      onClose={() => goBack()}
       open={open}
       styles={{ footer: { textAlign: "end" } }}
       title={t("roles")}

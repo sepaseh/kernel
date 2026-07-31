@@ -70,7 +70,7 @@ export const UserWorkspaceForm: FC<UserWorkspaceFormProps> = ({
       closeIcon={false}
       footer={
         <Space>
-          <Button loading={submitting} onClick={goBack}>
+          <Button loading={submitting} onClick={() => goBack()}>
             {t("cancel")}
           </Button>
           <Button
@@ -83,7 +83,7 @@ export const UserWorkspaceForm: FC<UserWorkspaceFormProps> = ({
         </Space>
       }
       mask={{ closable: false }}
-      onClose={goBack}
+      onClose={() => goBack()}
       open={open}
       styles={{ footer: { textAlign: "end" } }}
       title={t("workspaces")}
