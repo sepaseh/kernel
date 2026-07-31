@@ -1,8 +1,12 @@
 # Release approval and rollback
 
-This runbook governs production releases of Kernel. It complements the
+This template describes a possible production release process for downstream
+projects. It complements the
 [versioning policy](releasing.md) and the
 [deployment guide](deployment.md).
+
+This is a readiness template, not evidence of an active deployment process.
+Use it only after the project has real staging and production environments.
 
 ## Ownership
 
@@ -18,8 +22,9 @@ request and production deployment should be approved by someone other than the
 change author.
 
 Repository ownership is enforced for release configuration and version files
-through `CODEOWNERS`. Configure the GitHub `production` environment with required
-reviewers and prevent administrators from bypassing its protection rules.
+through `CODEOWNERS`. A downstream project adopting this process should
+configure a protected GitHub `production` environment with appropriate
+reviewers.
 
 ## Release approval
 
@@ -29,16 +34,16 @@ the release manager must verify:
 - The version matches the intended SemVer impact.
 - The changelog is complete, understandable, and contains no sensitive data.
 - CI `check`, `build`, and `e2e` jobs pass for the exact candidate commit.
-- CodeQL passes and blocking SonarQube security findings are reviewed.
+- CodeQL passes and advisory SonarQube findings are reviewed.
 - Dependency audit, performance budgets, and production security-header tests
   pass.
-- Required DAST and manual security reviews have no unresolved release-blocking
-  findings.
+- If DAST or manual security review is adopted, it has no unresolved
+  release-blocking findings.
 - Required configuration or data migrations have a tested rollback path.
 - The previous production artifact and its configuration remain available.
 - A deployment operator and incident lead are available for the release window.
-- The exact candidate artifact passes the
-  [staging validation gate](staging.md).
+- If staging is adopted as a release gate, the exact candidate artifact passes
+  [staging validation](staging.md).
 
 Approval is recorded by approving and merging the release pull request. Never
 publish a tag or deploy from an unreviewed commit. The generated GitHub Release,
@@ -50,7 +55,11 @@ After deployment:
 
 1. Record the version, commit SHA, artifact identifier, operator, and start time
    in the deployment record.
-2. Run the automated deployment smoke tests.
+2. Verify that the application and API health targets match the protected
+   authorized hosts, then manually run the deployment smoke workflow with its
+   required `application_url`, `api_health_url`, and immutable `deployment_id`
+   inputs. Add the workflow run and uploaded artifact identifiers to the
+   deployment record.
 3. Verify login, protected routing, and one read-only authenticated journey.
 4. Confirm security headers and API health checks succeed.
 5. Compare error rate, failed requests, latency, largest contentful paint,

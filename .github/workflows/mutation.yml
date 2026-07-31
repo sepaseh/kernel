@@ -4,16 +4,6 @@ on:
   schedule:
     - cron: "0 4 * * 1"
   workflow_dispatch:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - "src/shared/api/token.ts"
-      - "src/shared/api/token.test.ts"
-      - "src/shared/storage/**"
-      - "src/shared/lib/**"
-      - "stryker.config.json"
-
 concurrency:
   cancel-in-progress: true
   group: mutation-${{ github.ref }}
@@ -26,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      NODE_VERSION: 24.18.0
       VITE_API_BASE_URL: http://localhost
 
     steps:
@@ -35,7 +24,7 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           cache: npm
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: .nvmrc
 
       - run: npm ci
 

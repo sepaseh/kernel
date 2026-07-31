@@ -17,21 +17,21 @@ export const AuthLayout = () => {
   return (
     <main
       style={{
-        display: "flex",
-        padding: token.paddingSM,
-        flexGrow: 1,
         alignItems: "center",
-        justifyContent: "center",
         backgroundColor: token.colorBgLayout,
+        display: "flex",
+        flexGrow: 1,
+        justifyContent: "center",
+        padding: token.paddingSM,
       }}
     >
       <div
         style={{
-          width: "100%",
+          backgroundColor: token.colorBgBase,
+          borderRadius: 8,
           maxWidth: token.screenXS,
           padding: 32,
-          borderRadius: 8,
-          backgroundColor: token.colorBgBase,
+          width: "100%",
         }}
       >
         <Outlet />

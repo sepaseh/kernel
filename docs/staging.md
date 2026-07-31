@@ -1,12 +1,15 @@
 # Staging environment
 
-Staging is the production-like release gate for Kernel. It must use the same
+This is an optional, manually invoked capability. The repository does not
+currently assume that a staging environment exists.
+
+When provisioned, staging is the production-like release gate for Kernel. It must use the same
 build artifact, web-server configuration, routing rules, security headers, and
 API contract intended for production.
 
 ## Environment requirements
 
-Provision a GitHub environment named exactly `staging` and configure:
+Provide a staging deployment with:
 
 - A stable HTTPS application URL.
 - Non-production API, identity, and data stores with production-compatible
@@ -18,20 +21,17 @@ Provision a GitHub environment named exactly `staging` and configure:
 - Access controls that still allow GitHub-hosted test runners to reach the
   application and health endpoint.
 
-Set the repository Actions variable `STAGING_API_HEALTH_URL` to the public HTTPS
-health endpoint. The validation job intentionally does not attach itself to a
-GitHub environment, because doing so would create another deployment status and
-could retrigger the deployment-status workflow.
-
 Keep staging configuration separate from production secrets. Build once with an
 immutable release identifier and promote that artifact between environments;
 do not rebuild source specifically for production.
 
-## Automated validation
+## Manual validation
 
-The `Staging validation` workflow runs when GitHub receives a successful
-deployment status for the `staging` environment. It can also be started
-manually with application and API health URLs.
+Configure protected `STAGING_ALLOWED_APP_HOST` and
+`STAGING_ALLOWED_API_HOST` repository or environment variables with exact
+hostnames only. Start the `Staging validation` workflow manually and supply the
+application and API health URLs. It never runs on pull requests, schedules, or
+deployment events.
 
 The live suite verifies:
 
@@ -56,7 +56,8 @@ npm run test:staging
 
 ## Promotion
 
-A release is eligible for production only when:
+When staging is adopted as a release gate, a release is eligible for production
+only when:
 
 1. The ordinary CI and CodeQL checks pass, and SonarQube findings are reviewed.
 2. The exact candidate artifact is deployed to staging.
@@ -68,6 +69,7 @@ A release is eligible for production only when:
 Failed staging checks block promotion. Fix the issue through a reviewed change,
 create a new candidate artifact, and repeat the complete staging gate.
 
-The separate active DAST workflow also targets staging on the
-[security review schedule](security/reviews.md). Its authorization, isolation,
-and side-effect controls must be satisfied before enabling scheduled scans.
+The separate DAST workflow is a reusable template for downstream projects, not
+an active Kernel check. A project adopting it must configure `PRODUCTION_HOST`
+and satisfy its authorization, isolation, and side-effect controls before every
+manual scan.

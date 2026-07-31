@@ -1,7 +1,6 @@
 name: Deployment smoke tests
 
 on:
-  deployment_status:
   workflow_dispatch:
     inputs:
       application_url:
@@ -12,44 +11,98 @@ on:
         description: Public API health endpoint
         required: true
         type: string
+      deployment_id:
+        description: Immutable identifier of the deployed release
+        required: true
+        type: string
 
 concurrency:
   cancel-in-progress: true
-  group: deployment-smoke-${{ github.event.deployment.environment || inputs.application_url }}
+  group: deployment-smoke-${{ inputs.application_url }}
 
 permissions:
   contents: read
 
 jobs:
   smoke:
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
     env:
-      NODE_VERSION: 24.18.0
-      SMOKE_API_HEALTH_URL: >-
-        ${{ github.event_name == 'workflow_dispatch' &&
-        inputs.api_health_url || vars.SMOKE_API_HEALTH_URL }}
-      SMOKE_BASE_URL: >-
-        ${{ github.event_name == 'workflow_dispatch' &&
-        inputs.application_url ||
-        github.event.deployment_status.environment_url }}
+      SMOKE_ALLOWED_API_HOST: ${{ vars.SMOKE_ALLOWED_API_HOST }}
+      SMOKE_ALLOWED_APP_HOST: ${{ vars.SMOKE_ALLOWED_APP_HOST }}
+      SMOKE_API_HEALTH_URL: ${{ inputs.api_health_url }}
+      SMOKE_BASE_URL: ${{ inputs.application_url }}
+      SMOKE_DEPLOYMENT_ID: ${{ inputs.deployment_id }}
+      SMOKE_EXPECTED_DEPLOYMENT_ID: ${{ vars.SMOKE_EXPECTED_DEPLOYMENT_ID }}
 
     steps:
       - name: Validate smoke-test targets
+        shell: bash
         run: |
-          if [[ -z "$SMOKE_BASE_URL" || -z "$SMOKE_API_HEALTH_URL" ]]; then
-            echo "SMOKE_BASE_URL and SMOKE_API_HEALTH_URL are required."
-            exit 1
-          fi
+          node -e '
+            const parseConfiguredHostname = (name, rawValue) => {
+              if (!rawValue || rawValue !== rawValue.trim()) {
+                throw new Error(`${name} must be a hostname without whitespace`);
+              }
+              const normalized = rawValue.toLowerCase();
+              const hostnamePattern =
+                /^(?=.{1,253}$)(?!-)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)*[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
+              if (!hostnamePattern.test(normalized)) {
+                throw new Error(`${name} must contain a hostname only`);
+              }
+              const parsed = new URL(`https://${rawValue}`);
+              if (parsed.hostname !== normalized) {
+                throw new Error(`${name} must be a canonical hostname only`);
+              }
+              return parsed.hostname;
+            };
+            const parseTarget = (name, rawValue) => {
+              if (!rawValue) throw new Error(`${name} is required`);
+              const url = new URL(rawValue);
+              if (url.protocol !== "https:") {
+                throw new Error(`${name} must use HTTPS`);
+              }
+              if (url.username || url.password) {
+                throw new Error(`${name} must not contain credentials`);
+              }
+              return url;
+            };
+            const appUrl = parseTarget("SMOKE_BASE_URL", process.env.SMOKE_BASE_URL);
+            const apiUrl = parseTarget(
+              "SMOKE_API_HEALTH_URL",
+              process.env.SMOKE_API_HEALTH_URL,
+            );
+            const allowedAppHost = parseConfiguredHostname(
+              "SMOKE_ALLOWED_APP_HOST",
+              process.env.SMOKE_ALLOWED_APP_HOST,
+            );
+            const allowedApiHost = parseConfiguredHostname(
+              "SMOKE_ALLOWED_API_HOST",
+              process.env.SMOKE_ALLOWED_API_HOST,
+            );
+            if (appUrl.hostname !== allowedAppHost) {
+              throw new Error("SMOKE_BASE_URL host is not explicitly allowed");
+            }
+            if (apiUrl.hostname !== allowedApiHost) {
+              throw new Error("SMOKE_API_HEALTH_URL host is not explicitly allowed");
+            }
+            const deploymentId = process.env.SMOKE_DEPLOYMENT_ID;
+            const expectedDeploymentId = process.env.SMOKE_EXPECTED_DEPLOYMENT_ID;
+            if (!deploymentId || !expectedDeploymentId) {
+              throw new Error(
+                "SMOKE_DEPLOYMENT_ID and SMOKE_EXPECTED_DEPLOYMENT_ID are required",
+              );
+            }
+            if (deploymentId !== expectedDeploymentId) {
+              throw new Error("The smoke targets do not match the expected deployment");
+            }
+          '
 
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           cache: npm
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: .nvmrc
 
       - run: npm ci
 

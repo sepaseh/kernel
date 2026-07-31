@@ -28,8 +28,7 @@ infrastructure, or trust-boundary changes and at least quarterly.
    refresh cookie and its lifecycle.
 5. Language and theme preferences cross the browser-storage boundary but must
    never contain credentials or sensitive account data.
-6. CI builds artifacts and security reports using repository variables and
-   secrets. Staging and production are separate deployment boundaries.
+6. CI builds artifacts and security reports without deployment credentials.
 7. Sanitized browser errors and performance events may cross into the configured
    observability service.
 
@@ -43,7 +42,7 @@ infrastructure, or trust-boundary changes and at least quarterly.
 | Broken access control                      | Unauthorized user or role administration  | Client route/action filtering                                        | Enforce every permission on the API; client checks are not security boundaries |
 | Sensitive data exposure                    | Privacy or credential compromise          | HTTPS validation, redacted observability, memory-only access token   | Inspect logs, errors, caches, source maps, and browser storage                 |
 | Malicious or vulnerable build input        | Compromised production artifact           | Pinned Actions, audit, CodeQL, SBOM/license checks, protected branch | Review workflow permissions and artifact provenance                            |
-| Unsafe deployment or rollback              | Extended outage or vulnerable release     | Staging gate, immutable releases, smoke tests, rollback runbook      | Exercise rollback and compare release, artifact, and deployed SHA              |
+| Unsafe deployment or rollback              | Extended outage or vulnerable release     | Reproducible production build and immutable commit history           | Define deployment and rollback controls when hosting is selected               |
 | Denial of service or automated abuse       | Unavailable authentication/API            | Client request cancellation where applicable                         | Verify API rate limits, quotas, timeouts, and alerting                         |
 | Clickjacking or content-type confusion     | Deceptive UI or script execution          | Frame denial, MIME sniffing protection, CSP                          | Validate headers on CDN and direct routes                                      |
 | Observability leakage                      | Secrets in monitoring systems             | Client-side redaction and optional endpoint                          | Test server-side scrubbing and access/retention policy                         |
@@ -68,10 +67,8 @@ infrastructure, or trust-boundary changes and at least quarterly.
 - Refresh cookies are inaccessible to JavaScript and narrowly scoped.
 - Logout and terminal refresh failure clear client and server session state.
 - Error reports, logs, build artifacts, and test evidence contain no secrets.
-- Released tags are immutable and production can return to a known-good
-  artifact.
-- Active security testing targets only explicitly authorized, disposable
-  staging systems.
+- Production can return to a known-good build once deployment automation is
+  introduced.
 
 ## Residual risks
 

@@ -28,6 +28,7 @@
     "smoke.config.ts",
     "staging/**/*.ts",
     "staging.config.ts",
+    "tooling/**/*.ts",
     "vite.config.ts",
     "vitest.contract.config.ts",
     "vitest.config.ts"

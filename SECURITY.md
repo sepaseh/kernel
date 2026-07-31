@@ -42,7 +42,7 @@ The maintained security program includes:
 - The [application threat model](docs/security/threat-model.md).
 - The [authentication and session review](docs/security/authentication-review.md).
 - The [security testing and review schedule](docs/security/reviews.md).
-- Monthly active DAST against an explicitly authorized staging environment.
+- Optional manual DAST against an explicitly authorized non-production target.
 
 Security scan artifacts and unresolved vulnerability details are private.
 Automated results require human triage and do not replace manual review.

@@ -1,10 +1,11 @@
-import path from "path";
 import { defineConfig } from "vitest/config";
+
+import { srcPath } from "./tooling/paths.ts";
 
 export default defineConfig({
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "src"),
+      "@": srcPath,
     },
   },
   test: {

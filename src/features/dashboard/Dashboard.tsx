@@ -6,9 +6,9 @@ export const DashboardPage = () => {
   return (
     <div
       style={{
+        flexGrow: 1,
         paddingBlock: token.paddingMD,
         paddingInline: token.paddingSM,
-        flexGrow: 1,
       }}
     />
   );

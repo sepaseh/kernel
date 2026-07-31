@@ -4,8 +4,11 @@ This repository includes an nginx configuration for serving the built frontend
 with client-side routing, long-lived asset caching, and required security
 headers.
 
-Release candidates must pass the production-like
-[staging environment](staging.md) before production promotion.
+Kernel is a project template and does not have an active deployment environment
+of its own. The staging validation, deployment smoke, and DAST workflows are
+reusable templates that run only when started manually. A downstream project
+may configure and automate them after it has real, authorized deployment
+targets.
 
 ## Production Build
 
@@ -81,35 +84,14 @@ HSTS is honored by browsers only over HTTPS. When TLS terminates at a CDN or
 load balancer, configure that edge to preserve these response headers. Run the
 Playwright suite against the production build to verify the complete policy.
 
-## Post-deployment smoke tests
+## Optional deployment checks
 
-The deployment smoke workflow runs after a successful GitHub deployment status
-or can be started manually. It checks that:
-
-- The deployed HTML and application root load.
-- Same-origin scripts, stylesheets, and fonts resolve successfully.
-- Direct navigation to `/auth/register` reaches the client-side route.
-- The configured public API health endpoint returns a successful status.
-
-Set the repository variable `SMOKE_API_HEALTH_URL` to the public HTTPS health
-endpoint used by automatic deployment runs. The deployment provider must
-include its application URL in the successful deployment status. For a manual
-run, provide both URLs as workflow inputs.
-
-To run the same checks locally against a deployed environment:
-
-```bash
-SMOKE_BASE_URL=https://app.example.com/ \
-SMOKE_API_HEALTH_URL=https://api.example.com/health \
-npm run test:smoke
-```
-
-## Release control and rollback
-
-Production deployments must use the immutable artifact associated with the
-approved GitHub Release. Keep at least the current and previous production
-artifacts available so recovery does not require rebuilding old source.
-
-Follow the [release operations runbook](release-operations.md) for approval
-evidence, observation windows, rollback triggers, recovery steps, and incident
-follow-up.
+When a real environment exists, the `Staging validation`, `Deployment smoke
+tests`, and `DAST` workflows can be started manually with explicitly supplied
+targets. They do not run on pull requests, schedules, or deployment events.
+Before enabling them, configure their protected allowed-host variables. For
+deployment smoke, set `SMOKE_ALLOWED_APP_HOST`, `SMOKE_ALLOWED_API_HOST`, and
+`SMOKE_EXPECTED_DEPLOYMENT_ID`; the expected identifier must match the
+immutable `deployment_id` supplied for the run.
+See [Staging](staging.md) and [Release operations](release-operations.md) before
+using them against an authorized environment.

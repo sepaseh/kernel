@@ -25,22 +25,26 @@ Scopes are optional, for example `feat(auth): add passkey login`. Pull requests
 should be squash-merged with a compliant title so each merged change has one
 clear release-note entry.
 
-## Automated release flow
+## Optional manual release flow
 
-After releasable commits reach `main`, the Release workflow creates or updates a
-release pull request. That pull request updates:
+The repository does not publish releases automatically. When a release is
+needed, manually run the `Release` workflow on `main`; Release Please then
+creates or updates a release pull request. The release job is restricted to
+`main`; manual runs started from another branch are skipped. The pull request
+updates:
 
 - `CHANGELOG.md`
 - `package.json` and `package-lock.json`
 - `.release-please-manifest.json`
 
 Review and merge the release pull request only after its required checks pass.
-The next workflow run then creates the `vMAJOR.MINOR.PATCH` tag and GitHub
-Release with generated notes. This application is private and is not published
-to npm.
+Run the workflow manually again to create the `vMAJOR.MINOR.PATCH` tag and
+GitHub Release with generated notes. This application is private and is not
+published to npm.
 
-Every production release must follow the approval, verification, rollback, and
-follow-up steps in the [release operations runbook](release-operations.md).
+A downstream project adopting production releases should tailor and follow the
+approval, verification, rollback, and follow-up template in the
+[release operations runbook](release-operations.md).
 
 The workflow uses the repository `GITHUB_TOKEN` by default. If repository policy
 requires release pull requests to trigger other workflows, configure a
