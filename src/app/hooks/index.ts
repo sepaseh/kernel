@@ -1,4 +1,4 @@
-export { useActionPermissions } from "./use-action-permissions/useActionPermissions";
-export { useAllowedRoutes } from "./use-allowed-routes/useAllowedRoutes";
-export { useAntd } from "./use-antd/useAntd";
-export { useCore } from "./use-core/useCore";
+export { useActionPermissions } from "./useActionPermissions";
+export { useAllowedRoutes } from "./useAllowedRoutes";
+export { useAntd } from "./useAntd";
+export { useCore } from "./useCore";

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { useCore } from "@/app/hooks/use-core/useCore";
+import { useCore } from "./useCore";
 
 type ActionPermissions = {
   canCreateRoles: boolean;

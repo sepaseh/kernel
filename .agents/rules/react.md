@@ -35,4 +35,4 @@ All user-visible text should go through `react-i18next`.
 ## Routing
 
 - Define route keys and paths in `src/app/config/routes.ts`.
-- Update `src/app/hooks/use-allowed-routes` when route access changes.
+- Update `src/app/hooks/useAllowedRoutes.ts` when route access changes.

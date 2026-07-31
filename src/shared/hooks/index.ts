@@ -1,2 +1,2 @@
-export { useFilterParams } from "./use-filter-params/useFilterParams";
-export { useGoBack } from "./use-go-back/useGoBack";
+export { useFilterParams } from "./useFilterParams";
+export { useGoBack } from "./useGoBack";
