@@ -55,23 +55,21 @@ const handleUnauthorized = () => {
 };
 
 const refreshAccessToken = (): Promise<AccessTokenProps> => {
-  if (!refreshPromise) {
-    refreshPromise = axios
-      .post<AccessTokenProps>(refreshUrl, undefined, {
-        baseURL: apiUrl,
-        withCredentials: true,
-      })
-      .then(({ data }) => {
-        const result = toCamelCase(data);
+  refreshPromise ??= axios
+    .post<AccessTokenProps>(refreshUrl, undefined, {
+      baseURL: apiUrl,
+      withCredentials: true,
+    })
+    .then(({ data }) => {
+      const result = toCamelCase(data);
 
-        setAccessToken(result.accessToken);
+      setAccessToken(result.accessToken);
 
-        return result;
-      })
-      .finally(() => {
-        refreshPromise = null;
-      });
-  }
+      return result;
+    })
+    .finally(() => {
+      refreshPromise = null;
+    });
 
   return refreshPromise;
 };
