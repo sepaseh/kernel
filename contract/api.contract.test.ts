@@ -14,7 +14,11 @@ const loadApiFor = async (baseUrl: string) => {
   vi.resetModules();
   vi.stubEnv("VITE_API_BASE_URL", baseUrl);
 
-  return Promise.all([import("@/api/account"), import("@/api/auth")]);
+  return Promise.all([
+    import("@/api/account"),
+    import("@/api/auth"),
+    import("@/api/token"),
+  ]);
 };
 
 afterEach(() => {
@@ -55,7 +59,11 @@ describe("Kernel API consumer contract", () => {
       .addInteraction()
       .given("an authenticated account exists")
       .uponReceiving("an account details request")
-      .withRequest("GET", "/account/me")
+      .withRequest("GET", "/account/me", (request) => {
+        request.headers({
+          Authorization: "Bearer access-token",
+        });
+      })
       .willRespondWith(200, (response) => {
         response.jsonBody({
           email: "ada@example.com",
@@ -71,7 +79,9 @@ describe("Kernel API consumer contract", () => {
         });
       })
       .executeTest(async ({ url }) => {
-        const [{ getAccount }] = await loadApiFor(url);
+        const [{ getAccount }, , { setAccessToken }] = await loadApiFor(url);
+
+        setAccessToken("access-token");
 
         await expect(getAccount()).resolves.toEqual({
           email: "ada@example.com",
