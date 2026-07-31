@@ -81,7 +81,7 @@ export const RoleForm: FC<RoleFormProps> = ({
       afterOpenChange={(isOpen) => {
         if (isOpen) form.focusField("name");
       }}
-      onClose={goBack}
+      onClose={() => goBack()}
       onSubmit={() => form.submit()}
       open={open}
       submitting={submitting}

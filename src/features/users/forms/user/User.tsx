@@ -92,7 +92,7 @@ export const UserForm: FC<UserFormProps> = ({ data, onFinish }) => {
 
   return (
     <FormDrawer
-      onClose={goBack}
+      onClose={() => goBack()}
       onSubmit={() => form.submit()}
       open={open}
       submitting={submitting}

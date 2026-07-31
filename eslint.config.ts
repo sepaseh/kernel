@@ -4,6 +4,7 @@ import { Rule } from "eslint";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
+import storybook from "eslint-plugin-storybook";
 import fs from "fs";
 import globals from "globals";
 import path from "path";
@@ -334,7 +335,7 @@ const localRules = {
 };
 
 export default [
-  { ignores: [".stryker-tmp", "dist"] },
+  { ignores: [".stryker-tmp", "dist", "storybook-static"] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -366,4 +367,5 @@ export default [
       "local/style-props-no-shorthand-conflicts": "error",
     },
   },
+  ...storybook.configs["flat/recommended"],
 ];

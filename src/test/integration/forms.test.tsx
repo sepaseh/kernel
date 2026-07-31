@@ -264,3 +264,54 @@ describe("user access forms", () => {
     expect(onFinish).toHaveBeenCalledOnce();
   });
 });
+
+describe("form cancellation", () => {
+  it.each([
+    {
+      hash: "#create",
+      name: "user",
+      ui: <UserForm onFinish={vi.fn()} />,
+    },
+    {
+      hash: "#create",
+      name: "role",
+      ui: <RoleForm onFinish={vi.fn()} options={{ permissions: [] }} />,
+    },
+    {
+      hash: "#password",
+      name: "password",
+      ui: <UserPasswordForm data={userData} />,
+    },
+    {
+      hash: "#roles",
+      name: "roles",
+      ui: (
+        <UserFormRole
+          data={userData}
+          onFinish={vi.fn()}
+          options={{ roles: [] }}
+        />
+      ),
+    },
+    {
+      hash: "#workspaces",
+      name: "workspaces",
+      ui: (
+        <UserWorkspaceForm
+          data={userData}
+          onFinish={vi.fn()}
+          options={{ workspaces: [] }}
+        />
+      ),
+    },
+  ])(
+    "closes the $name form without forwarding the event",
+    async ({ hash, ui }) => {
+      const { user } = renderAtHash(ui, hash);
+
+      await user.click(await screen.findByRole("button", { name: "cancel" }));
+
+      expect(mocks.goBack).toHaveBeenLastCalledWith();
+    },
+  );
+});
