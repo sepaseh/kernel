@@ -68,7 +68,7 @@ export const UserFormRole: FC<UserFormRoleProps> = ({
 
   return (
     <FormDrawer
-      onClose={() => goBack()}
+      onClose={goBack}
       onSubmit={() => form.submit()}
       open={open}
       submitting={submitting}
