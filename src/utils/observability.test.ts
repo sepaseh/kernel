@@ -36,6 +36,20 @@ describe("observability", () => {
     expect(sanitizeObservabilityValue(value)).toBe(value.slice(0, 2_000));
   });
 
+  it("redacts empty, repeated, and encoded query values", () => {
+    expect(
+      sanitizeObservabilityValue(
+        "https://example.com/path?empty=&next=value&redirect=https%3A%2F%2Fprivate.example",
+      ),
+    ).toBe("https://example.com/path?[redacted]&[redacted]&[redacted]");
+  });
+
+  it("handles long query-like text without excessive backtracking", () => {
+    const value = `https://example.com/?${"key".repeat(70_000)}`;
+
+    expect(sanitizeObservabilityValue(value)).toBe(value.slice(0, 2_000));
+  });
+
   it("redacts sensitive values recursively", () => {
     expect(
       sanitizeObservabilityValue({

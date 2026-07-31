@@ -44,7 +44,7 @@ const sanitizeText = (value: string) =>
       /((?:api[-_]?key|authorization|cookie|password|secret|token)=)[^&\s]+/gi,
       `$1${REDACTED}`,
     )
-    .replaceAll(/([?&])[^=\s]+=[^&\s]+/g, `$1${REDACTED}`)
+    .replaceAll(/([?&])[^?&=\s]+=[^&\s]*/g, `$1${REDACTED}`)
     .slice(0, MAX_VALUE_LENGTH);
 
 export const sanitizeObservabilityValue = (value: unknown): unknown => {
