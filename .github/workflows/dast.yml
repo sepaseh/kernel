@@ -45,7 +45,7 @@ jobs:
               }
               return parsed.hostname;
             };
-            if (!value) throw new Error("STAGING_BASE_URL is required");
+            if (!value) throw new Error("target_url is required");
             const allowedHost = parseConfiguredHostname(
               "STAGING_ALLOWED_APP_HOST",
               process.env.DAST_ALLOWED_HOST,
@@ -56,13 +56,13 @@ jobs:
             );
             const url = new URL(value);
             if (url.protocol !== "https:") {
-              throw new Error("STAGING_BASE_URL must use HTTPS");
+              throw new Error("target_url must use HTTPS");
             }
             if (url.username || url.password) {
-              throw new Error("STAGING_BASE_URL must not contain credentials");
+              throw new Error("target_url must not contain credentials");
             }
             if (url.hostname.toLowerCase() !== allowedHost) {
-              throw new Error("STAGING_BASE_URL host is not explicitly allowed");
+              throw new Error("target_url host is not explicitly allowed");
             }
             if (url.hostname.toLowerCase() === productionHost) {
               throw new Error("DAST must not target the production host");
