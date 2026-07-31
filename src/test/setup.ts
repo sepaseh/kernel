@@ -6,11 +6,17 @@ import { afterAll, afterEach, beforeAll } from "vitest";
 import { server } from "./mocks/server";
 
 class ResizeObserverMock implements ResizeObserver {
-  disconnect() {}
+  disconnect() {
+    // No-op: JSDOM has no native ResizeObserver behavior to tear down.
+  }
 
-  observe() {}
+  observe() {
+    // No-op: tests do not depend on real size-change notifications.
+  }
 
-  unobserve() {}
+  unobserve() {
+    // No-op: no observation state is tracked by this JSDOM mock.
+  }
 }
 
 Object.defineProperty(window, "matchMedia", {
