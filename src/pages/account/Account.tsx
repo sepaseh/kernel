@@ -21,15 +21,15 @@ import {
   updateUsername,
   verifyEmail,
 } from "@/api";
-import { OtpInput } from "@/components/otp-input";
 import { useAntd, useCore } from "@/hooks";
+import { getErrorMessage } from "@/shared/lib";
+import { OtpInput } from "@/shared/ui/otp-input";
 import {
   ChangePasswordParams,
   UpdateProfileParams,
   UpdateUsernameParams,
   VerifyEmailParams,
 } from "@/types";
-import { getErrorMessage } from "@/utils";
 
 type PasswordFormParams = ChangePasswordParams & {
   confirmPassword: string;

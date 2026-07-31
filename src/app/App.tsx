@@ -1,5 +1,5 @@
 import { AntdProvider, CoreProvider } from "@/app/providers";
-import { ErrorBoundary } from "@/components/error-boundary";
+import { ErrorBoundary } from "@/shared/ui/error-boundary";
 
 import { Routes } from "./Routes";
 

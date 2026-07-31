@@ -5,13 +5,13 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 
 import { createUser, updateUser } from "@/api";
-import { DigitsInput } from "@/components/digits-input";
-import { FormDrawer } from "@/components/form-drawer";
-import { PasswordFields } from "@/components/password-fields";
 import { modalKeys } from "@/config";
 import { useAntd, useGoBack } from "@/hooks";
+import { getErrorMessage } from "@/shared/lib";
+import { DigitsInput } from "@/shared/ui/digits-input";
+import { FormDrawer } from "@/shared/ui/form-drawer";
+import { PasswordFields } from "@/shared/ui/password-fields";
 import { CreateUserParams, UpdateUserParams, UserProps } from "@/types";
-import { getErrorMessage } from "@/utils";
 
 type UserFormParams = CreateUserParams & {
   confirmPassword: string;

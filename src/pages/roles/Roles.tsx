@@ -15,12 +15,12 @@ import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router";
 
 import { deleteRole, fetchPermissions, fetchRole, fetchRoles } from "@/api";
-import { Icon } from "@/components/icon";
 import { modalKeys } from "@/config";
 import { RoleForm } from "@/forms/role";
 import { useActionPermissions, useAntd } from "@/hooks";
+import { getErrorMessage } from "@/shared/lib";
+import { Icon } from "@/shared/ui/icon";
 import { PermissionGroupProps, RoleProps } from "@/types";
-import { getErrorMessage } from "@/utils";
 
 export const RolesPage = () => {
   const { t } = useTranslation();

@@ -5,11 +5,11 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 
 import { createRole, updateRole } from "@/api";
-import { FormDrawer } from "@/components/form-drawer";
 import { modalKeys } from "@/config";
 import { useAntd, useGoBack } from "@/hooks";
+import { getErrorMessage } from "@/shared/lib";
+import { FormDrawer } from "@/shared/ui/form-drawer";
 import { PermissionGroupProps, RoleMutationParams, RoleProps } from "@/types";
-import { getErrorMessage } from "@/utils";
 
 type RoleFormProps = {
   data?: RoleProps;

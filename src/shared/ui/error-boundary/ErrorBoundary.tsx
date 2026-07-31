@@ -7,7 +7,7 @@ import {
 } from "react";
 
 import { i18nInstance } from "@/app/i18n";
-import { reportError } from "@/utils";
+import { reportError } from "@/shared/lib";
 
 type ErrorBoundaryProps = {
   children: ReactNode;

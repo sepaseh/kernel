@@ -7,8 +7,8 @@ import axios, {
 
 import { i18nInstance } from "@/app/i18n";
 import { apiUrl } from "@/config";
+import { toCamelCase, toSnakeCase } from "@/shared/lib";
 import { AccessTokenProps } from "@/types";
-import { toCamelCase, toSnakeCase } from "@/utils";
 
 import { clearAccessToken, getAccessToken, setAccessToken } from "./token";
 const api = axios.create({ baseURL: apiUrl, withCredentials: true });

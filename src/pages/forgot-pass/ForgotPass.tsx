@@ -4,14 +4,14 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 
 import { forgotPassword, requestOtp } from "@/api";
-import { DigitsInput } from "@/components/digits-input";
-import { Icon } from "@/components/icon";
-import { OtpInput } from "@/components/otp-input";
-import { PasswordFields } from "@/components/password-fields";
 import { routeTree } from "@/config";
 import { useAntd } from "@/hooks";
+import { getErrorMessage } from "@/shared/lib";
+import { DigitsInput } from "@/shared/ui/digits-input";
+import { Icon } from "@/shared/ui/icon";
+import { OtpInput } from "@/shared/ui/otp-input";
+import { PasswordFields } from "@/shared/ui/password-fields";
 import { ForgotPasswordParams } from "@/types";
-import { getErrorMessage } from "@/utils";
 
 type ForgotPasswordFormParams = ForgotPasswordParams & {
   confirmPassword: string;

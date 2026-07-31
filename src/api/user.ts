@@ -1,3 +1,4 @@
+import { toSnakeCase } from "@/shared/lib";
 import {
   CreateUserParams,
   UpdateUserParams,
@@ -11,7 +12,6 @@ import {
   UserSystemAdminParams,
   UserWorkspaceParams,
 } from "@/types";
-import { toSnakeCase } from "@/utils";
 
 import { apiClient } from "./instance";
 

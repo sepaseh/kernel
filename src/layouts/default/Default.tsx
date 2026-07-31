@@ -17,9 +17,9 @@ import { Link, Outlet, useNavigate } from "react-router";
 
 import { getAccount, logout, setUnauthorizedHandler } from "@/api";
 import { clearAccessToken } from "@/api/token";
-import { Icon } from "@/components/icon";
 import { RouteKey, routeTree } from "@/config";
 import { useAllowedRoutes, useCore } from "@/hooks";
+import { Icon } from "@/shared/ui/icon";
 
 const { useBreakpoint } = Grid;
 

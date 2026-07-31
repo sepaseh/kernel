@@ -1,14 +1,14 @@
-﻿import { Button, Flex, Form, FormProps, Input, Typography } from "antd";
+import { Button, Flex, Form, FormProps, Input, Typography } from "antd";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 
 import { login } from "@/api";
-import { Icon } from "@/components/icon";
 import { routeTree } from "@/config";
 import { useAntd } from "@/hooks";
+import { getErrorMessage } from "@/shared/lib";
+import { Icon } from "@/shared/ui/icon";
 import { LoginParams } from "@/types";
-import { getErrorMessage } from "@/utils";
 
 export const LoginPage = () => {
   const { t } = useTranslation();

@@ -29,8 +29,6 @@ import {
   updateUserStatus,
   updateUserSystemAdmin,
 } from "@/api";
-import { DigitsInput } from "@/components/digits-input";
-import { Icon } from "@/components/icon";
 import { defaultPageSize, modalKeys } from "@/config";
 import { UserForm } from "@/forms/user";
 import { UserPasswordForm } from "@/forms/user-password";
@@ -42,13 +40,15 @@ import {
   useCore,
   useFilterParams,
 } from "@/hooks";
+import { getErrorMessage } from "@/shared/lib";
+import { DigitsInput } from "@/shared/ui/digits-input";
+import { Icon } from "@/shared/ui/icon";
 import {
   UserListParams,
   UserOptionProps,
   UserProps,
   UserSummaryProps,
 } from "@/types";
-import { getErrorMessage } from "@/utils";
 
 export const UsersPage = () => {
   const { t } = useTranslation();
