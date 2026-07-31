@@ -1,7 +1,5 @@
 import { useMemo } from "react";
 
-import { PermissionKey } from "@/types";
-
 import { useCore } from "./useCore";
 
 type ActionPermissions = {
@@ -28,7 +26,7 @@ export const useActionPermissions = (): ActionPermissions => {
       };
     }
 
-    const permissions = new Set<PermissionKey>(user?.permissions);
+    const permissions = new Set<string>(user?.permissions);
 
     return {
       canCreateRoles: permissions.has("roles.create"),

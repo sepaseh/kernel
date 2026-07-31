@@ -1,13 +1,10 @@
 ﻿import { useMemo } from "react";
 
 import { RouteKey } from "@/config";
-import { PermissionKey } from "@/types";
 
 import { useCore } from "./useCore";
 
-type RouteAccess = "auth" | "public" | PermissionKey;
-
-const ROUTE_RULES: Record<RouteKey, RouteAccess> = {
+const ROUTE_RULES: Record<RouteKey, string> = {
   account: "auth",
   auth: "public",
   forgotPassword: "public",

@@ -1,7 +1,5 @@
-export type PermissionKey = string;
-
 type PermissionProps = {
-  name: PermissionKey;
+  name: string;
   title: string;
 };
 
