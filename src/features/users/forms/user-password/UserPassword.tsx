@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { Button, Drawer, Form, Space } from "antd";
+import { Form } from "antd";
 import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
@@ -10,6 +10,7 @@ import { UserPasswordParams, UserProps } from "@/features/users/types";
 import { modalKeys } from "@/shared/config";
 import { useGoBack } from "@/shared/hooks";
 import { getErrorMessage } from "@/shared/lib";
+import { FormDrawer } from "@/shared/ui/form-drawer";
 import { PasswordFields } from "@/shared/ui/password-fields";
 
 type UserPasswordFormParams = UserPasswordParams & {
@@ -56,26 +57,11 @@ export const UserPasswordForm: FC<UserPasswordFormProps> = ({ data }) => {
   }, [data, form, goBack, hash, open]);
 
   return (
-    <Drawer
-      closeIcon={false}
-      footer={
-        <Space>
-          <Button loading={submitting} onClick={() => goBack()}>
-            {t("cancel")}
-          </Button>
-          <Button
-            loading={submitting}
-            onClick={() => form.submit()}
-            type="primary"
-          >
-            {t("submit")}
-          </Button>
-        </Space>
-      }
-      mask={{ closable: false }}
+    <FormDrawer
       onClose={() => goBack()}
+      onSubmit={() => form.submit()}
       open={open}
-      styles={{ footer: { textAlign: "end" } }}
+      submitting={submitting}
       title={t("changePassword")}
     >
       <Form<UserPasswordFormParams>
@@ -85,6 +71,6 @@ export const UserPasswordForm: FC<UserPasswordFormProps> = ({ data }) => {
       >
         <PasswordFields passwordLabel="newPass" />
       </Form>
-    </Drawer>
+    </FormDrawer>
   );
 };

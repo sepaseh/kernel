@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { Button, Drawer, Form, Select, Space } from "antd";
+import { Form, Select } from "antd";
 import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
@@ -14,6 +14,7 @@ import {
 import { modalKeys } from "@/shared/config";
 import { useGoBack } from "@/shared/hooks";
 import { getErrorMessage } from "@/shared/lib";
+import { FormDrawer } from "@/shared/ui/form-drawer";
 
 type UserWorkspaceFormProps = {
   data?: UserProps;
@@ -66,26 +67,11 @@ export const UserWorkspaceForm: FC<UserWorkspaceFormProps> = ({
   }, [data, form, goBack, hash, open]);
 
   return (
-    <Drawer
-      closeIcon={false}
-      footer={
-        <Space>
-          <Button loading={submitting} onClick={() => goBack()}>
-            {t("cancel")}
-          </Button>
-          <Button
-            loading={submitting}
-            onClick={() => form.submit()}
-            type="primary"
-          >
-            {t("submit")}
-          </Button>
-        </Space>
-      }
-      mask={{ closable: false }}
+    <FormDrawer
       onClose={() => goBack()}
+      onSubmit={() => form.submit()}
       open={open}
-      styles={{ footer: { textAlign: "end" } }}
+      submitting={submitting}
       title={t("workspaces")}
     >
       <Form<UserWorkspaceParams>
@@ -103,6 +89,6 @@ export const UserWorkspaceForm: FC<UserWorkspaceFormProps> = ({
           />
         </Form.Item>
       </Form>
-    </Drawer>
+    </FormDrawer>
   );
 };
