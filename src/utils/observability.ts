@@ -36,7 +36,10 @@ const isSensitiveKey = (key: string) =>
 
 const sanitizeText = (value: string) =>
   value
-    .replaceAll(/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/g, REDACTED)
+    .replaceAll(
+      /(?<![\w.+-])[\w+-]+(?:\.[\w+-]+)*@(?:[\w-]+\.)+[A-Za-z]{2,}(?![\w.-])/g,
+      REDACTED,
+    )
     .replaceAll(
       /((?:api[-_]?key|authorization|cookie|password|secret|token)=)[^&\s]+/gi,
       `$1${REDACTED}`,

@@ -11,6 +11,31 @@ afterEach(() => {
 });
 
 describe("observability", () => {
+  it("redacts valid email addresses without changing malformed addresses", () => {
+    expect(
+      sanitizeObservabilityValue(
+        "Contact ada@example.com or grace+alerts@research.example.co.uk",
+      ),
+    ).toBe("Contact [redacted] or [redacted]");
+    expect(
+      sanitizeObservabilityValue(
+        "Malformed: ada@example, ada@.example.com, and @example.com",
+      ),
+    ).toBe("Malformed: ada@example, ada@.example.com, and @example.com");
+  });
+
+  it("handles long non-matching text without excessive backtracking", () => {
+    const value = "a".repeat(200_000);
+
+    expect(sanitizeObservabilityValue(value)).toBe(value.slice(0, 2_000));
+  });
+
+  it("handles adversarial dot-heavy email text without backtracking", () => {
+    const value = `a@${"label.".repeat(20_000)}!`;
+
+    expect(sanitizeObservabilityValue(value)).toBe(value.slice(0, 2_000));
+  });
+
   it("redacts sensitive values recursively", () => {
     expect(
       sanitizeObservabilityValue({
