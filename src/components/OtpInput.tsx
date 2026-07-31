@@ -1,8 +1,10 @@
 import { Input } from "antd";
 import { ComponentProps, FC } from "react";
 
-type OtpInputProps = ComponentProps<typeof Input.OTP>;
+const Otp = Input.OTP;
+
+type OtpInputProps = ComponentProps<typeof Otp>;
 
 export const OtpInput: FC<OtpInputProps> = (props) => {
-  return <Input.OTP {...props} />;
+  return <Otp {...props} />;
 };

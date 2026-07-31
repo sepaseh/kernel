@@ -126,10 +126,10 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (axios.isCancel(error)) return Promise.reject(error);
+    if (axios.isCancel(error)) throw error;
 
     if (!axios.isAxiosError<unknown>(error)) {
-      return Promise.reject(new Error(i18nInstance.t("unexpectedError")));
+      throw new Error(i18nInstance.t("unexpectedError"));
     }
 
     const retryResponse = await retryUnauthorizedRequest(error);
@@ -137,14 +137,14 @@ api.interceptors.response.use(
     if (retryResponse) return retryResponse;
 
     if (error.response) {
-      return Promise.reject(createResponseError(error.response.data));
+      throw createResponseError(error.response.data);
     }
 
     if (error.request) {
-      return Promise.reject(new Error(i18nInstance.t("networkError")));
+      throw new Error(i18nInstance.t("networkError"));
     }
 
-    return Promise.reject(new Error(i18nInstance.t("unexpectedError")));
+    throw new Error(i18nInstance.t("unexpectedError"));
   },
 );
 
