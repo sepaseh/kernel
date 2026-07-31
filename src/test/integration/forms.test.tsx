@@ -113,6 +113,9 @@ describe("user identity form", () => {
     expect(mocks.messageSuccess).toHaveBeenCalledWith("userCreated");
     expect(mocks.goBack).toHaveBeenCalledOnce();
     expect(onFinish).toHaveBeenCalledOnce();
+
+    await user.click(screen.getByRole("button", { name: "cancel" }));
+    expect(mocks.goBack).toHaveBeenLastCalledWith();
   });
 
   it("rejects mismatched user passwords", async () => {
@@ -188,6 +191,9 @@ describe("role form", () => {
       }),
     );
     expect(mocks.messageError).toHaveBeenCalledWith("Role already exists");
+
+    await user.click(screen.getByRole("button", { name: "cancel" }));
+    expect(mocks.goBack).toHaveBeenLastCalledWith();
   });
 });
 
@@ -214,6 +220,9 @@ describe("user access forms", () => {
       }),
     );
     expect(mocks.messageSuccess).toHaveBeenCalledWith("passwordUpdated");
+
+    await user.click(screen.getByRole("button", { name: "cancel" }));
+    expect(mocks.goBack).toHaveBeenLastCalledWith();
   });
 
   it("submits the user's current roles", async () => {
@@ -237,6 +246,9 @@ describe("user access forms", () => {
     );
     expect(mocks.messageSuccess).toHaveBeenCalledWith("rolesUpdated");
     expect(onFinish).toHaveBeenCalledOnce();
+
+    await user.click(screen.getByRole("button", { name: "cancel" }));
+    expect(mocks.goBack).toHaveBeenLastCalledWith();
   });
 
   it("submits the user's current workspaces", async () => {
@@ -262,5 +274,8 @@ describe("user access forms", () => {
     );
     expect(mocks.messageSuccess).toHaveBeenCalledWith("workspacesUpdated");
     expect(onFinish).toHaveBeenCalledOnce();
+
+    await user.click(screen.getByRole("button", { name: "cancel" }));
+    expect(mocks.goBack).toHaveBeenLastCalledWith();
   });
 });

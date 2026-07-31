@@ -68,7 +68,7 @@ export const UserWorkspaceForm: FC<UserWorkspaceFormProps> = ({
 
   return (
     <FormDrawer
-      onClose={goBack}
+      onClose={() => goBack()}
       onSubmit={() => form.submit()}
       open={open}
       submitting={submitting}

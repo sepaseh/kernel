@@ -1,31 +1,26 @@
-import { Button, Drawer, Space } from "antd";
-import { ReactNode } from "react";
+import { Button, Drawer, type DrawerProps, Space } from "antd";
 import { useTranslation } from "react-i18next";
 
-type FormDrawerProps = {
-  afterOpenChange?: (open: boolean) => void;
-  children: ReactNode;
-  onClose: () => void;
+type FormDrawerProps = Omit<
+  DrawerProps,
+  "closeIcon" | "footer" | "mask" | "styles"
+> & {
   onSubmit: () => void;
-  open: boolean;
   submitting: boolean;
-  title: ReactNode;
 };
 
 export const FormDrawer = ({
-  afterOpenChange,
   children,
   onClose,
   onSubmit,
-  open,
   submitting,
-  title,
+  ...rest
 }: FormDrawerProps) => {
   const { t } = useTranslation();
 
   return (
     <Drawer
-      afterOpenChange={afterOpenChange}
+      {...rest}
       closeIcon={false}
       footer={
         <Space>
@@ -39,9 +34,7 @@ export const FormDrawer = ({
       }
       mask={{ closable: false }}
       onClose={onClose}
-      open={open}
       styles={{ footer: { textAlign: "end" } }}
-      title={title}
     >
       {children}
     </Drawer>

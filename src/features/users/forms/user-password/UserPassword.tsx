@@ -58,7 +58,7 @@ export const UserPasswordForm: FC<UserPasswordFormProps> = ({ data }) => {
 
   return (
     <FormDrawer
-      onClose={goBack}
+      onClose={() => goBack()}
       onSubmit={() => form.submit()}
       open={open}
       submitting={submitting}
