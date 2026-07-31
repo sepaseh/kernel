@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+import { syntheticCredential } from "./fixtures";
+
 const locales = [
   {
     direction: "ltr",
@@ -31,7 +33,7 @@ test.describe("localized critical journeys", () => {
       await page.route("https://api.example.com/auth/login", async (route) => {
         expect(route.request().postDataJSON()).toEqual({
           identifier: "ada",
-          password: "correct-password",
+          password: syntheticCredential,
         });
         await route.fulfill({
           contentType: "application/json",
@@ -69,7 +71,7 @@ test.describe("localized critical journeys", () => {
         page.getByRole("heading", { name: locale.login }),
       ).toBeVisible();
       await page.getByLabel(locale.identifier).fill("ada");
-      await page.getByLabel(locale.password).fill("correct-password");
+      await page.getByLabel(locale.password).fill(syntheticCredential);
       await page.getByRole("button", { name: locale.enter }).click();
 
       await expect(page).toHaveURL(/\/$/);

@@ -1,5 +1,7 @@
 import { expect, Page, test } from "@playwright/test";
 
+import { syntheticCredential } from "./fixtures";
+
 type RoleRecord = {
   id: string;
   name: string;
@@ -200,7 +202,7 @@ test.describe("role and user management", () => {
             first_name: "Ada",
             last_name: "Lovelace",
             mobile: "09121111111",
-            password: "correct-password",
+            password: syntheticCredential,
             personnel_code: "200",
           });
           users.push({
@@ -269,8 +271,8 @@ test.describe("role and user management", () => {
     await createDialog.getByLabel("Personnel code").fill("200");
     await createDialog
       .getByLabel("Password", { exact: true })
-      .fill("correct-password");
-    await createDialog.getByLabel("Confirm password").fill("correct-password");
+      .fill(syntheticCredential);
+    await createDialog.getByLabel("Confirm password").fill(syntheticCredential);
     await createDialog.getByRole("button", { name: "Submit" }).click();
     await expect(page.getByText("User created successfully.")).toBeVisible();
     await expect(page.getByText("Ada Lovelace")).toBeVisible();

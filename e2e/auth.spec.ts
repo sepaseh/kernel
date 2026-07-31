@@ -1,5 +1,7 @@
 import { expect, Page, test } from "@playwright/test";
 
+import { syntheticCredential } from "./fixtures";
+
 const accountResponse = {
   email: "ada@example.com",
   first_name: "Ada",
@@ -50,7 +52,7 @@ test.describe("public authentication", () => {
     await page.route("https://api.example.com/auth/login", async (route) => {
       expect(route.request().postDataJSON()).toEqual({
         identifier: "ada",
-        password: "incorrect",
+        password: syntheticCredential,
       });
 
       await route.fulfill({
@@ -62,7 +64,7 @@ test.describe("public authentication", () => {
     await page.goto("/auth");
 
     await page.getByLabel("Username, email, or mobile").fill("ada");
-    await page.getByLabel("Password").fill("incorrect");
+    await page.getByLabel("Password").fill(syntheticCredential);
     await page.getByRole("button", { name: "Enter" }).click();
 
     await expect(page.getByText("Invalid credentials")).toBeVisible();
@@ -89,7 +91,7 @@ test.describe("public authentication", () => {
     await page.goto("/auth");
 
     await page.getByLabel("Username, email, or mobile").fill("ada");
-    await page.getByLabel("Password").fill("correct-password");
+    await page.getByLabel("Password").fill(syntheticCredential);
     await page.getByRole("button", { name: "Enter" }).click();
 
     await expect(page).toHaveURL(/\/$/);
@@ -118,7 +120,7 @@ test.describe("public authentication", () => {
         expect(route.request().postDataJSON()).toEqual({
           mobile: "09120000000",
           otp: "123456",
-          password: "new-password",
+          password: syntheticCredential,
         });
         await route.fulfill({ status: 204 });
       },
@@ -129,8 +131,8 @@ test.describe("public authentication", () => {
     await page.getByRole("button", { name: "Send code" }).click();
     await expect(page.getByText("Verification code sent.")).toBeVisible();
     await fillOtp(page, "123456");
-    await page.getByLabel("New password").fill("new-password");
-    await page.getByLabel("Confirm password").fill("new-password");
+    await page.getByLabel("New password").fill(syntheticCredential);
+    await page.getByLabel("Confirm password").fill(syntheticCredential);
     await page.getByRole("button", { name: "Submit" }).click();
 
     await expect(page).toHaveURL(/\/auth$/);
@@ -158,7 +160,7 @@ test.describe("public authentication", () => {
         last_name: "Lovelace",
         mobile: "09120000000",
         otp: "123456",
-        password: "correct-password",
+        password: syntheticCredential,
       });
       await route.fulfill({
         contentType: "application/json",
@@ -181,8 +183,10 @@ test.describe("public authentication", () => {
     await page.getByLabel("Mobile").fill("09120000000");
     await page.getByRole("button", { name: "Send code" }).click();
     await fillOtp(page, "123456");
-    await page.getByLabel("Password", { exact: true }).fill("correct-password");
-    await page.getByLabel("Confirm password").fill("correct-password");
+    await page
+      .getByLabel("Password", { exact: true })
+      .fill(syntheticCredential);
+    await page.getByLabel("Confirm password").fill(syntheticCredential);
     await page.getByRole("button", { name: "Register" }).click();
 
     await expect(page).toHaveURL(/\/$/);
@@ -210,7 +214,7 @@ test.describe("public authentication", () => {
     });
     await page.goto("/auth");
     await page.getByLabel("Username, email, or mobile").fill("ada");
-    await page.getByLabel("Password").fill("correct-password");
+    await page.getByLabel("Password").fill(syntheticCredential);
     await page.getByRole("button", { name: "Enter" }).click();
     await expect(page.getByRole("link", { name: "kernel" })).toBeVisible();
 
