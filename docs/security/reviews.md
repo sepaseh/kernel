@@ -19,6 +19,11 @@ variable `STAGING_BASE_URL`. The target must be an explicitly authorized,
 disposable staging environment. Active scans may submit forms, create data,
 trigger email or OTP delivery, and place load on the API.
 
+Configure a protected GitHub environment named `staging`. Store
+`STAGING_BASE_URL`, `STAGING_ALLOWED_HOST`, and `PRODUCTION_HOST` as
+environment-scoped variables so repository-level values cannot redirect the
+scan. Require approval from a staging security owner before the job can start.
+
 Before enabling the schedule:
 
 1. Obtain written authorization from the application, API, hosting, CDN, and
@@ -26,7 +31,10 @@ Before enabling the schedule:
 2. Seed non-sensitive test data and disable real notifications or downstream
    side effects.
 3. Confirm backups, rate limits, monitoring, and a cleanup procedure.
-4. Set `STAGING_BASE_URL` to the exact HTTPS application origin.
+4. Set `STAGING_BASE_URL` to the exact HTTPS application origin,
+   `STAGING_ALLOWED_HOST` to that origin's hostname, and `PRODUCTION_HOST` to the
+   production hostname. The workflow requires an exact staging-host match and
+   rejects the production host.
 5. Run the workflow manually and review the private artifact.
 
 The job fails on reported alerts. Do not suppress a rule merely to make the
