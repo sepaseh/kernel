@@ -5,13 +5,13 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 
 import { useAntd } from "@/app/hooks";
-import { modalKeys } from "@/config";
 import { createRole, updateRole } from "@/features/roles/api";
 import {
   PermissionGroupProps,
   RoleMutationParams,
   RoleProps,
 } from "@/features/roles/types";
+import { modalKeys } from "@/shared/config";
 import { useGoBack } from "@/shared/hooks";
 import { getErrorMessage } from "@/shared/lib";
 import { FormDrawer } from "@/shared/ui/form-drawer";

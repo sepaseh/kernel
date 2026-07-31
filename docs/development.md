@@ -73,7 +73,7 @@ Use `./` for same-directory imports and `@/` for imports that cross source direc
 
 ```ts
 import { fetchUsers } from "./api";
-import { routeTree } from "@/config";
+import { routeTree } from "@/app/config";
 ```
 
 Keep feature code close to the existing structure:
@@ -86,6 +86,6 @@ Keep feature code close to the existing structure:
 
 ## Localization
 
-The application currently ships with English (`en`) and Persian (`fa`). Translation strings live in `src/locales/en.ts` and `src/locales/fa.ts`.
+The application currently ships with English (`en`) and Persian (`fa`). Translation strings live in `src/app/i18n/locales/en.ts` and `src/app/i18n/locales/fa.ts`.
 
 Ant Design direction and locale are selected in `src/providers/antd/Antd.tsx`. Day.js locale/calendar setup is handled in `src/providers/core/Core.tsx`, using the Jalali calendar for Persian.

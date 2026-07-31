@@ -1,9 +1,10 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
-import { defaultLanguage } from "@/config";
-import { resources } from "@/locales";
-import { getLanguage } from "@/storage";
+import { defaultLanguage } from "@/shared/config";
+import { getLanguage } from "@/shared/storage";
+
+import { resources } from "./locales";
 
 declare module "i18next" {
   interface CustomTypeOptions {

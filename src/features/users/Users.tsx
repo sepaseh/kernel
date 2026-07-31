@@ -21,11 +21,11 @@ import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router";
 
 import { useActionPermissions, useAntd, useCore } from "@/app/hooks";
-import { defaultPageSize, modalKeys } from "@/config";
 import { UserForm } from "@/features/users/forms/user";
 import { UserPasswordForm } from "@/features/users/forms/user-password";
 import { UserFormRole } from "@/features/users/forms/user-role";
 import { UserWorkspaceForm } from "@/features/users/forms/user-workspace";
+import { modalKeys } from "@/shared/config";
 import { useFilterParams } from "@/shared/hooks";
 import { getErrorMessage } from "@/shared/lib";
 import { DigitsInput } from "@/shared/ui/digits-input";
@@ -40,6 +40,7 @@ import {
   updateUserStatus,
   updateUserSystemAdmin,
 } from "./api";
+import { defaultPageSize } from "./constants";
 import {
   UserListParams,
   UserOptionProps,

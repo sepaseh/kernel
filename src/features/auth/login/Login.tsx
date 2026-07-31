@@ -3,8 +3,8 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 
+import { routeTree } from "@/app/config";
 import { useAntd } from "@/app/hooks";
-import { routeTree } from "@/config";
 import { login } from "@/features/auth/api";
 import { LoginParams } from "@/features/auth/types";
 import { getErrorMessage } from "@/shared/lib";

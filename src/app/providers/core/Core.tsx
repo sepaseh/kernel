@@ -3,17 +3,18 @@ import calendar from "dayjs/plugin/calendar";
 import jalaliday from "jalaliday";
 import { FC, ReactNode, useCallback, useEffect, useState } from "react";
 
+import { RouteKey } from "@/app/config";
 import { CoreContext, CoreContextProps } from "@/app/contexts";
 import { i18nInstance } from "@/app/i18n";
-import { Language, RouteKey, storageKeys, Theme } from "@/config";
-import { faDayjs } from "@/locales";
+import { faDayjs } from "@/app/i18n/locales";
+import { Language, storageKeys, Theme } from "@/shared/config";
 import {
   getLanguage,
   getTheme,
   setLanguage as setLanguageStorage,
   setTheme as setThemeStorage,
   useLocalStorageWatcher,
-} from "@/storage";
+} from "@/shared/storage";
 
 dayjs.extend(calendar);
 dayjs.extend(jalaliday);

@@ -2,7 +2,7 @@ import { act } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useCore } from "@/app/hooks";
-import { storageKeys } from "@/config";
+import { storageKeys } from "@/shared/config";
 import { render, screen } from "@/test/render";
 
 import { CoreProvider } from "./";
@@ -22,7 +22,7 @@ vi.mock("@/app/i18n", () => ({
   },
 }));
 
-vi.mock("@/storage", () => ({
+vi.mock("@/shared/storage", () => ({
   getLanguage: mocks.getLanguage,
   getTheme: mocks.getTheme,
   setLanguage: mocks.setLanguage,

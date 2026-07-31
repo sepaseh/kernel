@@ -29,7 +29,7 @@ It also synchronizes language and theme with local storage and configures Day.js
 
 ## Routing
 
-Route definitions are centralized in `src/config/routes.ts`. The router is created in `src/app/Routes.tsx` with `createBrowserRouter`.
+Route definitions are centralized in `src/app/config/routes.ts`. The router is created in `src/app/Routes.tsx` with `createBrowserRouter`.
 
 The app uses two layouts:
 
@@ -57,7 +57,7 @@ their dedicated top-level directories.
 
 ## State and Persistence
 
-The app keeps lightweight UI preferences in local storage through helpers in `src/storage`.
+The app keeps lightweight UI preferences in local storage through helpers in `src/shared/storage`.
 
 Access tokens remain in frontend memory and are attached to protected API
 requests as bearer tokens. The backend owns the refresh token in an HttpOnly
@@ -67,7 +67,7 @@ to JavaScript.
 
 ## Styling
 
-Global styles live in `src/styles`. The application bundles the Vazirmatn
+Global styles live in `src/assets/styles`. The application bundles the Vazirmatn
 variable WOFF2 from `src/assets/fonts/vazirmatn` and uses weights 100–900 with
 `font-display: swap`. Vite fingerprints the local asset during production
 builds; the application does not depend on an external font provider.

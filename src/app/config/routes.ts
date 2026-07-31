@@ -13,3 +13,5 @@ export const routeTree = {
 >;
 
 export type RouteKey = keyof typeof routeTree;
+
+export const baseUrl: string = import.meta.env.VITE_APP_BASE_URL ?? "";

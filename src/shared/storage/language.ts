@@ -1,4 +1,4 @@
-﻿import { defaultLanguage, Language, storageKeys } from "@/config";
+import { defaultLanguage, Language, storageKeys } from "@/shared/config";
 
 import { getState, setState } from "./state";
 

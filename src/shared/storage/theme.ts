@@ -1,4 +1,4 @@
-import { defaultTheme, storageKeys, Theme } from "@/config";
+import { defaultTheme, storageKeys, Theme } from "@/shared/config";
 
 import { getState, setState } from "./state";
 

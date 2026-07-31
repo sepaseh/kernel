@@ -10,7 +10,7 @@ on:
     paths:
       - "src/shared/api/token.ts"
       - "src/shared/api/token.test.ts"
-      - "src/storage/**"
+      - "src/shared/storage/**"
       - "src/shared/lib/**"
       - "stryker.config.json"
 

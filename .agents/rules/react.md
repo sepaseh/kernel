@@ -27,12 +27,12 @@
 
 All user-visible text should go through `react-i18next`.
 
-- Add English strings to `src/locales/en.ts`.
-- Add Persian strings to `src/locales/fa.ts` when the translation is known.
+- Add English strings to `src/app/i18n/locales/en.ts`.
+- Add Persian strings to `src/app/i18n/locales/fa.ts` when the translation is known.
 - Keep locale keys alphabetized.
 - Use i18next pluralization for count-based strings.
 
 ## Routing
 
-- Define route keys and paths in `src/config/routes.ts`.
+- Define route keys and paths in `src/app/config/routes.ts`.
 - Update `src/app/hooks/use-allowed-routes` when route access changes.

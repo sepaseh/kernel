@@ -10,7 +10,7 @@
   },
   "mutate": [
     "src/shared/api/token.ts",
-    "src/storage/state.ts",
+    "src/shared/storage/state.ts",
     "src/shared/lib/error.ts",
     "src/shared/lib/transform.ts"
   ],

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { storageKeys } from "@/config";
+import { storageKeys } from "@/shared/config";
 
 export const useLocalStorageWatcher = (
   key: (typeof storageKeys)[keyof typeof storageKeys],

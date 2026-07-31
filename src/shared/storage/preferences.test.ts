@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { defaultLanguage, defaultTheme, storageKeys } from "@/config";
+import { defaultLanguage, defaultTheme, storageKeys } from "@/shared/config";
 
 import { getLanguage, setLanguage } from "./language";
 import { getTheme, setTheme } from "./theme";

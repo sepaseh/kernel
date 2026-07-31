@@ -5,13 +5,13 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 
 import { useAntd } from "@/app/hooks";
-import { modalKeys } from "@/config";
 import { createUser, updateUser } from "@/features/users/api";
 import {
   CreateUserParams,
   UpdateUserParams,
   UserProps,
 } from "@/features/users/types";
+import { modalKeys } from "@/shared/config";
 import { useGoBack } from "@/shared/hooks";
 import { getErrorMessage } from "@/shared/lib";
 import { DigitsInput } from "@/shared/ui/digits-input";

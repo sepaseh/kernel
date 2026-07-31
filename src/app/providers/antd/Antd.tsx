@@ -14,7 +14,7 @@ import { FC, ReactNode, useEffect } from "react";
 
 import { AntdContext } from "@/app/contexts";
 import { useCore } from "@/app/hooks";
-import { Language, Theme } from "@/config";
+import { Language, Theme } from "@/shared/config";
 
 type AntdProviderProps = {
   children?: ReactNode;

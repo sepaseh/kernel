@@ -1,7 +1,7 @@
 ﻿import { useMemo } from "react";
 
+import { RouteKey } from "@/app/config";
 import { useCore } from "@/app/hooks/use-core";
-import { RouteKey } from "@/config";
 
 const ROUTE_RULES: Record<RouteKey, string> = {
   account: "auth",
