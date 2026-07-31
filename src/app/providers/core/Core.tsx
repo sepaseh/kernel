@@ -1,11 +1,11 @@
-﻿import dayjs from "dayjs";
+import dayjs from "dayjs";
 import calendar from "dayjs/plugin/calendar";
 import jalaliday from "jalaliday";
 import { FC, ReactNode, useCallback, useEffect, useState } from "react";
 
+import { CoreContext, CoreContextProps } from "@/app/contexts";
+import { i18nInstance } from "@/app/i18n";
 import { Language, RouteKey, storageKeys, Theme } from "@/config";
-import { CoreContext, CoreContextProps } from "@/contexts";
-import { i18nInstance } from "@/i18n";
 import { faDayjs } from "@/locales";
 import {
   getLanguage,

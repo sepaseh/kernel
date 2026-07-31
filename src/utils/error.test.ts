@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { getErrorMessage } from "./error";
 
-vi.mock("@/i18n", () => ({
+vi.mock("@/app/i18n", () => ({
   i18nInstance: { t: (key: string) => key },
 }));
 

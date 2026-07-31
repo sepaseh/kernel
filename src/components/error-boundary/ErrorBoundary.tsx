@@ -6,7 +6,7 @@ import {
   type ReactNode,
 } from "react";
 
-import { i18nInstance } from "@/i18n";
+import { i18nInstance } from "@/app/i18n";
 import { reportError } from "@/utils";
 
 type ErrorBoundaryProps = {

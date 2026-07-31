@@ -2,7 +2,7 @@ import { renderHook } from "@testing-library/react";
 import { ReactNode } from "react";
 import { describe, expect, it } from "vitest";
 
-import { CoreContext, CoreContextProps } from "@/contexts";
+import { CoreContext, CoreContextProps } from "@/app/contexts";
 import { AccountProps } from "@/types";
 
 import { useActionPermissions } from "./";

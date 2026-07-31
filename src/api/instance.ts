@@ -5,8 +5,8 @@ import axios, {
   InternalAxiosRequestConfig,
 } from "axios";
 
+import { i18nInstance } from "@/app/i18n";
 import { apiUrl } from "@/config";
-import { i18nInstance } from "@/i18n";
 import { AccessTokenProps } from "@/types";
 import { toCamelCase, toSnakeCase } from "@/utils";
 

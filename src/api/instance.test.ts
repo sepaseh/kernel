@@ -2,7 +2,7 @@ import axios, { AxiosError } from "axios";
 import { delay, http, HttpResponse } from "msw";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { i18nInstance } from "@/i18n";
+import { i18nInstance } from "@/app/i18n";
 import { server } from "@/test/mocks/server";
 
 import { apiClient, setUnauthorizedHandler } from "./instance";

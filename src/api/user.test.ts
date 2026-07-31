@@ -1,12 +1,12 @@
 import { http, HttpResponse } from "msw";
 import { describe, expect, it, vi } from "vitest";
 
-import { i18nInstance } from "@/i18n";
+import { i18nInstance } from "@/app/i18n";
 import { server } from "@/test/mocks/server";
 
 import { fetchUsers } from "./user";
 
-vi.mock("@/i18n", () => ({
+vi.mock("@/app/i18n", () => ({
   i18nInstance: { t: (key: string) => key },
 }));
 

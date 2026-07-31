@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { AntdContext } from "@/contexts";
+import { AntdContext } from "@/app/contexts";
 import { render, screen } from "@/test/render";
 
 import { AntdProvider } from "./";

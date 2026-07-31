@@ -1,6 +1,6 @@
 import { useContext } from "react";
 
-import { AntdContext } from "@/contexts";
+import { AntdContext } from "@/app/contexts";
 
 export const useAntd = () => {
   const context = useContext(AntdContext);

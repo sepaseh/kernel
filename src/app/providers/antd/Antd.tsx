@@ -1,4 +1,4 @@
-﻿import {
+import {
   ConfigProvider,
   ConfigProviderProps,
   GlobalToken,
@@ -12,8 +12,8 @@ import enUS from "antd/locale/en_US";
 import faIR from "antd/locale/fa_IR";
 import { FC, ReactNode, useEffect } from "react";
 
+import { AntdContext } from "@/app/contexts";
 import { Language, Theme } from "@/config";
-import { AntdContext } from "@/contexts";
 import { useCore } from "@/hooks";
 
 type AntdProviderProps = {
