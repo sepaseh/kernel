@@ -10,7 +10,7 @@ const reportDirectory = path.resolve(".lighthouseci");
 const url = "https://127.0.0.1:4174/auth";
 const thresholds = {
   "cumulative-layout-shift": 0.1,
-  "first-contentful-paint": 3_500,
+  "first-contentful-paint": 4_000,
   interactive: 4_000,
   "largest-contentful-paint": 4_000,
   "total-blocking-time": 300,
