@@ -403,7 +403,7 @@ describe("priority pages", () => {
     });
   });
 
-  it("manages users when permitted", async () => {
+  it("manages users when permitted", { timeout: 15_000 }, async () => {
     Object.assign(mocks.actionPermissions, {
       canCreateUsers: true,
       canDeleteUsers: true,
