@@ -26,7 +26,7 @@ li {
 }
 
 html {
-  font-family: "Vazirmatn", system-ui, sans-serif;
+  font-family: Vazirmatn, system-ui, sans-serif;
   min-width: 320px;
   overflow-x: hidden;
 }
