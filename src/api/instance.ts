@@ -1,4 +1,9 @@
-import axios, { AxiosRequestConfig, InternalAxiosRequestConfig } from "axios";
+import axios, {
+  AxiosError,
+  AxiosRequestConfig,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from "axios";
 
 import { apiUrl } from "@/config";
 import { i18nInstance } from "@/i18n";
@@ -71,6 +76,37 @@ const refreshAccessToken = (): Promise<AccessTokenProps> => {
   return refreshPromise;
 };
 
+const retryUnauthorizedRequest = async (
+  error: AxiosError<unknown>,
+): Promise<AxiosResponse<unknown> | undefined> => {
+  if (error.response?.status !== 401) return;
+
+  const requestConfig = error.config as RetryableRequestConfig | undefined;
+  const isPublicAuthRequest = publicAuthUrls.has(requestConfig?.url ?? "");
+
+  if (!requestConfig || requestConfig._retried || isPublicAuthRequest) {
+    if (!isPublicAuthRequest) handleUnauthorized();
+    return;
+  }
+
+  requestConfig._retried = true;
+
+  try {
+    await refreshAccessToken();
+    return api.request(requestConfig);
+  } catch {
+    handleUnauthorized();
+  }
+};
+
+const createResponseError = (data: unknown): Error => {
+  if (!isApiErrorBody(data)) {
+    return new Error(i18nInstance.t("unexpectedError"));
+  }
+
+  return new Error(data.message, { cause: data.cause });
+};
+
 api.interceptors.request.use(
   (config) => {
     const authToken = getAccessToken();
@@ -92,43 +128,20 @@ api.interceptors.response.use(
   async (error) => {
     if (axios.isCancel(error)) return Promise.reject(error);
 
-    if (axios.isAxiosError<unknown>(error)) {
-      if (error.response?.status === 401) {
-        const requestConfig = error.config as
-          RetryableRequestConfig | undefined;
-        const isPublicAuthRequest = publicAuthUrls.has(
-          requestConfig?.url ?? "",
-        );
-        const canRefresh =
-          requestConfig && !requestConfig._retried && !isPublicAuthRequest;
+    if (!axios.isAxiosError<unknown>(error)) {
+      return Promise.reject(new Error(i18nInstance.t("unexpectedError")));
+    }
 
-        if (canRefresh) {
-          requestConfig._retried = true;
+    const retryResponse = await retryUnauthorizedRequest(error);
 
-          try {
-            await refreshAccessToken();
-            return api.request(requestConfig);
-          } catch {
-            handleUnauthorized();
-          }
-        } else if (!isPublicAuthRequest) {
-          handleUnauthorized();
-        }
-      }
+    if (retryResponse) return retryResponse;
 
-      if (error.response) {
-        const { data } = error.response;
+    if (error.response) {
+      return Promise.reject(createResponseError(error.response.data));
+    }
 
-        if (!isApiErrorBody(data)) {
-          return Promise.reject(new Error(i18nInstance.t("unexpectedError")));
-        }
-
-        return Promise.reject(new Error(data.message, { cause: data.cause }));
-      }
-
-      if (error.request) {
-        return Promise.reject(new Error(i18nInstance.t("networkError")));
-      }
+    if (error.request) {
+      return Promise.reject(new Error(i18nInstance.t("networkError")));
     }
 
     return Promise.reject(new Error(i18nInstance.t("unexpectedError")));

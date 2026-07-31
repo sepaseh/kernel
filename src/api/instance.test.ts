@@ -8,6 +8,8 @@ import { server } from "@/test/mocks/server";
 import { apiClient, setUnauthorizedHandler } from "./instance";
 import { clearAccessToken, getAccessToken, setAccessToken } from "./token";
 
+const syntheticCredential = "synthetic-test-credential";
+
 afterEach(() => {
   clearAccessToken();
   setUnauthorizedHandler(null);
@@ -170,6 +172,28 @@ describe("API client authentication", () => {
     expect(refreshRequestCount).toBe(1);
     expect(getAccessToken()).toBeNull();
     expect(onUnauthorized).toHaveBeenCalledOnce();
+  });
+
+  it("does not refresh or clear authentication for public auth requests", async () => {
+    const onUnauthorized = vi.fn();
+    const refresh = vi.fn();
+
+    setUnauthorizedHandler(onUnauthorized);
+    server.use(
+      http.post("http://localhost/auth/login", () =>
+        HttpResponse.json({ message: "Invalid credentials" }, { status: 401 }),
+      ),
+      http.post("http://localhost/auth/refresh-token", refresh),
+    );
+
+    await expect(
+      apiClient.post("/auth/login", {
+        identifier: "ada",
+        password: syntheticCredential,
+      }),
+    ).rejects.toThrow("Invalid credentials");
+    expect(refresh).not.toHaveBeenCalled();
+    expect(onUnauthorized).not.toHaveBeenCalled();
   });
 });
 
