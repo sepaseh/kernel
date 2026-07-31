@@ -1,6 +1,6 @@
 # API Client
 
-The API layer uses `src/api/instance.ts` as a small Axios wrapper around the configured backend base URL.
+The API layer uses `src/shared/api/client.ts` as a small Axios wrapper around the configured backend base URL. Domain endpoint helpers live beside their feature.
 
 ## Features
 
@@ -27,12 +27,14 @@ apiClient.blob(url, config);
 
 ## Starter Modules
 
-| File         | Purpose                                                  |
-| ------------ | -------------------------------------------------------- |
-| `auth.ts`    | Registration, login, OTP, password, and logout helpers   |
-| `account.ts` | Current-account and profile helpers                      |
-| `role.ts`    | Role CRUD and permission list helpers                    |
-| `user.ts`    | User CRUD, role assignment, status, and password helpers |
+| File                      | Purpose                                                  |
+| ------------------------- | -------------------------------------------------------- |
+| `features/auth/api.ts`    | Registration, login, OTP, password, and logout helpers   |
+| `features/account/api.ts` | Current-account and profile helpers                      |
+| `features/roles/api.ts`   | Role CRUD and permission list helpers                    |
+| `features/users/api.ts`   | User CRUD, role assignment, status, and password helpers |
+| `shared/api/client.ts`    | HTTP transport, refresh, retry, and data conversion      |
+| `shared/api/token.ts`     | In-memory access-token state                             |
 
 ## Endpoint Examples
 
@@ -69,4 +71,4 @@ apiClient.blob(url, config);
 
 ## Adding Modules
 
-Create a new file under `src/api`, export typed endpoint helpers, then re-export it from `src/api/index.ts` when it should be available through `@/api`.
+Add endpoint helpers to the owning feature's `api.ts`. Put only transport-level code used by multiple features in `src/shared/api`; do not create a global domain-service barrel.

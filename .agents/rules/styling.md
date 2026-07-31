@@ -4,7 +4,7 @@
 
 Ant Design is the source of truth for theming.
 
-- Theme config lives in `src/config/theme.ts`.
+- Theme config lives in `src/shared/config/theme.ts`.
 - Runtime language direction and Ant Design locale are handled by `AntdProvider`.
 - Prefer Ant Design components and tokens over custom CSS.
 
@@ -12,7 +12,7 @@ Ant Design is the source of truth for theming.
 
 - Prefer Ant Design props such as `type`, `variant`, `color`, `size`, and `layout` before custom styles.
 - Use inline `style` or Ant Design `styles` only for local layout tweaks.
-- Put global styles in `src/styles/index.css`.
+- Put global styles in `src/assets/styles/index.css`.
 - Keep `index.html` free of page-specific styling.
 
 ## CSS property order

@@ -15,9 +15,9 @@ const loadApiFor = async (baseUrl: string) => {
   vi.stubEnv("VITE_API_BASE_URL", baseUrl);
 
   return Promise.all([
-    import("@/api/account"),
-    import("@/api/auth"),
-    import("@/api/token"),
+    import("@/features/account/api"),
+    import("@/features/auth/api"),
+    import("@/shared/api"),
   ]);
 };
 

@@ -1,1 +1,0 @@
-export { UserPasswordForm } from "./UserPassword";

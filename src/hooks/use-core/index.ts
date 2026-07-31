@@ -1,1 +1,0 @@
-export { useCore } from "./useCore";

@@ -65,6 +65,6 @@ Fail fast for required internal values, but validate untrusted external data bef
 
 ## Shared types
 
-- Keep API/domain types in `src/types`.
-- Export shared types from `src/types/index.ts`.
-- Keep permission keys in `src/types/permission.ts`.
+- Keep domain types beside their owning feature in `src/features/<feature>/types.ts`.
+- Keep infrastructure contracts beside the shared module that owns them.
+- Keep permission contracts in `src/features/roles/types.ts`.

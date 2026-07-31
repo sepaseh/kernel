@@ -1,9 +1,8 @@
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 
-import { initializeObservability } from "@/utils";
-
-import { App } from "./App";
+import { App } from "@/app/App";
+import { initializeObservability } from "@/shared/lib";
 
 initializeObservability();
 

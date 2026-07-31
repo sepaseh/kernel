@@ -1,1 +1,0 @@
-export { useFilterParams } from "./useFilterParams";

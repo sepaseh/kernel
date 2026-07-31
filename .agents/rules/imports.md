@@ -9,11 +9,11 @@
 ## Examples
 
 ```ts
-// Same directory: src/api/auth.ts importing src/api/instance.ts
-import { apiClient } from "./instance";
+// Same directory: src/features/users/Users.tsx importing its API
+import { fetchUsers } from "./api";
 
-// Cross directory: src/pages/Users.tsx importing src/api/index.ts
-import { fetchUsers } from "@/api";
+// Cross directory: a feature importing shared infrastructure
+import { apiClient } from "@/shared/api";
 ```
 
 ## Enforcement
@@ -24,3 +24,14 @@ Custom ESLint rules in `eslint.config.ts` enforce this automatically:
 - `local/no-alias-for-same-dir` bans `@/` for same-directory imports.
 
 Import ordering is handled by `eslint-plugin-simple-import-sort`.
+
+## Architecture boundaries
+
+- `shared` must not import from `app`, `features`, or `layouts`.
+- Cross-feature imports must use `@/features/<feature>`, never an internal file.
+- Each feature root `index.ts` is its public API; route-specific lazy entrypoints
+  may expose dedicated subpaths to preserve code splitting.
+- Keep `index.ts` only when it defines a public module boundary. Import a single
+  internal implementation file directly instead of adding a shortcut barrel.
+
+`local/architecture-boundaries` enforces the first two rules.

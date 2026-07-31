@@ -8,10 +8,10 @@ on:
     branches:
       - main
     paths:
-      - "src/api/token.ts"
-      - "src/api/token.test.ts"
-      - "src/storage/**"
-      - "src/utils/**"
+      - "src/shared/api/token.ts"
+      - "src/shared/api/token.test.ts"
+      - "src/shared/storage/**"
+      - "src/shared/lib/**"
       - "stryker.config.json"
 
 concurrency:

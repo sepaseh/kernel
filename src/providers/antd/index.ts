@@ -1,1 +1,0 @@
-export { AntdProvider } from "./Antd";

@@ -1,1 +1,0 @@
-export { useAllowedRoutes } from "./useAllowedRoutes";

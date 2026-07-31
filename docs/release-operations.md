@@ -29,7 +29,7 @@ the release manager must verify:
 - The version matches the intended SemVer impact.
 - The changelog is complete, understandable, and contains no sensitive data.
 - CI `check`, `build`, and `e2e` jobs pass for the exact candidate commit.
-- CodeQL and the configured SonarQube quality gate pass.
+- CodeQL passes and blocking SonarQube security findings are reviewed.
 - Dependency audit, performance budgets, and production security-header tests
   pass.
 - Required DAST and manual security reviews have no unresolved release-blocking

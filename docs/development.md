@@ -72,20 +72,20 @@ npm run knip
 Use `./` for same-directory imports and `@/` for imports that cross source directories:
 
 ```ts
-import { apiClient } from "./instance";
-import { routeTree } from "@/config";
+import { fetchUsers } from "./api";
+import { routeTree } from "@/app/config";
 ```
 
 Keep feature code close to the existing structure:
 
-- API calls live in `src/api`.
-- Route-level screens live in `src/pages`.
-- Shared UI lives in `src/components`.
-- Entity forms live in `src/forms`.
-- Shared contracts live in `src/types`.
+- Feature API calls, screens, forms, and tests live together in `src/features`.
+- Shared API infrastructure lives in `src/shared/api`.
+- Shared UI lives in `src/shared/ui`.
+- Shared utilities live in `src/shared/lib`.
+- Domain contracts live beside their feature; infrastructure contracts live beside their shared module.
 
 ## Localization
 
-The application currently ships with English (`en`) and Persian (`fa`). Translation strings live in `src/locales/en.ts` and `src/locales/fa.ts`.
+The application currently ships with English (`en`) and Persian (`fa`). Translation strings live in `src/shared/i18n/locales/en.ts` and `src/shared/i18n/locales/fa.ts`.
 
-Ant Design direction and locale are selected in `src/providers/antd/Antd.tsx`. Day.js locale/calendar setup is handled in `src/providers/core/Core.tsx`, using the Jalali calendar for Persian.
+Ant Design direction and locale are selected in `src/app/providers/antd/Antd.tsx`. Day.js locale/calendar setup is handled in `src/app/providers/core/Core.tsx`, using the Jalali calendar for Persian.

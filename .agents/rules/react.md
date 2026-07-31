@@ -3,9 +3,9 @@
 ## Components
 
 - Keep one exported React component per `.tsx` file when practical.
-- Put reusable UI pieces in `src/components`.
-- Keep route-level screens in `src/pages`.
-- Keep form drawers and form-specific components in `src/forms`.
+- Put reusable UI pieces in `src/shared/ui`.
+- Keep route-level screens in their owning `src/features/<feature>` directory.
+- Keep feature-specific forms beside the owning feature.
 - Do not define React components inside another component render body.
 
 ## State and hooks
@@ -27,12 +27,12 @@
 
 All user-visible text should go through `react-i18next`.
 
-- Add English strings to `src/locales/en.ts`.
-- Add Persian strings to `src/locales/fa.ts` when the translation is known.
+- Add English strings to `src/shared/i18n/locales/en.ts`.
+- Add Persian strings to `src/shared/i18n/locales/fa.ts` when the translation is known.
 - Keep locale keys alphabetized.
 - Use i18next pluralization for count-based strings.
 
 ## Routing
 
-- Define route keys and paths in `src/config/routes.ts`.
-- Update `src/hooks/usePermissions.ts` when route access changes.
+- Define route keys and paths in `src/app/config/routes.ts`.
+- Update `src/app/hooks/useAllowedRoutes.ts` when route access changes.

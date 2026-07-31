@@ -1,1 +1,0 @@
-export { useActionPermissions } from "./useActionPermissions";

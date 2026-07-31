@@ -1,7 +1,7 @@
 import { MemoryRouter, Route, Routes } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 
-import { clearAccessToken } from "@/api/token";
+import { clearAccessToken } from "@/shared/api";
 import { render, screen } from "@/test/render";
 
 import { AuthLayout } from "./Auth";
@@ -10,11 +10,11 @@ const mocks = vi.hoisted(() => ({
   setUser: vi.fn(),
 }));
 
-vi.mock("@/api/token", () => ({
+vi.mock("@/shared/api", () => ({
   clearAccessToken: vi.fn(),
 }));
 
-vi.mock("@/hooks", () => ({
+vi.mock("@/app/hooks", () => ({
   useCore: () => ({ setUser: mocks.setUser }),
 }));
 

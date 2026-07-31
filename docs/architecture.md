@@ -2,13 +2,13 @@
 
 ## Application Entry
 
-`src/main.tsx` mounts the React application. `src/App.tsx` composes the top-level providers and route tree.
+`src/main.tsx` mounts the React application. `src/app/App.tsx` composes the top-level providers and route tree.
 
 The main runtime pieces are:
 
-- `src/providers/core/Core.tsx` for language, theme, current route, and authenticated user state.
-- `src/providers/antd/Antd.tsx` for Ant Design locale, direction, and theme tokens.
-- `src/Routes.tsx` for browser routing.
+- `src/app/providers/core/Core.tsx` for language, theme, current route, and authenticated user state.
+- `src/app/providers/antd/Antd.tsx` for Ant Design locale, direction, and theme tokens.
+- `src/app/Routes.tsx` for browser routing.
 
 ## Provider Responsibilities
 
@@ -29,7 +29,7 @@ It also synchronizes language and theme with local storage and configures Day.js
 
 ## Routing
 
-Route definitions are centralized in `src/config/routes.ts`. The router is created in `src/Routes.tsx` with `createBrowserRouter`.
+Route definitions are centralized in `src/app/config/routes.ts`. The router is created in `src/app/Routes.tsx` with `createBrowserRouter`.
 
 The app uses two layouts:
 
@@ -38,7 +38,7 @@ The app uses two layouts:
 
 `SetCurrentRoute` wraps each route element and updates `CoreProvider` with the active route key. Navigation components should prefer `routeTree` rather than hard-coded paths.
 
-## Pages
+## Feature Structure
 
 The starter pages are:
 
@@ -49,11 +49,27 @@ The starter pages are:
 - Users
 - Not found
 
-Route-level logic should stay in `src/pages`. Shared presentation and reusable view helpers should be extracted to `src/components`.
+Route-level screens, forms, domain API helpers, and their tests stay together in
+`src/features/<feature>`. Cross-feature UI belongs in `src/shared/ui`, generic
+utilities in `src/shared/lib`, and HTTP/token infrastructure in `src/shared/api`.
+Application composition belongs in `src/app`; layouts and static assets retain
+their dedicated top-level directories.
+
+## Dependency Direction
+
+- `shared` is independent and cannot import from `app`, `features`, or `layouts`.
+- Features may consume `shared` and application context hooks.
+- A feature importing another feature must use that feature's root public API.
+- `app` and `layouts` compose feature public APIs and shared infrastructure.
+
+ESLint enforces the shared-layer and cross-feature rules. Feature root
+`index.ts` files define public APIs; single-file internal barrels are avoided.
+Dedicated lazy route entrypoints remain public subpaths so route chunks stay
+independent.
 
 ## State and Persistence
 
-The app keeps lightweight UI preferences in local storage through helpers in `src/storage`.
+The app keeps lightweight UI preferences in local storage through helpers in `src/shared/storage`.
 
 Access tokens remain in frontend memory and are attached to protected API
 requests as bearer tokens. The backend owns the refresh token in an HttpOnly
@@ -63,7 +79,7 @@ to JavaScript.
 
 ## Styling
 
-Global styles live in `src/styles`. The application bundles the Vazirmatn
+Global styles live in `src/assets/styles`. The application bundles the Vazirmatn
 variable WOFF2 from `src/assets/fonts/vazirmatn` and uses weights 100–900 with
 `font-display: swap`. Vite fingerprints the local asset during production
 builds; the application does not depend on an external font provider.

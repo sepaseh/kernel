@@ -15,11 +15,12 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, Outlet, useNavigate } from "react-router";
 
-import { getAccount, logout, setUnauthorizedHandler } from "@/api";
-import { clearAccessToken } from "@/api/token";
-import { Icon } from "@/components/icon";
-import { RouteKey, routeTree } from "@/config";
-import { useAllowedRoutes, useCore } from "@/hooks";
+import { RouteKey, routeTree } from "@/app/config";
+import { useAllowedRoutes, useCore } from "@/app/hooks";
+import { getAccount } from "@/features/account";
+import { logout } from "@/features/auth";
+import { clearAccessToken, setUnauthorizedHandler } from "@/shared/api";
+import { Icon } from "@/shared/ui/icon";
 
 const { useBreakpoint } = Grid;
 

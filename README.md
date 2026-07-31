@@ -95,7 +95,8 @@ user returns to the login page.
 
 ## Permissions
 
-Starter permission keys live in `src/types/permission.ts` and cover basic CRUD-style access:
+Permission contracts live in `src/features/roles/types.ts`; route and action
+permission mappings live in `src/app/hooks` and cover basic CRUD-style access:
 
 ```ts
 role_create | role_delete | role_read | role_update;
@@ -113,20 +114,12 @@ Password pages/actions only require a valid auth token.
 
 ```text
 src/
-  api/          Axios instance and auth/user/role endpoint examples
-  components/   Shared UI components, including the starter Icon component
-  config/       Routes, constants, language, and theme config
-  contexts/     React contexts for providers
-  forms/        User, user-role, and role form drawers
-  hooks/        Shared React hooks and route permission helpers
-  layouts/      Auth and authenticated app layouts
-  locales/      English and Persian translation dictionaries
-  pages/        Route-level pages
-  providers/    Core and Ant Design providers
-  storage/      Local storage helpers
-  styles/       Global CSS and font styles
-  types/        Shared TypeScript types
-  utils/        Cookie, format, and transform helpers
+  app/          Application composition, routes, providers, contexts, and app hooks
+  assets/       Fonts and global styles
+  features/     Account, authentication, role, user, and dashboard slices
+  layouts/      Auth and authenticated application shells
+  shared/       Reusable API infrastructure, config, hooks, i18n, storage, UI, and utilities
+  test/         Shared test infrastructure and cross-feature integration tests
 ```
 
 ## AI Guidance
@@ -135,7 +128,7 @@ Provider-neutral AI assistant guidance lives in `.agents/`. It documents project
 
 ## Icons
 
-Icons are centralized in `src/components/icon/Icon.tsx`. Add new icon names to the internal `iconMap`, then render them with:
+Icons are centralized in `src/shared/ui/icon/Icon.tsx`. Add new icon names to the internal `iconMap`, then render them with:
 
 ```tsx
 <Icon name="user" />
