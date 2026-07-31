@@ -155,7 +155,7 @@ beforeEach(() => {
     expiresIn: 300,
     remainingSeconds: 60,
   });
-  vi.mocked(api.register).mockResolvedValue(mocks.account);
+  vi.mocked(api.register).mockResolvedValue({ accessToken: "access-token" });
   vi.mocked(api.requestEmailVerification).mockResolvedValue({
     expiresIn: 300,
     remainingSeconds: 60,
@@ -427,7 +427,6 @@ describe("priority pages", () => {
     });
     vi.mocked(api.fetchUser).mockResolvedValue({
       ...userRecord,
-      permissions: [],
       roleIds: [],
       workspaceIds: [],
     });
