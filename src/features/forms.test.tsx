@@ -3,14 +3,13 @@ import { MemoryRouter } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import * as api from "@/api";
+import { RoleForm } from "@/features/roles/form";
+import { UserForm } from "@/features/users/forms/user";
+import { UserPasswordForm } from "@/features/users/forms/user-password";
+import { UserFormRole } from "@/features/users/forms/user-role";
+import { UserWorkspaceForm } from "@/features/users/forms/user-workspace";
 import { render, screen } from "@/test/render";
 import { UserProps } from "@/types";
-
-import { RoleForm } from "./role";
-import { UserForm } from "./user";
-import { UserPasswordForm } from "./user-password";
-import { UserFormRole } from "./user-role";
-import { UserWorkspaceForm } from "./user-workspace";
 
 const mocks = vi.hoisted(() => ({
   goBack: vi.fn(),

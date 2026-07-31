@@ -21,17 +21,19 @@ vi.mock("@/hooks", () => ({
 }));
 vi.mock("@/layouts/auth", () => ({ AuthLayout: () => <Outlet /> }));
 vi.mock("@/layouts/default", () => ({ DefaultLayout: () => <Outlet /> }));
-vi.mock("@/pages/account", () => ({ AccountPage: () => "Account page" }));
-vi.mock("@/pages/dashboard", () => ({
+vi.mock("@/features/account", () => ({ AccountPage: () => "Account page" }));
+vi.mock("@/features/dashboard", () => ({
   DashboardPage: () => "Dashboard page",
 }));
-vi.mock("@/pages/forgot-pass", () => ({
+vi.mock("@/features/auth/forgot-pass", () => ({
   ForgotPassPage: () => "Forgot password page",
 }));
-vi.mock("@/pages/login", () => ({ LoginPage: () => "Login page" }));
-vi.mock("@/pages/register", () => ({ RegisterPage: () => "Register page" }));
-vi.mock("@/pages/roles", () => ({ RolesPage: () => "Roles page" }));
-vi.mock("@/pages/users", () => ({ UsersPage: () => "Users page" }));
+vi.mock("@/features/auth/login", () => ({ LoginPage: () => "Login page" }));
+vi.mock("@/features/auth/register", () => ({
+  RegisterPage: () => "Register page",
+}));
+vi.mock("@/features/roles", () => ({ RolesPage: () => "Roles page" }));
+vi.mock("@/features/users", () => ({ UsersPage: () => "Users page" }));
 
 beforeEach(() => {
   routeState.setCurrentRoute.mockClear();

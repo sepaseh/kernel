@@ -30,10 +30,10 @@ import {
   updateUserSystemAdmin,
 } from "@/api";
 import { defaultPageSize, modalKeys } from "@/config";
-import { UserForm } from "@/forms/user";
-import { UserPasswordForm } from "@/forms/user-password";
-import { UserFormRole } from "@/forms/user-role";
-import { UserWorkspaceForm } from "@/forms/user-workspace";
+import { UserForm } from "@/features/users/forms/user";
+import { UserPasswordForm } from "@/features/users/forms/user-password";
+import { UserFormRole } from "@/features/users/forms/user-role";
+import { UserWorkspaceForm } from "@/features/users/forms/user-workspace";
 import {
   useActionPermissions,
   useAntd,

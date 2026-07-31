@@ -3,14 +3,13 @@ import { MemoryRouter, useLocation } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import * as api from "@/api";
+import { AccountPage } from "@/features/account";
+import { ForgotPassPage } from "@/features/auth/forgot-pass";
+import { LoginPage } from "@/features/auth/login";
+import { RegisterPage } from "@/features/auth/register";
+import { RolesPage } from "@/features/roles";
+import { UsersPage } from "@/features/users";
 import { render, screen } from "@/test/render";
-
-import { AccountPage } from "./account";
-import { ForgotPassPage } from "./forgot-pass";
-import { LoginPage } from "./login";
-import { RegisterPage } from "./register";
-import { RolesPage } from "./roles";
-import { UsersPage } from "./users";
 
 const mocks = vi.hoisted(() => {
   const account = {
@@ -88,11 +87,17 @@ vi.mock("@/api", () => ({
   verifyEmail: vi.fn(),
 }));
 
-vi.mock("@/forms/role", () => ({ RoleForm: () => null }));
-vi.mock("@/forms/user", () => ({ UserForm: () => null }));
-vi.mock("@/forms/user-password", () => ({ UserPasswordForm: () => null }));
-vi.mock("@/forms/user-role", () => ({ UserFormRole: () => null }));
-vi.mock("@/forms/user-workspace", () => ({ UserWorkspaceForm: () => null }));
+vi.mock("@/features/roles/form", () => ({ RoleForm: () => null }));
+vi.mock("@/features/users/forms/user", () => ({ UserForm: () => null }));
+vi.mock("@/features/users/forms/user-password", () => ({
+  UserPasswordForm: () => null,
+}));
+vi.mock("@/features/users/forms/user-role", () => ({
+  UserFormRole: () => null,
+}));
+vi.mock("@/features/users/forms/user-workspace", () => ({
+  UserWorkspaceForm: () => null,
+}));
 
 vi.mock("@/hooks", () => ({
   useActionPermissions: () => mocks.actionPermissions,
