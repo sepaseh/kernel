@@ -1,13 +1,19 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
+  initializeObservability,
   reportError,
   sanitizeObservabilityValue,
   setObservabilityTransport,
 } from "./observability";
 
+const originalPerformanceObserver = globalThis.PerformanceObserver;
+
 afterEach(() => {
+  globalThis.PerformanceObserver = originalPerformanceObserver;
   setObservabilityTransport();
+  vi.restoreAllMocks();
+  vi.unstubAllEnvs();
 });
 
 describe("observability", () => {
@@ -94,5 +100,127 @@ describe("observability", () => {
       }),
     );
     expect(JSON.stringify(send.mock.calls[0])).not.toContain("secret");
+  });
+
+  it("reports browser errors and supported performance metrics", () => {
+    const callbacks: PerformanceObserverCallback[] = [];
+    const observe = vi.fn();
+
+    class PerformanceObserverMock {
+      static supportedEntryTypes = [
+        "largest-contentful-paint",
+        "layout-shift",
+        "longtask",
+      ];
+
+      constructor(callback: PerformanceObserverCallback) {
+        callbacks.push(callback);
+      }
+
+      disconnect() {}
+
+      observe = observe;
+
+      takeRecords() {
+        return [];
+      }
+    }
+
+    globalThis.PerformanceObserver =
+      PerformanceObserverMock as unknown as typeof PerformanceObserver;
+
+    const send = vi.fn();
+    setObservabilityTransport(send);
+    initializeObservability();
+    initializeObservability();
+
+    window.dispatchEvent(
+      new ErrorEvent("error", {
+        colno: 4,
+        error: new Error("render failed"),
+        filename: "app.tsx",
+        lineno: 12,
+        message: "render failed",
+      }),
+    );
+    const rejection = new Event("unhandledrejection");
+    Object.defineProperty(rejection, "reason", {
+      value: new Error("request failed"),
+    });
+    window.dispatchEvent(rejection);
+
+    const notify = (
+      callback: PerformanceObserverCallback,
+      entries: Partial<PerformanceEntry>[],
+    ) => {
+      callback(
+        {
+          getEntries: () => entries as PerformanceEntryList,
+          getEntriesByName: () => [],
+          getEntriesByType: () => [],
+        },
+        {} as PerformanceObserver,
+      );
+    };
+
+    notify(callbacks[0], [{ startTime: 123.456 }]);
+    notify(callbacks[1], [
+      { hadRecentInput: false, value: 0.123 },
+      { hadRecentInput: true, value: 10 },
+    ] as Partial<PerformanceEntry>[]);
+    notify(callbacks[2], [{ duration: 51.234 }]);
+
+    expect(observe).toHaveBeenCalledTimes(3);
+    expect(send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        metric: "largest-contentful-paint",
+        value: 123.46,
+      }),
+    );
+    expect(send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        metric: "cumulative-layout-shift",
+        value: 0.12,
+      }),
+    );
+    expect(send).toHaveBeenCalledWith(
+      expect.objectContaining({ metric: "long-task", value: 51.23 }),
+    );
+    expect(send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        context: expect.objectContaining({ source: "window.error" }),
+        name: "error",
+      }),
+    );
+    expect(send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        context: { source: "unhandledrejection" },
+        name: "error",
+      }),
+    );
+  });
+
+  it("sends events to the configured endpoint without surfacing failures", async () => {
+    vi.resetModules();
+    vi.stubEnv(
+      "VITE_OBSERVABILITY_URL",
+      "https://observability.example.com/events",
+    );
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockRejectedValue(new Error("offline"));
+    const { reportError: reportWithDefaultTransport } =
+      await import("./observability");
+
+    reportWithDefaultTransport("failed for ada@example.com");
+
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledOnce());
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://observability.example.com/events",
+      expect.objectContaining({
+        body: expect.not.stringContaining("ada@example.com"),
+        method: "POST",
+      }),
+    );
   });
 });
