@@ -72,16 +72,16 @@ npm run knip
 Use `./` for same-directory imports and `@/` for imports that cross source directories:
 
 ```ts
-import { apiClient } from "./instance";
+import { fetchUsers } from "./api";
 import { routeTree } from "@/config";
 ```
 
 Keep feature code close to the existing structure:
 
-- API calls live in `src/api`.
-- Route-level screens live in `src/pages`.
-- Shared UI lives in `src/components`.
-- Entity forms live in `src/forms`.
+- Feature API calls, screens, forms, and tests live together in `src/features`.
+- Shared API infrastructure lives in `src/shared/api`.
+- Shared UI lives in `src/shared/ui`.
+- Shared utilities live in `src/shared/lib`.
 - Shared contracts live in `src/types`.
 
 ## Localization

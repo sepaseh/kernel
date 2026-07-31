@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { i18nInstance } from "@/app/i18n";
 import { server } from "@/test/mocks/server";
 
-import { apiClient, setUnauthorizedHandler } from "./instance";
+import { apiClient, setUnauthorizedHandler } from "./client";
 import { clearAccessToken, getAccessToken, setAccessToken } from "./token";
 
 const syntheticCredential = "synthetic-test-credential";

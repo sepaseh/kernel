@@ -57,11 +57,11 @@ findings in a private security advisory rather than a public issue.
   approval.
 - Reviewer: Sepaseh
 - Evidence:
-  - [Token storage implementation](../../src/api/token.ts)
-  - [Authentication operations](../../src/api/auth.ts)
-  - [Refresh and retry implementation](../../src/api/instance.ts)
-  - [Authentication operation tests](../../src/api/auth.test.ts)
-  - [Refresh, retry, and concurrency tests](../../src/api/instance.test.ts)
+  - [Token storage implementation](../../src/shared/api/token.ts)
+  - [Authentication operations](../../src/features/auth/api.ts)
+  - [Refresh and retry implementation](../../src/shared/api/client.ts)
+  - [Authentication operation tests](../../src/features/auth/api.test.ts)
+  - [Refresh, retry, and concurrency tests](../../src/shared/api/client.test.ts)
   - [Authenticated-layout cleanup tests](../../src/layouts/default/Default.test.tsx)
 
 The frontend review confirmed:

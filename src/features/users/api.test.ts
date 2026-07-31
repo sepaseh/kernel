@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { i18nInstance } from "@/app/i18n";
 import { server } from "@/test/mocks/server";
 
-import { fetchUsers } from "./user";
+import { fetchUsers } from "./api";
 
 vi.mock("@/app/i18n", () => ({
   i18nInstance: { t: (key: string) => key },

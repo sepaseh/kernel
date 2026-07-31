@@ -2,8 +2,8 @@ import { useAntdToken } from "antd-style";
 import { useEffect } from "react";
 import { Outlet } from "react-router";
 
-import { clearAccessToken } from "@/api/token";
 import { useCore } from "@/hooks";
+import { clearAccessToken } from "@/shared/api";
 
 export const AuthLayout = () => {
   const { setUser } = useCore();

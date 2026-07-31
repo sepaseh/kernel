@@ -1,3 +1,4 @@
+import { apiClient } from "@/shared/api";
 import { toSnakeCase } from "@/shared/lib";
 import {
   CreateUserParams,
@@ -12,8 +13,6 @@ import {
   UserSystemAdminParams,
   UserWorkspaceParams,
 } from "@/types";
-
-import { apiClient } from "./instance";
 
 export const createUser = async (
   params: CreateUserParams,

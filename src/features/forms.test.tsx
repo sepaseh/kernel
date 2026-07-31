@@ -2,8 +2,9 @@ import { waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import * as api from "@/api";
+import * as rolesApi from "@/features/roles/api";
 import { RoleForm } from "@/features/roles/form";
+import * as usersApi from "@/features/users/api";
 import { UserForm } from "@/features/users/forms/user";
 import { UserPasswordForm } from "@/features/users/forms/user-password";
 import { UserFormRole } from "@/features/users/forms/user-role";
@@ -17,15 +18,20 @@ const mocks = vi.hoisted(() => ({
   messageSuccess: vi.fn(),
 }));
 
-vi.mock("@/api", () => ({
+vi.mock("@/features/roles/api", () => ({
   createRole: vi.fn(),
-  createUser: vi.fn(),
   updateRole: vi.fn(),
+}));
+
+vi.mock("@/features/users/api", () => ({
+  createUser: vi.fn(),
   updateUser: vi.fn(),
   updateUserPassword: vi.fn(),
   updateUserRoles: vi.fn(),
   updateUserWorkspaces: vi.fn(),
 }));
+
+const api = { ...rolesApi, ...usersApi };
 
 vi.mock("@/hooks", () => ({
   useAntd: () => ({

@@ -13,14 +13,7 @@ import { useAntdToken } from "antd-style";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import {
-  changePassword,
-  getAccount,
-  requestEmailVerification,
-  updateProfile,
-  updateUsername,
-  verifyEmail,
-} from "@/api";
+import { changePassword } from "@/features/auth/api";
 import { useAntd, useCore } from "@/hooks";
 import { getErrorMessage } from "@/shared/lib";
 import { OtpInput } from "@/shared/ui/otp-input";
@@ -30,6 +23,14 @@ import {
   UpdateUsernameParams,
   VerifyEmailParams,
 } from "@/types";
+
+import {
+  getAccount,
+  requestEmailVerification,
+  updateProfile,
+  updateUsername,
+  verifyEmail,
+} from "./api";
 
 type PasswordFormParams = ChangePasswordParams & {
   confirmPassword: string;

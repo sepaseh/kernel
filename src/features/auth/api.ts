@@ -1,3 +1,4 @@
+import { apiClient, clearAccessToken, setAccessToken } from "@/shared/api";
 import {
   AccessTokenProps,
   ChangePasswordParams,
@@ -7,9 +8,6 @@ import {
   OtpRequestProps,
   RegisterParams,
 } from "@/types";
-
-import { apiClient } from "./instance";
-import { clearAccessToken, setAccessToken } from "./token";
 
 export const changePassword = async (
   params: ChangePasswordParams,

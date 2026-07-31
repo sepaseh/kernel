@@ -20,15 +20,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router";
 
-import {
-  deleteUser,
-  fetchUser,
-  fetchUserRoleOptions,
-  fetchUsers,
-  fetchUserWorkspaceOptions,
-  updateUserStatus,
-  updateUserSystemAdmin,
-} from "@/api";
 import { defaultPageSize, modalKeys } from "@/config";
 import { UserForm } from "@/features/users/forms/user";
 import { UserPasswordForm } from "@/features/users/forms/user-password";
@@ -49,6 +40,16 @@ import {
   UserProps,
   UserSummaryProps,
 } from "@/types";
+
+import {
+  deleteUser,
+  fetchUser,
+  fetchUserRoleOptions,
+  fetchUsers,
+  fetchUserWorkspaceOptions,
+  updateUserStatus,
+  updateUserSystemAdmin,
+} from "./api";
 
 export const UsersPage = () => {
   const { t } = useTranslation();

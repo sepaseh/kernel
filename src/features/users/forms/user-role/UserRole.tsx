@@ -4,8 +4,8 @@ import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 
-import { updateUserRoles } from "@/api";
 import { modalKeys } from "@/config";
+import { updateUserRoles } from "@/features/users/api";
 import { useAntd, useGoBack } from "@/hooks";
 import { getErrorMessage } from "@/shared/lib";
 import { FormDrawer } from "@/shared/ui/form-drawer";

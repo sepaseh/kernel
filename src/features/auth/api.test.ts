@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { apiClient, clearAccessToken, setAccessToken } from "@/shared/api";
+
 import {
   changePassword,
   forgotPassword,
@@ -7,17 +9,12 @@ import {
   logout,
   register,
   requestOtp,
-} from "./auth";
-import { apiClient } from "./instance";
-import { clearAccessToken, setAccessToken } from "./token";
+} from "./api";
 
-vi.mock("./instance", () => ({
+vi.mock("@/shared/api", () => ({
   apiClient: {
     post: vi.fn(),
   },
-}));
-
-vi.mock("./token", () => ({
   clearAccessToken: vi.fn(),
   setAccessToken: vi.fn(),
 }));

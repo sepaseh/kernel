@@ -2,13 +2,16 @@ import { within } from "@testing-library/react";
 import { MemoryRouter, useLocation } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import * as api from "@/api";
 import { AccountPage } from "@/features/account";
+import * as accountApi from "@/features/account/api";
+import * as authApi from "@/features/auth/api";
 import { ForgotPassPage } from "@/features/auth/forgot-pass";
 import { LoginPage } from "@/features/auth/login";
 import { RegisterPage } from "@/features/auth/register";
 import { RolesPage } from "@/features/roles";
+import * as rolesApi from "@/features/roles/api";
 import { UsersPage } from "@/features/users";
+import * as usersApi from "@/features/users/api";
 import { render, screen } from "@/test/render";
 
 const mocks = vi.hoisted(() => {
@@ -63,29 +66,40 @@ const mocks = vi.hoisted(() => {
   };
 });
 
-vi.mock("@/api", () => ({
+vi.mock("@/features/account/api", () => ({
+  getAccount: vi.fn(),
+  requestEmailVerification: vi.fn(),
+  updateProfile: vi.fn(),
+  updateUsername: vi.fn(),
+  verifyEmail: vi.fn(),
+}));
+
+vi.mock("@/features/auth/api", () => ({
   changePassword: vi.fn(),
+  forgotPassword: vi.fn(),
+  login: vi.fn(),
+  register: vi.fn(),
+  requestOtp: vi.fn(),
+}));
+
+vi.mock("@/features/roles/api", () => ({
   deleteRole: vi.fn(),
-  deleteUser: vi.fn(),
   fetchPermissions: vi.fn(),
   fetchRole: vi.fn(),
   fetchRoles: vi.fn(),
+}));
+
+vi.mock("@/features/users/api", () => ({
+  deleteUser: vi.fn(),
   fetchUser: vi.fn(),
   fetchUserRoleOptions: vi.fn(),
   fetchUsers: vi.fn(),
   fetchUserWorkspaceOptions: vi.fn(),
-  forgotPassword: vi.fn(),
-  getAccount: vi.fn(),
-  login: vi.fn(),
-  register: vi.fn(),
-  requestEmailVerification: vi.fn(),
-  requestOtp: vi.fn(),
-  updateProfile: vi.fn(),
-  updateUsername: vi.fn(),
   updateUserStatus: vi.fn(),
   updateUserSystemAdmin: vi.fn(),
-  verifyEmail: vi.fn(),
 }));
+
+const api = { ...accountApi, ...authApi, ...rolesApi, ...usersApi };
 
 vi.mock("@/features/roles/form", () => ({ RoleForm: () => null }));
 vi.mock("@/features/users/forms/user", () => ({ UserForm: () => null }));

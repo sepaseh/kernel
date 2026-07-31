@@ -9,11 +9,11 @@
 ## Examples
 
 ```ts
-// Same directory: src/api/auth.ts importing src/api/instance.ts
-import { apiClient } from "./instance";
+// Same directory: src/features/users/Users.tsx importing its API
+import { fetchUsers } from "./api";
 
-// Cross directory: src/pages/Users.tsx importing src/api/index.ts
-import { fetchUsers } from "@/api";
+// Cross directory: a feature importing shared infrastructure
+import { apiClient } from "@/shared/api";
 ```
 
 ## Enforcement

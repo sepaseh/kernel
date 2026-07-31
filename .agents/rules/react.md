@@ -3,9 +3,9 @@
 ## Components
 
 - Keep one exported React component per `.tsx` file when practical.
-- Put reusable UI pieces in `src/components`.
-- Keep route-level screens in `src/pages`.
-- Keep form drawers and form-specific components in `src/forms`.
+- Put reusable UI pieces in `src/shared/ui`.
+- Keep route-level screens in their owning `src/features/<feature>` directory.
+- Keep feature-specific forms beside the owning feature.
 - Do not define React components inside another component render body.
 
 ## State and hooks

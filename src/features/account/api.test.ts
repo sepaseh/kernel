@@ -1,15 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { apiClient } from "@/shared/api";
+
 import {
   getAccount,
   requestEmailVerification,
   updateProfile,
   updateUsername,
   verifyEmail,
-} from "./account";
-import { apiClient } from "./instance";
+} from "./api";
 
-vi.mock("./instance", () => ({
+vi.mock("@/shared/api", () => ({
   apiClient: {
     get: vi.fn(),
     patch: vi.fn(),

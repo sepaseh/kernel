@@ -1,6 +1,5 @@
+import { apiClient } from "@/shared/api";
 import { PermissionGroupProps, RoleMutationParams, RoleProps } from "@/types";
-
-import { apiClient } from "./instance";
 
 export const createRole = async (
   params: RoleMutationParams,

@@ -4,8 +4,8 @@ import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 
-import { createUser, updateUser } from "@/api";
 import { modalKeys } from "@/config";
+import { createUser, updateUser } from "@/features/users/api";
 import { useAntd, useGoBack } from "@/hooks";
 import { getErrorMessage } from "@/shared/lib";
 import { DigitsInput } from "@/shared/ui/digits-input";

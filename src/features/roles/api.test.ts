@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { apiClient } from "./instance";
+import { apiClient } from "@/shared/api";
+
 import {
   createRole,
   deleteRole,
@@ -8,9 +9,9 @@ import {
   fetchRole,
   fetchRoles,
   updateRole,
-} from "./role";
+} from "./api";
 
-vi.mock("./instance", () => ({
+vi.mock("@/shared/api", () => ({
   apiClient: {
     del: vi.fn(),
     get: vi.fn(),

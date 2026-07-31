@@ -2,8 +2,9 @@ import { waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { getAccount, logout, setUnauthorizedHandler } from "@/api";
-import { clearAccessToken } from "@/api/token";
+import { getAccount } from "@/features/account/api";
+import { logout } from "@/features/auth/api";
+import { clearAccessToken, setUnauthorizedHandler } from "@/shared/api";
 import { render, screen } from "@/test/render";
 
 import { DefaultLayout } from "./Default";
@@ -34,14 +35,17 @@ const mocks = vi.hoisted(() => {
   };
 });
 
-vi.mock("@/api", () => ({
+vi.mock("@/features/account/api", () => ({
   getAccount: vi.fn(),
-  logout: vi.fn(),
-  setUnauthorizedHandler: vi.fn(),
 }));
 
-vi.mock("@/api/token", () => ({
+vi.mock("@/features/auth/api", () => ({
+  logout: vi.fn(),
+}));
+
+vi.mock("@/shared/api", () => ({
   clearAccessToken: vi.fn(),
+  setUnauthorizedHandler: vi.fn(),
 }));
 
 vi.mock("@/hooks", () => ({

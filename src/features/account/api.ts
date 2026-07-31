@@ -1,3 +1,4 @@
+import { apiClient } from "@/shared/api";
 import {
   AccountProps,
   EmailVerificationParams,
@@ -6,8 +7,6 @@ import {
   UpdateUsernameParams,
   VerifyEmailParams,
 } from "@/types";
-
-import { apiClient } from "./instance";
 
 export const getAccount = async (): Promise<AccountProps> => {
   return apiClient.get<AccountProps>("/account/me");

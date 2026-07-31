@@ -9,10 +9,10 @@
     "fileName": "reports/mutation/mutation.json"
   },
   "mutate": [
-    "src/api/token.ts",
+    "src/shared/api/token.ts",
     "src/storage/state.ts",
-    "src/utils/error.ts",
-    "src/utils/transform.ts"
+    "src/shared/lib/error.ts",
+    "src/shared/lib/transform.ts"
   ],
   "reporters": ["clear-text", "progress", "html", "json"],
   "testRunner": "vitest",

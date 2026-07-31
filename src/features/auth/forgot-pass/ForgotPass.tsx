@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 
-import { forgotPassword, requestOtp } from "@/api";
 import { routeTree } from "@/config";
+import { forgotPassword, requestOtp } from "@/features/auth/api";
 import { useAntd } from "@/hooks";
 import { getErrorMessage } from "@/shared/lib";
 import { DigitsInput } from "@/shared/ui/digits-input";
