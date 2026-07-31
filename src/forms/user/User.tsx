@@ -126,11 +126,7 @@ export const UserForm: FC<UserFormProps> = ({ data, onFinish }) => {
         >
           <Input style={{ direction: "ltr" }} />
         </Form.Item>
-        {!isUpdate && (
-          <>
-            <PasswordFields />
-          </>
-        )}
+        {!isUpdate && <PasswordFields />}
       </Form>
     </FormDrawer>
   );
