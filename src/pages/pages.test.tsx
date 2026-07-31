@@ -5,12 +5,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as api from "@/api";
 import { render, screen } from "@/test/render";
 
-import { AccountPage } from "./Account";
-import { ForgotPassPage } from "./ForgotPass";
-import { LoginPage } from "./Login";
-import { RegisterPage } from "./Register";
-import { RolesPage } from "./Roles";
-import { UsersPage } from "./Users";
+import { AccountPage } from "./account";
+import { ForgotPassPage } from "./forgot-pass";
+import { LoginPage } from "./login";
+import { RegisterPage } from "./register";
+import { RolesPage } from "./roles";
+import { UsersPage } from "./users";
 
 const mocks = vi.hoisted(() => {
   const account = {
@@ -88,11 +88,11 @@ vi.mock("@/api", () => ({
   verifyEmail: vi.fn(),
 }));
 
-vi.mock("@/forms/Role", () => ({ RoleForm: () => null }));
-vi.mock("@/forms/User", () => ({ UserForm: () => null }));
-vi.mock("@/forms/UserPassword", () => ({ UserPasswordForm: () => null }));
-vi.mock("@/forms/UserRole", () => ({ UserFormRole: () => null }));
-vi.mock("@/forms/UserWorkspace", () => ({ UserWorkspaceForm: () => null }));
+vi.mock("@/forms/role", () => ({ RoleForm: () => null }));
+vi.mock("@/forms/user", () => ({ UserForm: () => null }));
+vi.mock("@/forms/user-password", () => ({ UserPasswordForm: () => null }));
+vi.mock("@/forms/user-role", () => ({ UserFormRole: () => null }));
+vi.mock("@/forms/user-workspace", () => ({ UserWorkspaceForm: () => null }));
 
 vi.mock("@/hooks", () => ({
   useActionPermissions: () => mocks.actionPermissions,

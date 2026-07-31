@@ -12,42 +12,42 @@ import { RouterProvider } from "react-router/dom";
 
 import { baseUrl, RouteKey, routeTree } from "@/config";
 import { useAllowedRoutes, useCore } from "@/hooks";
-import { NotFoundPage } from "@/pages/NotFound";
+import { NotFoundPage } from "@/pages/not-found";
 
 const AccountPage = lazy(async () => {
-  const { AccountPage } = await import("@/pages/Account");
+  const { AccountPage } = await import("@/pages/account");
   return { default: AccountPage };
 });
 const AuthLayout = lazy(async () => {
-  const { AuthLayout } = await import("@/layouts/Auth");
+  const { AuthLayout } = await import("@/layouts/auth");
   return { default: AuthLayout };
 });
 const DashboardPage = lazy(async () => {
-  const { DashboardPage } = await import("@/pages/Dashboard");
+  const { DashboardPage } = await import("@/pages/dashboard");
   return { default: DashboardPage };
 });
 const DefaultLayout = lazy(async () => {
-  const { DefaultLayout } = await import("@/layouts/Default");
+  const { DefaultLayout } = await import("@/layouts/default");
   return { default: DefaultLayout };
 });
 const ForgotPassPage = lazy(async () => {
-  const { ForgotPassPage } = await import("@/pages/ForgotPass");
+  const { ForgotPassPage } = await import("@/pages/forgot-pass");
   return { default: ForgotPassPage };
 });
 const LoginPage = lazy(async () => {
-  const { LoginPage } = await import("@/pages/Login");
+  const { LoginPage } = await import("@/pages/login");
   return { default: LoginPage };
 });
 const RegisterPage = lazy(async () => {
-  const { RegisterPage } = await import("@/pages/Register");
+  const { RegisterPage } = await import("@/pages/register");
   return { default: RegisterPage };
 });
 const RolesPage = lazy(async () => {
-  const { RolesPage } = await import("@/pages/Roles");
+  const { RolesPage } = await import("@/pages/roles");
   return { default: RolesPage };
 });
 const UsersPage = lazy(async () => {
-  const { UsersPage } = await import("@/pages/Users");
+  const { UsersPage } = await import("@/pages/users");
   return { default: UsersPage };
 });
 

@@ -1,2 +1,2 @@
-export * from "./Antd";
-export * from "./Core";
+export * from "./antd";
+export * from "./core";

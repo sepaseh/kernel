@@ -6,8 +6,8 @@
 
 The main runtime pieces are:
 
-- `src/providers/Core.tsx` for language, theme, current route, and authenticated user state.
-- `src/providers/Antd.tsx` for Ant Design locale, direction, and theme tokens.
+- `src/providers/core/Core.tsx` for language, theme, current route, and authenticated user state.
+- `src/providers/antd/Antd.tsx` for Ant Design locale, direction, and theme tokens.
 - `src/Routes.tsx` for browser routing.
 
 ## Provider Responsibilities

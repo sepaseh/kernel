@@ -6,11 +6,11 @@ import * as api from "@/api";
 import { render, screen } from "@/test/render";
 import { UserProps } from "@/types";
 
-import { RoleForm } from "./Role";
-import { UserForm } from "./User";
-import { UserPasswordForm } from "./UserPassword";
-import { UserFormRole } from "./UserRole";
-import { UserWorkspaceForm } from "./UserWorkspace";
+import { RoleForm } from "./role";
+import { UserForm } from "./user";
+import { UserPasswordForm } from "./user-password";
+import { UserFormRole } from "./user-role";
+import { UserWorkspaceForm } from "./user-workspace";
 
 const mocks = vi.hoisted(() => ({
   goBack: vi.fn(),

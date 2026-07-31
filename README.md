@@ -135,7 +135,7 @@ Provider-neutral AI assistant guidance lives in `.agents/`. It documents project
 
 ## Icons
 
-Icons are centralized in `src/components/Icon.tsx`. Add new icon names to the internal `iconMap`, then render them with:
+Icons are centralized in `src/components/icon/Icon.tsx`. Add new icon names to the internal `iconMap`, then render them with:
 
 ```tsx
 <Icon name="user" />

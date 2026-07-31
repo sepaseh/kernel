@@ -62,7 +62,7 @@ findings in a private security advisory rather than a public issue.
   - [Refresh and retry implementation](../../src/api/instance.ts)
   - [Authentication operation tests](../../src/api/auth.test.ts)
   - [Refresh, retry, and concurrency tests](../../src/api/instance.test.ts)
-  - [Authenticated-layout cleanup tests](../../src/layouts/Default.test.tsx)
+  - [Authenticated-layout cleanup tests](../../src/layouts/default/Default.test.tsx)
 
 The frontend review confirmed:
 

@@ -19,19 +19,19 @@ vi.mock("@/hooks", () => ({
   useAllowedRoutes: () => routeState.allowedRoutes,
   useCore: () => ({ setCurrentRoute: routeState.setCurrentRoute }),
 }));
-vi.mock("@/layouts/Auth", () => ({ AuthLayout: () => <Outlet /> }));
-vi.mock("@/layouts/Default", () => ({ DefaultLayout: () => <Outlet /> }));
-vi.mock("@/pages/Account", () => ({ AccountPage: () => "Account page" }));
-vi.mock("@/pages/Dashboard", () => ({
+vi.mock("@/layouts/auth", () => ({ AuthLayout: () => <Outlet /> }));
+vi.mock("@/layouts/default", () => ({ DefaultLayout: () => <Outlet /> }));
+vi.mock("@/pages/account", () => ({ AccountPage: () => "Account page" }));
+vi.mock("@/pages/dashboard", () => ({
   DashboardPage: () => "Dashboard page",
 }));
-vi.mock("@/pages/ForgotPass", () => ({
+vi.mock("@/pages/forgot-pass", () => ({
   ForgotPassPage: () => "Forgot password page",
 }));
-vi.mock("@/pages/Login", () => ({ LoginPage: () => "Login page" }));
-vi.mock("@/pages/Register", () => ({ RegisterPage: () => "Register page" }));
-vi.mock("@/pages/Roles", () => ({ RolesPage: () => "Roles page" }));
-vi.mock("@/pages/Users", () => ({ UsersPage: () => "Users page" }));
+vi.mock("@/pages/login", () => ({ LoginPage: () => "Login page" }));
+vi.mock("@/pages/register", () => ({ RegisterPage: () => "Register page" }));
+vi.mock("@/pages/roles", () => ({ RolesPage: () => "Roles page" }));
+vi.mock("@/pages/users", () => ({ UsersPage: () => "Users page" }));
 
 beforeEach(() => {
   routeState.setCurrentRoute.mockClear();
