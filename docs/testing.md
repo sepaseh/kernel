@@ -54,6 +54,11 @@ separate because they run against the built application.
 - `npm run performance` builds the app, checks bundle budgets, and runs
   Lighthouse.
 
+Vitest loads the tracked `.env.test` file, which provides deterministic local
+API and application base URLs for unit, component, and API integration tests.
+These values take precedence over developer-specific `.env.local` settings, so
+tests never depend on or contact a configured development backend.
+
 Local Chromium and mobile E2E runs use the installed stable Chrome channel.
 Firefox and WebKit use Playwright's pinned browser builds. GitHub CI installs
 all three pinned engines for reproducibility. Install the required local
