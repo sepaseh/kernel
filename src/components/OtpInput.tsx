@@ -3,11 +3,10 @@ import { ComponentProps, FC } from "react";
 
 type OtpInputProps = ComponentProps<typeof Input.OTP>;
 
-export const OtpInput: FC<OtpInputProps> = ({
-  "aria-required": ariaRequired,
-  ...props
-}) => {
-  void ariaRequired;
+export const OtpInput: FC<OtpInputProps> = (props) => {
+  const otpProps = { ...props };
 
-  return <Input.OTP {...props} />;
+  delete otpProps["aria-required"];
+
+  return <Input.OTP {...otpProps} />;
 };
