@@ -6,5 +6,5 @@ const Otp = Input.OTP;
 type OtpInputProps = ComponentProps<typeof Otp>;
 
 export const OtpInput: FC<OtpInputProps> = (props) => {
-  return <Otp {...props} />;
+  return <Otp {...props} aria-required={undefined} />;
 };
