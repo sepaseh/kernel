@@ -89,5 +89,9 @@ Playwright suite against the production build to verify the complete policy.
 When a real environment exists, the `Staging validation`, `Deployment smoke
 tests`, and `DAST` workflows can be started manually with explicitly supplied
 targets. They do not run on pull requests, schedules, or deployment events.
+Before enabling them, configure their protected allowed-host variables. For
+deployment smoke, set `SMOKE_ALLOWED_APP_HOST`, `SMOKE_ALLOWED_API_HOST`, and
+`SMOKE_EXPECTED_DEPLOYMENT_ID`; the expected identifier must match the
+immutable `deployment_id` supplied for the run.
 See [Staging](staging.md) and [Release operations](release-operations.md) before
 using them against an authorized environment.

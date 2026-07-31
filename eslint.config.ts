@@ -142,6 +142,16 @@ function getSortableProperties(objNode: TSESTree.ObjectExpression) {
   return properties as TSESTree.Property[];
 }
 
+function getNamedProperties(objNode: TSESTree.ObjectExpression) {
+  return objNode.properties.filter(
+    (property): property is TSESTree.Property =>
+      property.type === AST_NODE_TYPES.Property &&
+      !property.computed &&
+      (property.key.type === AST_NODE_TYPES.Identifier ||
+        property.key.type === AST_NODE_TYPES.Literal),
+  );
+}
+
 function checkAndFixAlphabeticalStyleOrder(
   context: Rule.RuleContext,
   objNode: TSESTree.ObjectExpression,
@@ -173,7 +183,7 @@ function checkShorthandConflicts(
   context: Rule.RuleContext,
   objNode: TSESTree.ObjectExpression,
 ) {
-  const properties = getSortableProperties(objNode);
+  const properties = getNamedProperties(objNode);
   const propertyByName = new Map(
     properties.map((property) => [getPropertyName(property.key), property]),
   );

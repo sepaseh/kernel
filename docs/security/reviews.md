@@ -26,8 +26,9 @@ Kernel keeps the DAST workflow only as a reusable template for downstream
 projects; it is not part of Kernel's active quality gate. The workflow has no
 schedule and can only be started manually.
 
-Before using the template, configure the repository variable `PRODUCTION_HOST`
-with the production hostname only, without a protocol or path. Each manual run
-still requires an explicitly authorized target and its exact allowed hostname.
-The fixed repository variable prevents the run from redefining production and
-must never match the scan target.
+Before using the template, configure protected repository or environment
+variables `PRODUCTION_HOST` and `STAGING_ALLOWED_APP_HOST` with exact hostnames
+only, without a protocol, port, path, or whitespace. `STAGING_ALLOWED_APP_HOST`
+is the trusted authorization source for each manual DAST target; workflow
+dispatch callers cannot redefine it. `PRODUCTION_HOST` prevents scanning
+production and must never match the authorized staging host.
