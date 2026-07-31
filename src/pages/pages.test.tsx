@@ -133,6 +133,18 @@ const renderPage = (page: React.ReactNode) =>
 
 beforeEach(() => {
   vi.clearAllMocks();
+  Object.assign(mocks.actionPermissions, {
+    canCreateRoles: false,
+    canCreateUsers: false,
+    canDeleteRoles: false,
+    canDeleteUsers: false,
+    canUpdateRoles: false,
+    canUpdateUsers: false,
+  });
+  mocks.core.user = mocks.account;
+  vi.mocked(api.deleteUser).mockResolvedValue(undefined);
+  vi.mocked(api.fetchUserRoleOptions).mockResolvedValue([]);
+  vi.mocked(api.fetchUserWorkspaceOptions).mockResolvedValue([]);
   vi.mocked(api.changePassword).mockResolvedValue(undefined);
   vi.mocked(api.forgotPassword).mockResolvedValue(undefined);
   vi.mocked(api.getAccount).mockResolvedValue(mocks.account);
@@ -150,6 +162,8 @@ beforeEach(() => {
   });
   vi.mocked(api.updateProfile).mockResolvedValue(mocks.account);
   vi.mocked(api.updateUsername).mockResolvedValue(mocks.account);
+  vi.mocked(api.updateUserStatus).mockResolvedValue(undefined);
+  vi.mocked(api.updateUserSystemAdmin).mockResolvedValue(undefined);
   vi.mocked(api.verifyEmail).mockResolvedValue(undefined);
   vi.mocked(api.fetchRoles).mockResolvedValue([]);
   vi.mocked(api.fetchUsers).mockResolvedValue({ items: [], total: 0 });
@@ -328,6 +342,40 @@ describe("priority pages", () => {
     expect(api.fetchRoles).toHaveBeenCalledOnce();
   });
 
+  it("updates and deletes roles when permitted", async () => {
+    Object.assign(mocks.actionPermissions, {
+      canCreateRoles: true,
+      canDeleteRoles: true,
+      canUpdateRoles: true,
+    });
+    const role = {
+      id: "role-1",
+      name: "Operators",
+      permissions: ["users.read"],
+    };
+    vi.mocked(api.fetchRoles).mockResolvedValue([role]);
+    vi.mocked(api.fetchRole).mockResolvedValue(role);
+    vi.mocked(api.fetchPermissions).mockResolvedValue([]);
+    vi.mocked(api.deleteRole).mockResolvedValue(undefined);
+    const { user } = renderPage(<RolesPage />);
+
+    await screen.findByText("Operators");
+    await user.click(screen.getByRole("button", { name: "update" }));
+
+    expect(api.fetchRole).toHaveBeenCalledWith("role-1");
+    expect(screen.getByLabelText("location")).toHaveTextContent("/");
+
+    await user.click(screen.getByRole("button", { name: "delete" }));
+    const confirmation = mocks.modalConfirm.mock.calls.at(-1)?.[0] as {
+      onOk: () => Promise<void>;
+    };
+    await confirmation.onOk();
+
+    expect(api.deleteRole).toHaveBeenCalledWith("role-1");
+    expect(mocks.messageSuccess).toHaveBeenCalledWith("roleDeleted");
+    expect(api.fetchRoles).toHaveBeenCalledTimes(2);
+  });
+
   it("loads and displays users", async () => {
     vi.mocked(api.fetchUsers).mockResolvedValue({
       items: [
@@ -353,5 +401,65 @@ describe("priority pages", () => {
       offset: "0",
       size: "12",
     });
+  });
+
+  it("manages users when permitted", async () => {
+    Object.assign(mocks.actionPermissions, {
+      canCreateUsers: true,
+      canDeleteUsers: true,
+      canUpdateUsers: true,
+    });
+    mocks.core.user = { ...mocks.account, isSystemAdmin: true };
+    const userRecord = {
+      email: "ada@example.com",
+      firstName: "Ada",
+      id: "user-1",
+      isSystemAdmin: false,
+      lastName: "Lovelace",
+      mobile: "09120000000",
+      personnelCode: "1001",
+      status: "active" as const,
+      username: "ada",
+    };
+    vi.mocked(api.fetchUsers).mockResolvedValue({
+      items: [userRecord],
+      total: 1,
+    });
+    vi.mocked(api.fetchUser).mockResolvedValue({
+      ...userRecord,
+      permissions: [],
+      roleIds: [],
+      workspaceIds: [],
+    });
+    const { user } = renderPage(<UsersPage />);
+
+    await screen.findByText("Ada Lovelace");
+    await user.click(screen.getByRole("button", { name: "update" }));
+    expect(api.fetchUser).toHaveBeenCalledWith("user-1");
+
+    await user.click(screen.getByRole("button", { name: "active" }));
+    let confirmation = mocks.modalConfirm.mock.calls.at(-1)?.[0] as {
+      onOk: () => Promise<void>;
+    };
+    await confirmation.onOk();
+    expect(api.updateUserStatus).toHaveBeenCalledWith("user-1", {
+      status: "inactive",
+    });
+
+    await user.click(screen.getByRole("button", { name: "systemAdmin" }));
+    confirmation = mocks.modalConfirm.mock.calls.at(-1)?.[0] as {
+      onOk: () => Promise<void>;
+    };
+    await confirmation.onOk();
+    expect(api.updateUserSystemAdmin).toHaveBeenCalledWith("user-1", {
+      isSystemAdmin: true,
+    });
+
+    await user.click(screen.getByRole("button", { name: "delete" }));
+    confirmation = mocks.modalConfirm.mock.calls.at(-1)?.[0] as {
+      onOk: () => Promise<void>;
+    };
+    await confirmation.onOk();
+    expect(api.deleteUser).toHaveBeenCalledWith("user-1");
   });
 });
