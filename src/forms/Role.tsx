@@ -6,7 +6,6 @@ import {
   Drawer,
   Flex,
   Form,
-  FormProps,
   Input,
   Space,
 } from "antd";
@@ -34,9 +33,7 @@ export const RoleForm: FC<{
   const goBack = useGoBack();
   const isUpdate = hash === modalKeys.update && !!data;
 
-  const handleSubmit: FormProps<RoleMutationParams>["onFinish"] = async (
-    values,
-  ) => {
+  const handleSubmit = async (values: RoleMutationParams) => {
     if (submitting) return;
 
     try {
@@ -106,7 +103,7 @@ export const RoleForm: FC<{
         form={form}
         initialValues={{ permissions: [] }}
         layout="vertical"
-        onFinish={handleSubmit}
+        onFinish={(values) => void handleSubmit(values)}
       >
         <Form.Item label={t("name")} name="name" rules={[{ required: true }]}>
           <Input />

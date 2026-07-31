@@ -55,13 +55,13 @@ export const RegisterPage = () => {
     }
   };
 
-  const handleSubmit: FormProps<RegisterFormParams>["onFinish"] = async ({
+  const handleSubmit = async ({
     firstName,
     lastName,
     mobile,
     otp,
     password,
-  }) => {
+  }: RegisterFormParams) => {
     if (submitting) return;
 
     try {
@@ -77,6 +77,12 @@ export const RegisterPage = () => {
     }
   };
 
+  const handleFormSubmit: NonNullable<
+    FormProps<RegisterFormParams>["onFinish"]
+  > = (values) => {
+    void handleSubmit(values);
+  };
+
   return (
     <Flex gap={32} vertical>
       <Flex align="center" gap={8} vertical>
@@ -88,7 +94,7 @@ export const RegisterPage = () => {
       <Form
         form={form}
         layout="vertical"
-        onFinish={handleSubmit}
+        onFinish={handleFormSubmit}
         requiredMark={false}
         scrollToFirstError
       >

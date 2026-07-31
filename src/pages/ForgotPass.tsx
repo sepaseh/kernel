@@ -58,11 +58,11 @@ export const ForgotPassPage = () => {
     }
   };
 
-  const handleSubmit: FormProps<ForgotPasswordFormParams>["onFinish"] = async ({
+  const handleSubmit = async ({
     mobile,
     otp,
     password,
-  }) => {
+  }: ForgotPasswordFormParams) => {
     if (submitting) return;
 
     try {
@@ -79,6 +79,12 @@ export const ForgotPassPage = () => {
     }
   };
 
+  const handleFormSubmit: NonNullable<
+    FormProps<ForgotPasswordFormParams>["onFinish"]
+  > = (values) => {
+    void handleSubmit(values);
+  };
+
   return (
     <Flex gap={32} vertical>
       <Flex align="center" gap={8} vertical>
@@ -90,7 +96,7 @@ export const ForgotPassPage = () => {
       <Form
         form={form}
         layout="vertical"
-        onFinish={handleSubmit}
+        onFinish={handleFormSubmit}
         requiredMark={false}
         scrollToFirstError
       >

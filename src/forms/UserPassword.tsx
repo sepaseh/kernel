@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { Button, Drawer, Form, FormProps, Input, Space } from "antd";
+import { Button, Drawer, Form, Input, Space } from "antd";
 import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
@@ -23,9 +23,7 @@ export const UserPasswordForm: FC<{ data?: UserProps }> = ({ data }) => {
   const [form] = Form.useForm<UserPasswordFormParams>();
   const goBack = useGoBack();
 
-  const handleSubmit: FormProps<UserPasswordFormParams>["onFinish"] = async ({
-    password,
-  }) => {
+  const handleSubmit = async ({ password }: UserPasswordFormParams) => {
     if (submitting || !data) return;
 
     try {
@@ -77,7 +75,7 @@ export const UserPasswordForm: FC<{ data?: UserProps }> = ({ data }) => {
       <Form<UserPasswordFormParams>
         form={form}
         layout="vertical"
-        onFinish={handleSubmit}
+        onFinish={(values) => void handleSubmit(values)}
       >
         <Form.Item
           label={t("newPass")}

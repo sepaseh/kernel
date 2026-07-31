@@ -17,7 +17,7 @@ export const LoginPage = () => {
   const [form] = Form.useForm<LoginParams>();
   const navigate = useNavigate();
 
-  const handleSubmit: FormProps<LoginParams>["onFinish"] = async (values) => {
+  const submit = async (values: LoginParams) => {
     if (submitting) return;
 
     setSubmitting(true);
@@ -31,6 +31,12 @@ export const LoginPage = () => {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleSubmit: NonNullable<FormProps<LoginParams>["onFinish"]> = (
+    values,
+  ) => {
+    void submit(values);
   };
 
   const handleSubmitTrigger = () => {

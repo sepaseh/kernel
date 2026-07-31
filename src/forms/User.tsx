@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { Button, Drawer, Form, FormProps, Input, Space } from "antd";
+import { Button, Drawer, Form, Input, Space } from "antd";
 import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
@@ -28,13 +28,13 @@ export const UserForm: FC<{ data?: UserProps; onFinish: () => void }> = ({
   const goBack = useGoBack();
   const isUpdate = hash === modalKeys.update && !!data;
 
-  const handleSubmit: FormProps<UserFormParams>["onFinish"] = async ({
+  const handleSubmit = async ({
     firstName,
     lastName,
     mobile,
     password,
     personnelCode,
-  }) => {
+  }: UserFormParams) => {
     if (submitting) return;
 
     try {
@@ -107,7 +107,7 @@ export const UserForm: FC<{ data?: UserProps; onFinish: () => void }> = ({
       <Form<UserFormParams>
         form={form}
         layout="vertical"
-        onFinish={handleSubmit}
+        onFinish={(values) => void handleSubmit(values)}
       >
         <Form.Item
           label={t("firstName")}

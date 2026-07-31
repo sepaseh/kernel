@@ -68,41 +68,39 @@ export const AccountPage = () => {
     messageAPI.error(getErrorMessage(error));
   };
 
-  const handleProfileSubmit: FormProps<UpdateProfileParams>["onFinish"] =
-    async (values) => {
-      if (profileSubmitting) return;
+  const submitProfile = async (values: UpdateProfileParams) => {
+    if (profileSubmitting) return;
 
-      try {
-        setProfileSubmitting(true);
+    try {
+      setProfileSubmitting(true);
 
-        const account = await updateProfile(values);
+      const account = await updateProfile(values);
 
-        setUser(account);
-        messageAPI.success(t("profileUpdated"));
-      } catch (error) {
-        showError(error);
-      } finally {
-        setProfileSubmitting(false);
-      }
-    };
+      setUser(account);
+      messageAPI.success(t("profileUpdated"));
+    } catch (error) {
+      showError(error);
+    } finally {
+      setProfileSubmitting(false);
+    }
+  };
 
-  const handleUsernameSubmit: FormProps<UpdateUsernameParams>["onFinish"] =
-    async (values) => {
-      if (usernameSubmitting) return;
+  const submitUsername = async (values: UpdateUsernameParams) => {
+    if (usernameSubmitting) return;
 
-      try {
-        setUsernameSubmitting(true);
+    try {
+      setUsernameSubmitting(true);
 
-        const account = await updateUsername(values);
+      const account = await updateUsername(values);
 
-        setUser(account);
-        messageAPI.success(t("usernameUpdated"));
-      } catch (error) {
-        showError(error);
-      } finally {
-        setUsernameSubmitting(false);
-      }
-    };
+      setUser(account);
+      messageAPI.success(t("usernameUpdated"));
+    } catch (error) {
+      showError(error);
+    } finally {
+      setUsernameSubmitting(false);
+    }
+  };
 
   const handleEmailVerificationRequest = async () => {
     if (otpSubmitting || otpRemainingSeconds) return;
@@ -123,9 +121,7 @@ export const AccountPage = () => {
     }
   };
 
-  const handleEmailSubmit: FormProps<VerifyEmailParams>["onFinish"] = async (
-    values,
-  ) => {
+  const submitEmail = async (values: VerifyEmailParams) => {
     if (emailSubmitting) return;
 
     try {
@@ -145,23 +141,46 @@ export const AccountPage = () => {
     }
   };
 
-  const handlePasswordSubmit: FormProps<PasswordFormParams>["onFinish"] =
-    async ({ currentPassword, newPassword }) => {
-      if (passwordSubmitting) return;
+  const submitPassword = async ({
+    currentPassword,
+    newPassword,
+  }: PasswordFormParams) => {
+    if (passwordSubmitting) return;
 
-      try {
-        setPasswordSubmitting(true);
+    try {
+      setPasswordSubmitting(true);
 
-        await changePassword({ currentPassword, newPassword });
+      await changePassword({ currentPassword, newPassword });
 
-        messageAPI.success(t("passwordChanged"));
-        passwordForm.resetFields();
-      } catch (error) {
-        showError(error);
-      } finally {
-        setPasswordSubmitting(false);
-      }
-    };
+      messageAPI.success(t("passwordChanged"));
+      passwordForm.resetFields();
+    } catch (error) {
+      showError(error);
+    } finally {
+      setPasswordSubmitting(false);
+    }
+  };
+
+  const handleProfileSubmit: NonNullable<
+    FormProps<UpdateProfileParams>["onFinish"]
+  > = (values) => {
+    void submitProfile(values);
+  };
+  const handleUsernameSubmit: NonNullable<
+    FormProps<UpdateUsernameParams>["onFinish"]
+  > = (values) => {
+    void submitUsername(values);
+  };
+  const handleEmailSubmit: NonNullable<
+    FormProps<VerifyEmailParams>["onFinish"]
+  > = (values) => {
+    void submitEmail(values);
+  };
+  const handlePasswordSubmit: NonNullable<
+    FormProps<PasswordFormParams>["onFinish"]
+  > = (values) => {
+    void submitPassword(values);
+  };
 
   return (
     <Flex

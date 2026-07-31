@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { Button, Drawer, Form, FormProps, Select, Space } from "antd";
+import { Button, Drawer, Form, Select, Space } from "antd";
 import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
@@ -29,9 +29,7 @@ export const UserFormRole: FC<UserFormRoleProps> = ({
   const [form] = Form.useForm<UserRoleParams>();
   const goBack = useGoBack();
 
-  const handleSubmit: FormProps<UserRoleParams>["onFinish"] = async (
-    values,
-  ) => {
+  const handleSubmit = async (values: UserRoleParams) => {
     if (submitting || !data) return;
 
     try {
@@ -88,7 +86,7 @@ export const UserFormRole: FC<UserFormRoleProps> = ({
       <Form<UserRoleParams>
         form={form}
         layout="vertical"
-        onFinish={handleSubmit}
+        onFinish={(values) => void handleSubmit(values)}
       >
         <Form.Item label={t("roles")} name="roleIds">
           <Select
