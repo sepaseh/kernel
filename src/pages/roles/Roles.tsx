@@ -150,8 +150,12 @@ export const RolesPage = () => {
         ".ant-table-content",
       );
 
-    if (scrollRegion) scrollRegion.tabIndex = 0;
-  }, [data]);
+    if (scrollRegion) {
+      scrollRegion.tabIndex = 0;
+      scrollRegion.setAttribute("role", "region");
+      scrollRegion.setAttribute("aria-label", t("roles"));
+    }
+  }, [data, t]);
 
   return (
     <>

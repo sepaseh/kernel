@@ -9,7 +9,7 @@ React starter kit upgraded as a dashboard-ready foundation under the `kernel` pr
 | UI framework         | React 19 + TypeScript       |
 | Build tool           | Vite                        |
 | Component library    | Ant Design 6                |
-| Routing              | `react-router-dom` 7        |
+| Routing              | `react-router` 8.3          |
 | Internationalization | `i18next` + `react-i18next` |
 | HTTP                 | Axios                       |
 | Date handling        | Day.js + Jalaliday          |

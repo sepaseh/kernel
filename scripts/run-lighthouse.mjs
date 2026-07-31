@@ -33,11 +33,7 @@ const server = await preview({
   },
 });
 const chrome = await chromeLauncher.launch({
-  chromeFlags: [
-    "--headless=new",
-    "--ignore-certificate-errors",
-    "--no-sandbox",
-  ],
+  chromeFlags: ["--headless=new", "--ignore-certificate-errors"],
 });
 
 try {

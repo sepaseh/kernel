@@ -17,12 +17,19 @@ export const useFilterParams = <T extends Record<string, string>>() => {
 
   const setFilters = useCallback(
     (newFilters: Partial<T>) => {
-      const sanitized = Object.fromEntries(
-        Object.entries(newFilters).filter(
-          ([, v]) => v !== undefined && v !== null && v !== "",
-        ),
-      );
-      setSearchParams(sanitized);
+      setSearchParams((current) => {
+        const next = new URLSearchParams(current);
+
+        for (const [key, value] of Object.entries(newFilters)) {
+          if (value === undefined || value === null || value === "") {
+            next.delete(key);
+          } else {
+            next.set(key, value);
+          }
+        }
+
+        return next;
+      });
     },
     [setSearchParams],
   );
