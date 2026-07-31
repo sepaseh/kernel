@@ -328,34 +328,52 @@ const localRules = {
           .replaceAll("\\", "/");
         const [sourceLayer, sourceFeature] = filename.split("/");
 
+        const checkSource = (source: TSESTree.StringLiteral) => {
+          const importPath = source.value;
+          if (typeof importPath !== "string" || !importPath.startsWith("@/"))
+            return;
+
+          const [targetLayer, targetFeature] = importPath.slice(2).split("/");
+
+          if (
+            sourceLayer === "shared" &&
+            ["app", "features", "layouts"].includes(targetLayer)
+          ) {
+            context.report({
+              node: source,
+              message: `Shared modules cannot depend on ${targetLayer}.`,
+            });
+          }
+
+          if (
+            sourceLayer === "features" &&
+            targetLayer === "features" &&
+            sourceFeature !== targetFeature &&
+            importPath !== `@/features/${targetFeature}`
+          ) {
+            context.report({
+              node: source,
+              message: `Import another feature through its public API: @/features/${targetFeature}.`,
+            });
+          }
+        };
+
         return {
+          ExportAllDeclaration(node: TSESTree.ExportAllDeclaration) {
+            checkSource(node.source);
+          },
+          ExportNamedDeclaration(node: TSESTree.ExportNamedDeclaration) {
+            if (node.source) checkSource(node.source);
+          },
           ImportDeclaration(node: TSESTree.ImportDeclaration) {
-            const importPath = node.source.value;
-            if (typeof importPath !== "string" || !importPath.startsWith("@/"))
-              return;
-
-            const [targetLayer, targetFeature] = importPath.slice(2).split("/");
-
+            checkSource(node.source);
+          },
+          ImportExpression(node: TSESTree.ImportExpression) {
             if (
-              sourceLayer === "shared" &&
-              ["app", "features", "layouts"].includes(targetLayer)
+              node.source.type === AST_NODE_TYPES.Literal &&
+              typeof node.source.value === "string"
             ) {
-              context.report({
-                node: node.source,
-                message: `Shared modules cannot depend on ${targetLayer}.`,
-              });
-            }
-
-            if (
-              sourceLayer === "features" &&
-              targetLayer === "features" &&
-              sourceFeature !== targetFeature &&
-              importPath !== `@/features/${targetFeature}`
-            ) {
-              context.report({
-                node: node.source,
-                message: `Import another feature through its public API: @/features/${targetFeature}.`,
-              });
+              checkSource(node.source);
             }
           },
         };

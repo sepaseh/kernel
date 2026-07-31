@@ -55,6 +55,18 @@ utilities in `src/shared/lib`, and HTTP/token infrastructure in `src/shared/api`
 Application composition belongs in `src/app`; layouts and static assets retain
 their dedicated top-level directories.
 
+## Dependency Direction
+
+- `shared` is independent and cannot import from `app`, `features`, or `layouts`.
+- Features may consume `shared` and application context hooks.
+- A feature importing another feature must use that feature's root public API.
+- `app` and `layouts` compose feature public APIs and shared infrastructure.
+
+ESLint enforces the shared-layer and cross-feature rules. Feature root
+`index.ts` files define public APIs; single-file internal barrels are avoided.
+Dedicated lazy route entrypoints remain public subpaths so route chunks stay
+independent.
+
 ## State and Persistence
 
 The app keeps lightweight UI preferences in local storage through helpers in `src/shared/storage`.
