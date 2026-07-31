@@ -101,15 +101,15 @@ vi.mock("@/features/users/api", () => ({
 
 const api = { ...accountApi, ...authApi, ...rolesApi, ...usersApi };
 
-vi.mock("@/features/roles/form", () => ({ RoleForm: () => null }));
-vi.mock("@/features/users/forms/user", () => ({ UserForm: () => null }));
-vi.mock("@/features/users/forms/user-password", () => ({
+vi.mock("@/features/roles/form/Role", () => ({ RoleForm: () => null }));
+vi.mock("@/features/users/forms/user/User", () => ({ UserForm: () => null }));
+vi.mock("@/features/users/forms/user-password/UserPassword", () => ({
   UserPasswordForm: () => null,
 }));
-vi.mock("@/features/users/forms/user-role", () => ({
+vi.mock("@/features/users/forms/user-role/UserRole", () => ({
   UserFormRole: () => null,
 }));
-vi.mock("@/features/users/forms/user-workspace", () => ({
+vi.mock("@/features/users/forms/user-workspace/UserWorkspace", () => ({
   UserWorkspaceForm: () => null,
 }));
 

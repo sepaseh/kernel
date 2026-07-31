@@ -3,12 +3,12 @@ import { MemoryRouter } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import * as rolesApi from "@/features/roles/api";
-import { RoleForm } from "@/features/roles/form";
+import { RoleForm } from "@/features/roles/form/Role";
 import * as usersApi from "@/features/users/api";
-import { UserForm } from "@/features/users/forms/user";
-import { UserPasswordForm } from "@/features/users/forms/user-password";
-import { UserFormRole } from "@/features/users/forms/user-role";
-import { UserWorkspaceForm } from "@/features/users/forms/user-workspace";
+import { UserForm } from "@/features/users/forms/user/User";
+import { UserPasswordForm } from "@/features/users/forms/user-password/UserPassword";
+import { UserFormRole } from "@/features/users/forms/user-role/UserRole";
+import { UserWorkspaceForm } from "@/features/users/forms/user-workspace/UserWorkspace";
 import { UserProps } from "@/features/users/types";
 import { render, screen } from "@/test/render";
 

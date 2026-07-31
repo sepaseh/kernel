@@ -15,7 +15,7 @@ import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router";
 
 import { useActionPermissions, useAntd } from "@/app/hooks";
-import { RoleForm } from "@/features/roles/form";
+import { RoleForm } from "@/features/roles/form/Role";
 import { modalKeys } from "@/shared/config";
 import { getErrorMessage } from "@/shared/lib";
 import { Icon } from "@/shared/ui/icon";

@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AntdContext } from "@/app/contexts";
 import { render, screen } from "@/test/render";
 
-import { AntdProvider } from "./";
+import { AntdProvider } from "./Antd";
 
 const mocks = vi.hoisted(() => ({
   language: "en" as "en" | "fa",

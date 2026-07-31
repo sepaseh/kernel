@@ -5,7 +5,7 @@ import { useCore } from "@/app/hooks";
 import { storageKeys } from "@/shared/config";
 import { render, screen } from "@/test/render";
 
-import { CoreProvider } from "./";
+import { CoreProvider } from "./Core";
 
 const mocks = vi.hoisted(() => ({
   changeLanguage: vi.fn(),

@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { CoreContext, CoreContextProps } from "@/app/contexts";
 import { AccountProps } from "@/features/account/types";
 
-import { useActionPermissions } from "./";
+import { useActionPermissions } from "./useActionPermissions";
 
 const createUser = (overrides: Partial<AccountProps> = {}): AccountProps => ({
   email: null,
