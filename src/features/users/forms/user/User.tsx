@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { Form, Input } from "antd";
+import { Button, Drawer, Form, Input, Space } from "antd";
 import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
@@ -15,7 +15,6 @@ import { modalKeys } from "@/shared/config";
 import { useGoBack } from "@/shared/hooks";
 import { getErrorMessage } from "@/shared/lib";
 import { DigitsInput } from "@/shared/ui/digits-input";
-import { FormDrawer } from "@/shared/ui/form-drawer";
 import { PasswordFields } from "@/shared/ui/password-fields";
 
 type UserFormParams = CreateUserParams & {
@@ -91,11 +90,26 @@ export const UserForm: FC<UserFormProps> = ({ data, onFinish }) => {
   }, [data, form, goBack, hash, open]);
 
   return (
-    <FormDrawer
+    <Drawer
+      closeIcon={false}
+      footer={
+        <Space>
+          <Button loading={submitting} onClick={goBack}>
+            {t("cancel")}
+          </Button>
+          <Button
+            loading={submitting}
+            onClick={() => form.submit()}
+            type="primary"
+          >
+            {t("submit")}
+          </Button>
+        </Space>
+      }
+      mask={{ closable: false }}
       onClose={goBack}
-      onSubmit={() => form.submit()}
       open={open}
-      submitting={submitting}
+      styles={{ footer: { textAlign: "end" } }}
       title={t(isUpdate ? "update" : "create")}
     >
       <Form<UserFormParams>
@@ -133,6 +147,6 @@ export const UserForm: FC<UserFormProps> = ({ data, onFinish }) => {
         </Form.Item>
         {!isUpdate && <PasswordFields />}
       </Form>
-    </FormDrawer>
+    </Drawer>
   );
 };

@@ -1,11 +1,15 @@
 import "@/assets/styles/index.css";
 import "@/assets/styles/vazirmatn.css";
+import "@/shared/i18n";
 
 import type { Preview } from "@storybook/react-vite";
 import { ConfigProvider, theme } from "antd";
 import { sb } from "storybook/test";
 
 sb.mock(import("../src/features/account/api.ts"), { spy: true });
+sb.mock(import("../src/features/auth/api.ts"), { spy: true });
+sb.mock(import("../src/features/roles/api.ts"), { spy: true });
+sb.mock(import("../src/features/users/api.ts"), { spy: true });
 
 const preview: Preview = {
   decorators: [
