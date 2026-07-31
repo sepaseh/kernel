@@ -14,8 +14,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useAntd, useCore } from "@/app/hooks";
-import { changePassword } from "@/features/auth/api";
-import { ChangePasswordParams } from "@/features/auth/types";
+import { changePassword, ChangePasswordParams } from "@/features/auth";
 import { getErrorMessage } from "@/shared/lib";
 import { OtpInput } from "@/shared/ui/otp-input";
 

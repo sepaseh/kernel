@@ -321,6 +321,46 @@ function checkAndFixStyleObject(
 
 const localRules = {
   rules: {
+    "architecture-boundaries": {
+      create(context: Rule.RuleContext) {
+        const filename = path
+          .relative(srcRoot, context.filename)
+          .replaceAll("\\", "/");
+        const [sourceLayer, sourceFeature] = filename.split("/");
+
+        return {
+          ImportDeclaration(node: TSESTree.ImportDeclaration) {
+            const importPath = node.source.value;
+            if (typeof importPath !== "string" || !importPath.startsWith("@/"))
+              return;
+
+            const [targetLayer, targetFeature] = importPath.slice(2).split("/");
+
+            if (
+              sourceLayer === "shared" &&
+              ["app", "features", "layouts"].includes(targetLayer)
+            ) {
+              context.report({
+                node: node.source,
+                message: `Shared modules cannot depend on ${targetLayer}.`,
+              });
+            }
+
+            if (
+              sourceLayer === "features" &&
+              targetLayer === "features" &&
+              sourceFeature !== targetFeature &&
+              importPath !== `@/features/${targetFeature}`
+            ) {
+              context.report({
+                node: node.source,
+                message: `Import another feature through its public API: @/features/${targetFeature}.`,
+              });
+            }
+          },
+        };
+      },
+    },
     "no-parent-relative-imports": {
       create(context: Rule.RuleContext) {
         return {
@@ -413,7 +453,7 @@ const localRules = {
 };
 
 export default [
-  { ignores: ["dist"] },
+  { ignores: [".stryker-tmp", "dist"] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -437,6 +477,7 @@ export default [
       "@typescript-eslint/no-explicit-any": "off",
       "simple-import-sort/imports": "error",
       "simple-import-sort/exports": "error",
+      "local/architecture-boundaries": "error",
       "local/no-parent-relative-imports": "error",
       "local/no-alias-for-same-dir": "error",
       "local/style-props-recess-order": "error",

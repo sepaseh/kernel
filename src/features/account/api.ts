@@ -1,4 +1,4 @@
-import { OtpRequestProps } from "@/features/auth/types";
+import { OtpRequestProps } from "@/features/auth";
 import { apiClient } from "@/shared/api";
 
 import {

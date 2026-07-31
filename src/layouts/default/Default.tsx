@@ -17,8 +17,8 @@ import { Link, Outlet, useNavigate } from "react-router";
 
 import { RouteKey, routeTree } from "@/app/config";
 import { useAllowedRoutes, useCore } from "@/app/hooks";
-import { getAccount } from "@/features/account/api";
-import { logout } from "@/features/auth/api";
+import { getAccount } from "@/features/account";
+import { logout } from "@/features/auth";
 import { clearAccessToken, setUnauthorizedHandler } from "@/shared/api";
 import { Icon } from "@/shared/ui/icon";
 
