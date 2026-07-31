@@ -167,7 +167,7 @@ describe("observability", () => {
     notify(callbacks[1], [
       { hadRecentInput: false, value: 0.123 },
       { hadRecentInput: true, value: 10 },
-    ] as Partial<PerformanceEntry>[]);
+    ] as unknown as Partial<PerformanceEntry>[]);
     notify(callbacks[2], [{ duration: 51.234 }]);
 
     expect(observe).toHaveBeenCalledTimes(3);
