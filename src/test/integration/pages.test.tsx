@@ -191,7 +191,7 @@ beforeEach(() => {
   vi.mocked(api.fetchUsers).mockResolvedValue({ items: [], total: 0 });
 });
 
-describe("priority pages", () => {
+describe("authentication pages", () => {
   it("submits login credentials and navigates home", async () => {
     const { user } = renderPage(<LoginPage />);
 
@@ -270,7 +270,9 @@ describe("priority pages", () => {
     });
     expect(screen.getByLabelText("location")).toHaveTextContent("/");
   });
+});
 
+describe("account page", () => {
   it("updates the account profile", async () => {
     const updatedAccount = { ...mocks.account, firstName: "Augusta" };
     vi.mocked(api.updateProfile).mockResolvedValue(updatedAccount);
@@ -348,7 +350,9 @@ describe("priority pages", () => {
       newPassword: "new-password",
     });
   });
+});
 
+describe("roles page", () => {
   it("loads and displays roles", async () => {
     vi.mocked(api.fetchRoles).mockResolvedValue([
       {
@@ -397,7 +401,9 @@ describe("priority pages", () => {
     expect(mocks.messageSuccess).toHaveBeenCalledWith("roleDeleted");
     expect(api.fetchRoles).toHaveBeenCalledTimes(2);
   });
+});
 
+describe("users page", () => {
   it("loads and displays users", async () => {
     vi.mocked(api.fetchUsers).mockResolvedValue({
       items: [

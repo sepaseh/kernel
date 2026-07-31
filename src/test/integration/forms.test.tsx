@@ -88,7 +88,7 @@ beforeEach(() => {
   vi.mocked(api.updateUserWorkspaces).mockResolvedValue(undefined);
 });
 
-describe("management forms", () => {
+describe("user identity form", () => {
   it("validates and creates a user", async () => {
     const onFinish = vi.fn();
     const { user } = renderAtHash(<UserForm onFinish={onFinish} />, "#create");
@@ -154,7 +154,9 @@ describe("management forms", () => {
     expect(mocks.messageSuccess).toHaveBeenCalledWith("userUpdated");
     expect(onFinish).toHaveBeenCalledOnce();
   });
+});
 
+describe("role form", () => {
   it("creates a role with selected permissions and reports failures", async () => {
     vi.mocked(api.createRole).mockRejectedValueOnce(
       new Error("Role already exists"),
@@ -187,7 +189,9 @@ describe("management forms", () => {
     );
     expect(mocks.messageError).toHaveBeenCalledWith("Role already exists");
   });
+});
 
+describe("user access forms", () => {
   it("updates a user's password", async () => {
     const { user } = renderAtHash(
       <UserPasswordForm data={userData} />,
