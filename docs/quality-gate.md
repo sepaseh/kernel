@@ -6,12 +6,12 @@ the scanner is unavailable or the quality gate is not satisfied.
 
 The recommended project quality gate uses these new-code targets:
 
-| New-code condition         | Required value |
-| -------------------------- | -------------- |
-| Issues                     | `0`            |
-| Security Hotspots reviewed | `100%`         |
-| Coverage                   | `>= 80%`       |
-| Duplicated lines           | `<= 3%`        |
+| New-code condition         | Recommended value |
+| -------------------------- | ----------------- |
+| Issues                     | `0`               |
+| Security Hotspots reviewed | `100%`            |
+| Coverage                   | `>= 80%`          |
+| Duplicated lines           | `<= 3%`           |
 
 These targets apply to new code only. They guide incremental improvement without
 blocking structural refactors or small maintenance changes.

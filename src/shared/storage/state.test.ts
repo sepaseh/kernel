@@ -26,12 +26,18 @@ describe("storage state", () => {
     expect(getState("settings", {})).toEqual(value);
   });
 
-  it("falls back to browser string conversion for circular values", () => {
+  it("rejects circular values without storing lossy data", () => {
     const value: { self?: unknown } = {};
     value.self = value;
 
-    setState("circular", value);
+    expect(() => setState("circular", value)).toThrow(TypeError);
+    expect(localStorage.getItem("circular")).toBeNull();
+  });
 
-    expect(localStorage.getItem("circular")).toBe("[object Object]");
+  it("rejects values that JSON cannot serialize", () => {
+    expect(() => setState("undefined", undefined)).toThrow(
+      "State value is not JSON-serializable",
+    );
+    expect(localStorage.getItem("undefined")).toBeNull();
   });
 });

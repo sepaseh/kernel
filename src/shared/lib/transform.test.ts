@@ -36,4 +36,24 @@ describe("case transforms", () => {
       workspace: { created_at: 1 },
     });
   });
+
+  it.each([
+    new Date("2026-01-01T00:00:00.000Z"),
+    new FormData(),
+    new Blob(["value"]),
+  ])("leaves non-plain built-in values unchanged", (value) => {
+    expect(toCamelCase(value)).toBe(value);
+    expect(toSnakeCase(value)).toBe(value);
+  });
+
+  it("leaves class instances unchanged", () => {
+    class Value {
+      snake_key = "value";
+    }
+
+    const value = new Value();
+
+    expect(toCamelCase(value)).toBe(value);
+    expect(toSnakeCase(value)).toBe(value);
+  });
 });

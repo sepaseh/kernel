@@ -19,7 +19,7 @@ export const faDayjs = {
     "فروردین_اردیبهشت_خرداد_تیر_مرداد_شهریور_مهر_آبان_آذر_دی_بهمن_اسفند".split(
       "_",
     ),
-  ordinal: (n: any) => n,
+  ordinal: (n: number) => n,
   formats: {
     LT: "HH:mm",
     LTS: "HH:mm:ss",

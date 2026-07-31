@@ -148,10 +148,11 @@ repository settings:
 | `SONAR_TOKEN`       | Repository secret   | Project analysis token created in SonarQube |
 
 Configure them under **Settings → Secrets and variables → Actions**. Store the
-token as a secret, never as a variable or committed file. CI fails with the
-names of missing settings before analysis starts; it never prints their values.
+token as a secret, never as a variable or committed file. CI reports the names
+of missing settings before analysis starts and continues the remaining checks;
+it never prints their values.
 
 The scan publishes findings without waiting for the configured quality gate.
-Scanner or gate failures do not fail CI. See [SonarQube Analysis](quality-gate.md)
-for the recommended new-code targets
-and project setup.
+Scanner or gate failures are reported as errors but do not block CI. See
+[SonarQube Analysis](quality-gate.md) for the recommended new-code targets and
+project setup.
