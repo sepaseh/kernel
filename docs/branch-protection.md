@@ -3,12 +3,12 @@
 The `main` branch is protected on GitHub. Changes must be merged through a pull
 request after the branch is current and these checks pass:
 
-| Required check                      | Coverage                                                |
-| ----------------------------------- | ------------------------------------------------------- |
-| `check`                             | Audit, types, lint, format, tests, SonarQube, dead code |
-| `build`                             | Validated production build                              |
-| `e2e`                               | Critical browser journeys                               |
-| `Analyze JavaScript and TypeScript` | CodeQL security analysis                                |
+| Required check                               | Coverage                                                |
+| -------------------------------------------- | ------------------------------------------------------- |
+| `CI / check`                                 | Audit, types, lint, format, tests, SonarQube, dead code |
+| `CI / build`                                 | Validated production build                              |
+| `CI / e2e`                                   | Critical browser journeys                               |
+| `CodeQL / Analyze JavaScript and TypeScript` | CodeQL security analysis                                |
 
 Protection also:
 
