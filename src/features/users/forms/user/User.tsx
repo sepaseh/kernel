@@ -4,6 +4,7 @@ import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 
+import { useAntd } from "@/app/hooks";
 import { modalKeys } from "@/config";
 import { createUser, updateUser } from "@/features/users/api";
 import {
@@ -11,7 +12,7 @@ import {
   UpdateUserParams,
   UserProps,
 } from "@/features/users/types";
-import { useAntd, useGoBack } from "@/hooks";
+import { useGoBack } from "@/shared/hooks";
 import { getErrorMessage } from "@/shared/lib";
 import { DigitsInput } from "@/shared/ui/digits-input";
 import { FormDrawer } from "@/shared/ui/form-drawer";

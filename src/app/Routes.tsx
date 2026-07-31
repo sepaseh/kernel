@@ -10,9 +10,9 @@ import {
 import { createBrowserRouter, Navigate } from "react-router";
 import { RouterProvider } from "react-router/dom";
 
+import { useAllowedRoutes, useCore } from "@/app/hooks";
 import { NotFoundPage } from "@/app/not-found";
 import { baseUrl, RouteKey, routeTree } from "@/config";
-import { useAllowedRoutes, useCore } from "@/hooks";
 
 const AccountPage = lazy(async () => {
   const { AccountPage } = await import("@/features/account");

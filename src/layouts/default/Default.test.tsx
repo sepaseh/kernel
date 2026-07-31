@@ -48,7 +48,7 @@ vi.mock("@/shared/api", () => ({
   setUnauthorizedHandler: vi.fn(),
 }));
 
-vi.mock("@/hooks", () => ({
+vi.mock("@/app/hooks", () => ({
   useAllowedRoutes: () => new Set(["account", "root", "roles", "users"]),
   useCore: () => mocks.core,
 }));

@@ -15,10 +15,10 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, Outlet, useNavigate } from "react-router";
 
+import { useAllowedRoutes, useCore } from "@/app/hooks";
 import { RouteKey, routeTree } from "@/config";
 import { getAccount } from "@/features/account/api";
 import { logout } from "@/features/auth/api";
-import { useAllowedRoutes, useCore } from "@/hooks";
 import { clearAccessToken, setUnauthorizedHandler } from "@/shared/api";
 import { Icon } from "@/shared/ui/icon";
 

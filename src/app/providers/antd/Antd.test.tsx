@@ -11,7 +11,7 @@ const mocks = vi.hoisted(() => ({
   theme: "light" as "dark" | "light",
 }));
 
-vi.mock("@/hooks", () => ({
+vi.mock("@/app/hooks", () => ({
   useCore: () => ({
     language: mocks.language,
     theme: mocks.theme,

@@ -113,10 +113,13 @@ vi.mock("@/features/users/forms/user-workspace", () => ({
   UserWorkspaceForm: () => null,
 }));
 
-vi.mock("@/hooks", () => ({
+vi.mock("@/app/hooks", () => ({
   useActionPermissions: () => mocks.actionPermissions,
   useAntd: () => mocks.antd,
   useCore: () => mocks.core,
+}));
+
+vi.mock("@/shared/hooks", () => ({
   useFilterParams: () => mocks.filterState,
 }));
 

@@ -14,7 +14,7 @@ vi.mock("@/shared/api", () => ({
   clearAccessToken: vi.fn(),
 }));
 
-vi.mock("@/hooks", () => ({
+vi.mock("@/app/hooks", () => ({
   useCore: () => ({ setUser: mocks.setUser }),
 }));
 

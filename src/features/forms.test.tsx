@@ -33,13 +33,16 @@ vi.mock("@/features/users/api", () => ({
 
 const api = { ...rolesApi, ...usersApi };
 
-vi.mock("@/hooks", () => ({
+vi.mock("@/app/hooks", () => ({
   useAntd: () => ({
     messageAPI: {
       error: mocks.messageError,
       success: mocks.messageSuccess,
     },
   }),
+}));
+
+vi.mock("@/shared/hooks", () => ({
   useGoBack: () => mocks.goBack,
 }));
 

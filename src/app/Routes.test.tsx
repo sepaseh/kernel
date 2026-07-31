@@ -15,7 +15,7 @@ const routeState = vi.hoisted(() => ({
   setCurrentRoute: vi.fn(),
 }));
 
-vi.mock("@/hooks", () => ({
+vi.mock("@/app/hooks", () => ({
   useAllowedRoutes: () => routeState.allowedRoutes,
   useCore: () => ({ setCurrentRoute: routeState.setCurrentRoute }),
 }));

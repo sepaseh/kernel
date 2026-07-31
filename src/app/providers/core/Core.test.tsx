@@ -1,8 +1,8 @@
 import { act } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { useCore } from "@/app/hooks";
 import { storageKeys } from "@/config";
-import { useCore } from "@/hooks";
 import { render, screen } from "@/test/render";
 
 import { CoreProvider } from "./";
