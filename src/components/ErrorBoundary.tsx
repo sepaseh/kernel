@@ -1,4 +1,10 @@
-import { Component, type ErrorInfo, type ReactNode } from "react";
+import {
+  Component,
+  type ErrorInfo,
+  Fragment,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 
 import { i18nInstance } from "@/i18n";
 import { reportError } from "@/utils";
@@ -25,9 +31,9 @@ export class ErrorBoundary extends Component<Props, State> {
     });
   }
 
-  public render(): ReactNode {
+  public render(): ReactElement {
     if (!this.state.hasError) {
-      return this.props.children;
+      return <Fragment>{this.props.children}</Fragment>;
     }
 
     return (

@@ -16,6 +16,16 @@ afterEach(() => {
 });
 
 describe("ErrorBoundary", () => {
+  it("renders healthy children", () => {
+    render(
+      <ErrorBoundary>
+        <p>Ready</p>
+      </ErrorBoundary>,
+    );
+
+    expect(screen.getByText("Ready")).toBeInTheDocument();
+  });
+
   it("reports render failures and offers recovery", async () => {
     await i18nInstance.changeLanguage("en");
     vi.spyOn(console, "error").mockImplementation(() => undefined);
