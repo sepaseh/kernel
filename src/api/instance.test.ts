@@ -193,17 +193,28 @@ describe("API client errors", () => {
     });
   });
 
-  it("uses the unexpected-error message for malformed error responses", async () => {
-    server.use(
-      http.get("http://localhost/malformed-error", () =>
-        HttpResponse.json({ message: null }, { status: 500 }),
-      ),
-    );
+  it.each([
+    ["null", null],
+    ["primitive", "failure"],
+    ["array", []],
+    ["missing message", {}],
+    ["empty message", { message: "" }],
+    ["non-string message", { message: 500 }],
+  ])(
+    "uses the unexpected-error message for a %s response body",
+    async (label, body) => {
+      const path = `/malformed-error/${label.replaceAll(" ", "-")}`;
+      server.use(
+        http.get(`http://localhost${path}`, () =>
+          HttpResponse.json(body, { status: 500 }),
+        ),
+      );
 
-    await expect(apiClient.get("/malformed-error")).rejects.toThrow(
-      i18nInstance.t("unexpectedError"),
-    );
-  });
+      await expect(apiClient.get(path)).rejects.toThrow(
+        i18nInstance.t("unexpectedError"),
+      );
+    },
+  );
 
   it("preserves request cancellation", async () => {
     const controller = new AbortController();

@@ -24,6 +24,23 @@ type RetryableRequestConfig = InternalAxiosRequestConfig & {
   _retried?: boolean;
 };
 
+type ApiErrorBody = {
+  cause?: unknown;
+  message: string;
+};
+
+const isApiErrorBody = (value: unknown): value is ApiErrorBody => {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return false;
+  }
+
+  return (
+    "message" in value &&
+    typeof value.message === "string" &&
+    value.message.length > 0
+  );
+};
+
 const handleUnauthorized = () => {
   if (isHandlingUnauthorized) return;
 
@@ -75,11 +92,7 @@ api.interceptors.response.use(
   async (error) => {
     if (axios.isCancel(error)) return Promise.reject(error);
 
-    if (
-      axios.isAxiosError<{ cause: Record<string, string>; message: string }>(
-        error,
-      )
-    ) {
+    if (axios.isAxiosError<unknown>(error)) {
       if (error.response?.status === 401) {
         const requestConfig = error.config as
           RetryableRequestConfig | undefined;
@@ -106,12 +119,7 @@ api.interceptors.response.use(
       if (error.response) {
         const { data } = error.response;
 
-        if (
-          typeof data !== "object" ||
-          data === null ||
-          typeof data.message !== "string" ||
-          !data.message
-        ) {
+        if (!isApiErrorBody(data)) {
           return Promise.reject(new Error(i18nInstance.t("unexpectedError")));
         }
 
