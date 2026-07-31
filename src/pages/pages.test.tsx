@@ -258,13 +258,9 @@ describe("priority pages", () => {
     expect(mocks.messageSuccess).toHaveBeenCalledWith("profileUpdated");
   });
 
-  it("updates account credentials", async () => {
+  it("updates the account username", async () => {
     const updatedAccount = { ...mocks.account, username: "augusta" };
     vi.mocked(api.updateUsername).mockResolvedValue(updatedAccount);
-    vi.mocked(api.getAccount).mockResolvedValue({
-      ...updatedAccount,
-      email: "augusta@example.com",
-    });
     const { user } = renderPage(<AccountPage />);
 
     const username = screen.getByLabelText("username");
@@ -274,19 +270,25 @@ describe("priority pages", () => {
       within(username.closest("form")!).getByRole("button", { name: "update" }),
     );
 
+    expect(api.updateUsername).toHaveBeenCalledWith({ username: "augusta" });
+    expect(mocks.setUser).toHaveBeenCalledWith(updatedAccount);
+  });
+
+  it("verifies a replacement account email", async () => {
+    const updatedAccount = {
+      ...mocks.account,
+      email: "augusta@example.com",
+    };
+    vi.mocked(api.getAccount).mockResolvedValue(updatedAccount);
+    const { user } = renderPage(<AccountPage />);
     const email = screen.getByLabelText("email");
+
     await user.clear(email);
     await user.type(email, "augusta@example.com");
     await user.click(screen.getByRole("button", { name: "requestOtp" }));
     await user.type(screen.getByLabelText("OTP Input 1"), "123456");
     await user.click(screen.getByRole("button", { name: "verifyEmail" }));
 
-    await user.type(screen.getByLabelText("currentPass"), "current-pass");
-    await user.type(screen.getByLabelText("newPass"), "new-password");
-    await user.type(screen.getByLabelText("confirmPass"), "new-password");
-    await user.click(screen.getByRole("button", { name: "changePassword" }));
-
-    expect(api.updateUsername).toHaveBeenCalledWith({ username: "augusta" });
     expect(api.requestEmailVerification).toHaveBeenCalledWith({
       email: "augusta@example.com",
     });
@@ -294,6 +296,17 @@ describe("priority pages", () => {
       email: "augusta@example.com",
       otp: "123456",
     });
+    expect(mocks.setUser).toHaveBeenCalledWith(updatedAccount);
+  });
+
+  it("changes the account password", async () => {
+    const { user } = renderPage(<AccountPage />);
+
+    await user.type(screen.getByLabelText("currentPass"), "current-pass");
+    await user.type(screen.getByLabelText("newPass"), "new-password");
+    await user.type(screen.getByLabelText("confirmPass"), "new-password");
+    await user.click(screen.getByRole("button", { name: "changePassword" }));
+
     expect(api.changePassword).toHaveBeenCalledWith({
       currentPassword: "current-pass",
       newPassword: "new-password",
