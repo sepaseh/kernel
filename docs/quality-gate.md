@@ -30,5 +30,8 @@ duplication conditions also apply when a change contains fewer than 20 lines.
 CI waits for the quality-gate result and fails when the gate fails.
 
 The remote gate cannot be configured from this repository. It requires
-SonarQube project-administrator access and the repository's `SONAR_TOKEN`,
-`SONAR_PROJECT_KEY`, and, for SonarQube Server, `SONAR_HOST_URL` settings.
+SonarQube project-administrator access and all three GitHub Actions settings:
+the `SONAR_TOKEN` repository secret plus the `SONAR_PROJECT_KEY` and
+`SONAR_HOST_URL` repository variables. CI fails before analysis when any
+setting is missing. See [Testing](testing.md#sonarqube) for configuration
+details.

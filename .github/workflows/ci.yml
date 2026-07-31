@@ -52,18 +52,25 @@ jobs:
           path: pacts
           retention-days: 14
 
-      - name: Check SonarQube configuration
-        id: sonarqube
+      - name: Validate SonarQube configuration
         env:
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
           SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          if [[ -n "$SONAR_PROJECT_KEY" && -n "$SONAR_TOKEN" ]]; then
-            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          missing=()
+
+          [[ -z "$SONAR_HOST_URL" ]] && missing+=("SONAR_HOST_URL")
+          [[ -z "$SONAR_PROJECT_KEY" ]] && missing+=("SONAR_PROJECT_KEY")
+          [[ -z "$SONAR_TOKEN" ]] && missing+=("SONAR_TOKEN")
+
+          if (( ${#missing[@]} > 0 )); then
+            missing_list=$(IFS=,; echo "${missing[*]}")
+            echo "::error title=Missing SonarQube configuration::Configure these repository settings: $missing_list"
+            exit 1
           fi
 
       - name: SonarQube scan
-        if: ${{ steps.sonarqube.outputs.enabled == 'true' }}
         uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995 # v8.1.0
         env:
           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
