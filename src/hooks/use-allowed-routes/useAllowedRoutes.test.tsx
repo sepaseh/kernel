@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 import { describe, expect, it } from "vitest";
 
 import { CoreContext, CoreContextProps } from "@/app/contexts";
-import { AccountProps } from "@/types";
+import { AccountProps } from "@/features/account/types";
 
 import { useAllowedRoutes } from "./";
 

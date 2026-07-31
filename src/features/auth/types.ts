@@ -1,7 +1,3 @@
-export type AccessTokenProps = {
-  accessToken: string;
-};
-
 export type ChangePasswordParams = {
   currentPassword: string;
   newPassword: string;

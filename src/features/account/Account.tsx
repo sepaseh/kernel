@@ -14,15 +14,10 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { changePassword } from "@/features/auth/api";
+import { ChangePasswordParams } from "@/features/auth/types";
 import { useAntd, useCore } from "@/hooks";
 import { getErrorMessage } from "@/shared/lib";
 import { OtpInput } from "@/shared/ui/otp-input";
-import {
-  ChangePasswordParams,
-  UpdateProfileParams,
-  UpdateUsernameParams,
-  VerifyEmailParams,
-} from "@/types";
 
 import {
   getAccount,
@@ -31,6 +26,11 @@ import {
   updateUsername,
   verifyEmail,
 } from "./api";
+import {
+  UpdateProfileParams,
+  UpdateUsernameParams,
+  VerifyEmailParams,
+} from "./types";
 
 type PasswordFormParams = ChangePasswordParams & {
   confirmPassword: string;

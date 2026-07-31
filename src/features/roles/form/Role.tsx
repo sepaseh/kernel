@@ -6,10 +6,14 @@ import { useLocation } from "react-router";
 
 import { modalKeys } from "@/config";
 import { createRole, updateRole } from "@/features/roles/api";
+import {
+  PermissionGroupProps,
+  RoleMutationParams,
+  RoleProps,
+} from "@/features/roles/types";
 import { useAntd, useGoBack } from "@/hooks";
 import { getErrorMessage } from "@/shared/lib";
 import { FormDrawer } from "@/shared/ui/form-drawer";
-import { PermissionGroupProps, RoleMutationParams, RoleProps } from "@/types";
 
 type RoleFormProps = {
   data?: RoleProps;

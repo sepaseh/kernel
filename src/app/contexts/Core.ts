@@ -1,7 +1,7 @@
 import { createContext } from "react";
 
 import { Language, RouteKey, Theme } from "@/config";
-import { AccountProps } from "@/types";
+import { AccountProps } from "@/features/account/types";
 
 export type CoreContextProps = {
   currentRoute: RouteKey;

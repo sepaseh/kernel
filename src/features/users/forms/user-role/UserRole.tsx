@@ -6,10 +6,14 @@ import { useLocation } from "react-router";
 
 import { modalKeys } from "@/config";
 import { updateUserRoles } from "@/features/users/api";
+import {
+  UserOptionProps,
+  UserProps,
+  UserRoleParams,
+} from "@/features/users/types";
 import { useAntd, useGoBack } from "@/hooks";
 import { getErrorMessage } from "@/shared/lib";
 import { FormDrawer } from "@/shared/ui/form-drawer";
-import { UserOptionProps, UserProps, UserRoleParams } from "@/types";
 
 type UserFormRoleProps = {
   data?: UserProps;

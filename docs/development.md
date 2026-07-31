@@ -82,7 +82,7 @@ Keep feature code close to the existing structure:
 - Shared API infrastructure lives in `src/shared/api`.
 - Shared UI lives in `src/shared/ui`.
 - Shared utilities live in `src/shared/lib`.
-- Shared contracts live in `src/types`.
+- Domain contracts live beside their feature; infrastructure contracts live beside their shared module.
 
 ## Localization
 

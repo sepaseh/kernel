@@ -34,12 +34,6 @@ import {
 import { getErrorMessage } from "@/shared/lib";
 import { DigitsInput } from "@/shared/ui/digits-input";
 import { Icon } from "@/shared/ui/icon";
-import {
-  UserListParams,
-  UserOptionProps,
-  UserProps,
-  UserSummaryProps,
-} from "@/types";
 
 import {
   deleteUser,
@@ -50,6 +44,12 @@ import {
   updateUserStatus,
   updateUserSystemAdmin,
 } from "./api";
+import {
+  UserListParams,
+  UserOptionProps,
+  UserProps,
+  UserSummaryProps,
+} from "./types";
 
 export const UsersPage = () => {
   const { t } = useTranslation();

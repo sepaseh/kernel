@@ -5,13 +5,13 @@ import { Link, useNavigate } from "react-router";
 
 import { routeTree } from "@/config";
 import { register, requestOtp } from "@/features/auth/api";
+import { RegisterParams } from "@/features/auth/types";
 import { useAntd } from "@/hooks";
 import { getErrorMessage } from "@/shared/lib";
 import { DigitsInput } from "@/shared/ui/digits-input";
 import { Icon } from "@/shared/ui/icon";
 import { OtpInput } from "@/shared/ui/otp-input";
 import { PasswordFields } from "@/shared/ui/password-fields";
-import { RegisterParams } from "@/types";
 
 type RegisterFormParams = RegisterParams & {
   confirmPassword: string;

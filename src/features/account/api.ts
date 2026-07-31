@@ -1,12 +1,13 @@
+import { OtpRequestProps } from "@/features/auth/types";
 import { apiClient } from "@/shared/api";
+
 import {
   AccountProps,
   EmailVerificationParams,
-  OtpRequestProps,
   UpdateProfileParams,
   UpdateUsernameParams,
   VerifyEmailParams,
-} from "@/types";
+} from "./types";
 
 export const getAccount = async (): Promise<AccountProps> => {
   return apiClient.get<AccountProps>("/account/me");

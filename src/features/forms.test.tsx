@@ -9,8 +9,8 @@ import { UserForm } from "@/features/users/forms/user";
 import { UserPasswordForm } from "@/features/users/forms/user-password";
 import { UserFormRole } from "@/features/users/forms/user-role";
 import { UserWorkspaceForm } from "@/features/users/forms/user-workspace";
+import { UserProps } from "@/features/users/types";
 import { render, screen } from "@/test/render";
-import { UserProps } from "@/types";
 
 const mocks = vi.hoisted(() => ({
   goBack: vi.fn(),

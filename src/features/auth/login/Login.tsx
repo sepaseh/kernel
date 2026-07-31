@@ -5,10 +5,10 @@ import { Link, useNavigate } from "react-router";
 
 import { routeTree } from "@/config";
 import { login } from "@/features/auth/api";
+import { LoginParams } from "@/features/auth/types";
 import { useAntd } from "@/hooks";
 import { getErrorMessage } from "@/shared/lib";
 import { Icon } from "@/shared/ui/icon";
-import { LoginParams } from "@/types";
 
 export const LoginPage = () => {
   const { t } = useTranslation();

@@ -6,12 +6,16 @@ import { useLocation } from "react-router";
 
 import { modalKeys } from "@/config";
 import { createUser, updateUser } from "@/features/users/api";
+import {
+  CreateUserParams,
+  UpdateUserParams,
+  UserProps,
+} from "@/features/users/types";
 import { useAntd, useGoBack } from "@/hooks";
 import { getErrorMessage } from "@/shared/lib";
 import { DigitsInput } from "@/shared/ui/digits-input";
 import { FormDrawer } from "@/shared/ui/form-drawer";
 import { PasswordFields } from "@/shared/ui/password-fields";
-import { CreateUserParams, UpdateUserParams, UserProps } from "@/types";
 
 type UserFormParams = CreateUserParams & {
   confirmPassword: string;

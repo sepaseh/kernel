@@ -19,9 +19,9 @@ import { RoleForm } from "@/features/roles/form";
 import { useActionPermissions, useAntd } from "@/hooks";
 import { getErrorMessage } from "@/shared/lib";
 import { Icon } from "@/shared/ui/icon";
-import { PermissionGroupProps, RoleProps } from "@/types";
 
 import { deleteRole, fetchPermissions, fetchRole, fetchRoles } from "./api";
+import { PermissionGroupProps, RoleProps } from "./types";
 
 export const RolesPage = () => {
   const { t } = useTranslation();
