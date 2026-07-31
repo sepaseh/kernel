@@ -122,8 +122,8 @@ Coverage uses Vitest's V8 provider and includes untested source files. Reports
 are written to `coverage/`, which is ignored by Git. Global thresholds preserve
 the established baseline across statements, branches, functions, and lines.
 Raise thresholds as coverage grows; never lower them to make a change pass.
-SonarQube separately requires at least 80% coverage on new code through the
-mandatory quality gate.
+SonarQube reports a recommended target of at least 80% coverage on new code. Its
+quality gate is advisory and does not block CI.
 
 Coverage is a guardrail, not a quality score. Critical authentication, token
 refresh, authorization, and account-management branches should receive direct
@@ -151,6 +151,7 @@ Configure them under **Settings → Secrets and variables → Actions**. Store t
 token as a secret, never as a variable or committed file. CI fails with the
 names of missing settings before analysis starts; it never prints their values.
 
-The scan waits for the configured quality gate, so a failed gate fails CI. See
-[SonarQube Quality Gate](quality-gate.md) for the required new-code conditions
+The scan publishes findings without waiting for the configured quality gate.
+Scanner or gate failures do not fail CI. See [SonarQube Analysis](quality-gate.md)
+for the recommended new-code targets
 and project setup.

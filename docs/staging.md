@@ -58,7 +58,7 @@ npm run test:staging
 
 A release is eligible for production only when:
 
-1. The ordinary CI, CodeQL, and quality-gate checks pass.
+1. The ordinary CI and CodeQL checks pass, and SonarQube findings are reviewed.
 2. The exact candidate artifact is deployed to staging.
 3. The Staging validation workflow passes for that deployment.
 4. Any required manual acceptance checks complete.
