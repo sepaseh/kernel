@@ -74,7 +74,7 @@ The nginx configuration applies:
 - HTTP Strict Transport Security for one year, including subdomains
 - Denial of framing through CSP and `X-Frame-Options`
 - MIME sniffing protection
-- Strict-origin referrer behavior
+- Strict-origin-when-cross-origin referrer behavior
 - Disabled camera, geolocation, microphone, payment, and USB browser features
 
 HSTS is honored by browsers only over HTTPS. When TLS terminates at a CDN or
