@@ -68,6 +68,15 @@ Check unused files, exports, and dependencies:
 npm run knip
 ```
 
+Explore shared UI and full-page layouts in isolation:
+
+```bash
+npm run storybook
+```
+
+Stories stay beside the component or layout they document. CI builds the
+static Storybook bundle so broken stories and configuration fail before merge.
+
 ## Import Style
 
 Use `./` for same-directory imports and `@/` for imports that cross source directories:

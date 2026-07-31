@@ -16,6 +16,7 @@ playwright-report
 pacts
 reports/mutation
 test-results
+storybook-static
 blob-report
 *.local
 .vitest-cache

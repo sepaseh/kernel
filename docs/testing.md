@@ -5,12 +5,13 @@ fast and maintainable.
 
 ## Stack
 
-| Layer           | Tools                                | Use it for                                                 |
-| --------------- | ------------------------------------ | ---------------------------------------------------------- |
-| Unit            | Vitest                               | Pure functions, hooks, reducers, and isolated logic        |
-| Component       | React Testing Library and user-event | User-visible rendering and interactions                    |
-| API integration | MSW                                  | Request serialization, response handling, and error states |
-| End-to-end      | Playwright and axe-core              | Critical journeys and automated accessibility checks       |
+| Layer           | Tools                                | Use it for                                                  |
+| --------------- | ------------------------------------ | ----------------------------------------------------------- |
+| Unit            | Vitest                               | Pure functions, hooks, reducers, and isolated logic         |
+| Component       | React Testing Library and user-event | User-visible rendering and interactions                     |
+| UI development  | Storybook                            | Isolated components, layouts, themes, and responsive states |
+| API integration | MSW                                  | Request serialization, response handling, and error states  |
+| End-to-end      | Playwright and axe-core              | Critical journeys and automated accessibility checks        |
 
 Vitest is the best unit runner for this project because it shares Vite's
 TypeScript and module resolution model. React Testing Library encourages tests
@@ -28,6 +29,7 @@ missing testing layer.
 ```text
 src/
   **/*.test.ts(x)       # Unit, component, and API integration tests
+  **/*.stories.tsx      # Stories colocated with components and layouts
   test/
     render.tsx          # Shared Testing Library render and user-event setup
     setup.ts            # Global cleanup and MSW lifecycle
@@ -52,6 +54,8 @@ separate because they run against the built application.
 - `npm run test:e2e:ui` opens Playwright's interactive UI.
 - `npm run test:e2e:report` opens the most recent HTML report.
 - `npm run test:e2e:update-snapshots` reviews and updates visual baselines.
+- `npm run storybook` starts the component and layout explorer.
+- `npm run build-storybook` verifies the static Storybook build used by CI.
 - `npm run performance` builds the app and checks bundle-size budgets.
 - `npm run lighthouse` runs the local advisory Lighthouse audit after a build.
 - `npm run test:mutation`, `test:smoke`, and `test:staging` run specialized
