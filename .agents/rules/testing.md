@@ -12,14 +12,15 @@ Use the configured project checks first:
 npm run typecheck
 npm run lint
 npm run test:coverage
-npm run test:e2e
-npm run build
+npm run test:contract
+npm run test:e2e -- --project=chromium
+npm run performance
 npm run knip
 ```
 
 ## Choosing a test layer
 
-If the project gains a test setup, use this decision tree:
+Use this decision tree when choosing the existing test setup:
 
 - Pure utility or mapper: unit test.
 - Hook that composes state or side effects: integration test.

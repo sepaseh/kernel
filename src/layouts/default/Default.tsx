@@ -86,9 +86,9 @@ export const DefaultLayout = () => {
           gap={16}
           justify="space-between"
           style={{
+            backgroundColor: token.colorBgContainer,
             height: 64,
             paddingInline: token.paddingSM,
-            backgroundColor: token.colorBgContainer,
           }}
         >
           <Link to={routeTree.root.path}>
@@ -143,16 +143,16 @@ export const DefaultLayout = () => {
               <>
                 <Flex
                   style={{
+                    backgroundColor: token.colorBgContainer,
+                    gap: 4,
                     minWidth: 200,
                     paddingBlock: 8,
                     paddingInline: 16,
-                    gap: 4,
-                    backgroundColor: token.colorBgContainer,
                   }}
                   vertical
                 >
                   <Typography.Text
-                    style={{ display: "flex", alignItems: "center", gap: 8 }}
+                    style={{ alignItems: "center", display: "flex", gap: 8 }}
                   >
                     <Icon name="user" size={14} />
                     {`${user.firstName} ${user.lastName}`.trim()}
@@ -172,7 +172,7 @@ export const DefaultLayout = () => {
         </Flex>
       </header>
       <main
-        style={{ display: "flex", width: "100%", minWidth: 0, flexGrow: 1 }}
+        style={{ display: "flex", flexGrow: 1, minWidth: 0, width: "100%" }}
       >
         <Outlet />
       </main>

@@ -12,252 +12,72 @@ import { fileURLToPath } from "url";
 
 const srcRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), "src");
 
-// Recess order: positioning → box model → flex/grid → border → background/color → typography → ui → transform/animation
-// https://github.com/stormwarning/stylelint-config-recess-order
-const RECESS_ORDER = [
-  // Generated content
-  "content",
-  // Positioning
-  "position",
-  "top",
-  "right",
-  "bottom",
-  "left",
-  "inset",
-  "insetBlock",
-  "insetBlockStart",
-  "insetBlockEnd",
-  "insetInline",
-  "insetInlineStart",
-  "insetInlineEnd",
-  "zIndex",
-  // Box model
-  "display",
-  "visibility",
-  "float",
-  "clear",
-  "overflow",
-  "overflowX",
-  "overflowY",
-  "overflowBlock",
-  "overflowInline",
-  "clipPath",
-  "boxSizing",
-  "width",
-  "minWidth",
-  "maxWidth",
-  "height",
-  "minHeight",
-  "maxHeight",
-  "inlineSize",
-  "minInlineSize",
-  "maxInlineSize",
-  "blockSize",
-  "minBlockSize",
-  "maxBlockSize",
-  "aspectRatio",
-  "padding",
-  "paddingTop",
-  "paddingRight",
-  "paddingBottom",
-  "paddingLeft",
-  "paddingBlock",
-  "paddingBlockStart",
-  "paddingBlockEnd",
-  "paddingInline",
-  "paddingInlineStart",
-  "paddingInlineEnd",
-  "margin",
-  "marginTop",
-  "marginRight",
-  "marginBottom",
-  "marginLeft",
-  "marginBlock",
-  "marginBlockStart",
-  "marginBlockEnd",
-  "marginInline",
-  "marginInlineStart",
-  "marginInlineEnd",
-  // Flex
-  "flex",
-  "flexDirection",
-  "flexWrap",
-  "flexFlow",
-  "flexGrow",
-  "flexShrink",
-  "flexBasis",
-  "alignContent",
-  "alignItems",
-  "alignSelf",
-  "justifyContent",
-  "justifyItems",
-  "justifySelf",
-  "placeContent",
-  "placeItems",
-  "placeSelf",
-  "gap",
-  "rowGap",
-  "columnGap",
-  "order",
-  // Grid
-  "grid",
-  "gridTemplate",
-  "gridTemplateColumns",
-  "gridTemplateRows",
-  "gridTemplateAreas",
-  "gridAutoColumns",
-  "gridAutoRows",
-  "gridAutoFlow",
-  "gridArea",
-  "gridColumn",
-  "gridColumnStart",
-  "gridColumnEnd",
-  "gridRow",
-  "gridRowStart",
-  "gridRowEnd",
-  // Border
-  "border",
-  "borderTop",
-  "borderRight",
-  "borderBottom",
-  "borderLeft",
-  "borderBlock",
-  "borderBlockStart",
-  "borderBlockEnd",
-  "borderInline",
-  "borderInlineStart",
-  "borderInlineEnd",
-  "borderWidth",
-  "borderTopWidth",
-  "borderRightWidth",
-  "borderBottomWidth",
-  "borderLeftWidth",
-  "borderStyle",
-  "borderTopStyle",
-  "borderRightStyle",
-  "borderBottomStyle",
-  "borderLeftStyle",
-  "borderColor",
-  "borderTopColor",
-  "borderRightColor",
-  "borderBottomColor",
-  "borderLeftColor",
-  "borderRadius",
-  "borderTopLeftRadius",
-  "borderTopRightRadius",
-  "borderBottomRightRadius",
-  "borderBottomLeftRadius",
-  "borderStartStartRadius",
-  "borderStartEndRadius",
-  "borderEndStartRadius",
-  "borderEndEndRadius",
-  "borderSpacing",
-  "borderCollapse",
-  "outline",
-  "outlineWidth",
-  "outlineStyle",
-  "outlineColor",
-  "outlineOffset",
-  "boxShadow",
-  // Background & color
-  "background",
-  "backgroundColor",
-  "backgroundImage",
-  "backgroundPosition",
-  "backgroundPositionX",
-  "backgroundPositionY",
-  "backgroundSize",
-  "backgroundRepeat",
-  "backgroundAttachment",
-  "backgroundClip",
-  "backgroundOrigin",
-  "color",
-  "opacity",
-  "filter",
-  "backdropFilter",
-  "mixBlendMode",
-  "isolation",
-  // Typography
-  "font",
-  "fontFamily",
-  "fontSize",
-  "fontWeight",
-  "fontStyle",
-  "fontVariant",
-  "fontStretch",
-  "lineHeight",
-  "letterSpacing",
-  "wordSpacing",
-  "textAlign",
-  "textDecoration",
-  "textDecorationColor",
-  "textDecorationLine",
-  "textDecorationStyle",
-  "textTransform",
-  "textOverflow",
-  "textShadow",
-  "textIndent",
-  "whiteSpace",
-  "wordBreak",
-  "wordWrap",
-  "overflowWrap",
-  "hyphens",
-  "verticalAlign",
-  "direction",
-  // List & table
-  "listStyle",
-  "listStyleType",
-  "listStylePosition",
-  "listStyleImage",
-  "tableLayout",
-  "captionSide",
-  "emptyCells",
-  // UI
-  "cursor",
-  "pointerEvents",
-  "resize",
-  "userSelect",
-  "appearance",
-  "caretColor",
-  "scrollBehavior",
-  "scrollSnapType",
-  "scrollSnapAlign",
-  "touchAction",
-  "willChange",
-  // SVG
-  "fill",
-  "fillOpacity",
-  "fillRule",
-  "stroke",
-  "strokeWidth",
-  "strokeDasharray",
-  "strokeDashoffset",
-  "strokeLinecap",
-  "strokeLinejoin",
-  "strokeMiterlimit",
-  "strokeOpacity",
-  // Transform & animation
-  "transform",
-  "transformOrigin",
-  "transformStyle",
-  "perspective",
-  "perspectiveOrigin",
-  "backfaceVisibility",
-  "transition",
-  "transitionProperty",
-  "transitionDuration",
-  "transitionTimingFunction",
-  "transitionDelay",
-  "animation",
-  "animationName",
-  "animationDuration",
-  "animationTimingFunction",
-  "animationDelay",
-  "animationIterationCount",
-  "animationDirection",
-  "animationFillMode",
-  "animationPlayState",
-];
+const SHORTHAND_LONGHANDS: Record<string, readonly string[]> = {
+  animation: [
+    "animationDelay",
+    "animationDirection",
+    "animationDuration",
+    "animationFillMode",
+    "animationIterationCount",
+    "animationName",
+    "animationPlayState",
+    "animationTimingFunction",
+  ],
+  background: [
+    "backgroundAttachment",
+    "backgroundClip",
+    "backgroundColor",
+    "backgroundImage",
+    "backgroundOrigin",
+    "backgroundPosition",
+    "backgroundRepeat",
+    "backgroundSize",
+  ],
+  border: [
+    "borderBlock",
+    "borderBottom",
+    "borderColor",
+    "borderInline",
+    "borderLeft",
+    "borderRight",
+    "borderStyle",
+    "borderTop",
+    "borderWidth",
+  ],
+  font: [
+    "fontFamily",
+    "fontSize",
+    "fontStretch",
+    "fontStyle",
+    "fontVariant",
+    "fontWeight",
+    "lineHeight",
+  ],
+  inset: ["bottom", "insetBlock", "insetInline", "left", "right", "top"],
+  margin: [
+    "marginBlock",
+    "marginBottom",
+    "marginInline",
+    "marginLeft",
+    "marginRight",
+    "marginTop",
+  ],
+  outline: ["outlineColor", "outlineOffset", "outlineStyle", "outlineWidth"],
+  padding: [
+    "paddingBlock",
+    "paddingBottom",
+    "paddingInline",
+    "paddingLeft",
+    "paddingRight",
+    "paddingTop",
+  ],
+  transition: [
+    "transitionDelay",
+    "transitionDuration",
+    "transitionProperty",
+    "transitionTimingFunction",
+  ],
+};
 
 const STYLE_PROP_LIST = ["style", "styles"] as const;
 
@@ -277,46 +97,100 @@ function getPropertyName(key: TSESTree.Property["key"]): string {
   return "";
 }
 
-function getRecessIndex(key: string) {
-  const i = RECESS_ORDER.indexOf(key);
-  return i === -1 ? Infinity : i;
+function getStyleObjects(node: TSESTree.JSXAttribute) {
+  if (
+    node.name.type !== AST_NODE_TYPES.JSXIdentifier ||
+    !node.value ||
+    node.value.type !== AST_NODE_TYPES.JSXExpressionContainer ||
+    node.value.expression.type !== AST_NODE_TYPES.ObjectExpression
+  ) {
+    return [];
+  }
+
+  const name = node.name.name as StylePropName;
+
+  if (!STYLE_PROPS.has(name)) return [];
+
+  const expression = node.value.expression;
+
+  if (name === "style") return [expression];
+
+  return expression.properties.flatMap((slot) =>
+    slot.type === AST_NODE_TYPES.Property &&
+    slot.value.type === AST_NODE_TYPES.ObjectExpression
+      ? [slot.value]
+      : [],
+  );
 }
 
-function checkAndFixStyleObject(
+function getSortableProperties(objNode: TSESTree.ObjectExpression) {
+  const properties = objNode.properties;
+
+  if (
+    properties.some(
+      (property) =>
+        property.type !== AST_NODE_TYPES.Property ||
+        property.computed ||
+        (property.key.type !== AST_NODE_TYPES.Identifier &&
+          property.key.type !== AST_NODE_TYPES.Literal),
+    )
+  ) {
+    return [];
+  }
+
+  return properties as TSESTree.Property[];
+}
+
+function checkAndFixAlphabeticalStyleOrder(
   context: Rule.RuleContext,
   objNode: TSESTree.ObjectExpression,
 ) {
-  const props = objNode.properties.filter(
-    (p): p is TSESTree.Property =>
-      p.type === AST_NODE_TYPES.Property &&
-      (p.key.type === AST_NODE_TYPES.Identifier ||
-        p.key.type === AST_NODE_TYPES.Literal),
+  const properties = getSortableProperties(objNode);
+  if (properties.length < 2) return;
+
+  const sorted = [...properties].sort((a, b) =>
+    getPropertyName(a.key).localeCompare(getPropertyName(b.key), "en"),
+  );
+  const firstMismatch = properties.findIndex(
+    (property, index) => property !== sorted[index],
   );
 
-  const sorted = [...props].sort((a, b) => {
-    const keyA = getPropertyName(a.key);
-    const keyB = getPropertyName(b.key);
-    return getRecessIndex(keyA) - getRecessIndex(keyB);
+  if (firstMismatch === -1) return;
+
+  context.report({
+    node: properties[firstMismatch].key,
+    message: "Style properties should be in alphabetical order.",
+    fix(fixer) {
+      return properties.map((property, index) =>
+        fixer.replaceText(property, context.sourceCode.getText(sorted[index])),
+      );
+    },
   });
+}
 
-  const sourceCode = context.sourceCode;
+function checkShorthandConflicts(
+  context: Rule.RuleContext,
+  objNode: TSESTree.ObjectExpression,
+) {
+  const properties = getSortableProperties(objNode);
+  const propertyByName = new Map(
+    properties.map((property) => [getPropertyName(property.key), property]),
+  );
 
-  props.forEach((prop, i) => {
-    if (prop !== sorted[i]) {
-      const key = getPropertyName(prop.key);
-      const expectedKey = getPropertyName(sorted[i].key);
+  for (const [shorthand, longhands] of Object.entries(SHORTHAND_LONGHANDS)) {
+    const shorthandProperty = propertyByName.get(shorthand);
+    if (!shorthandProperty) continue;
 
-      context.report({
-        node: prop.key,
-        message: `CSS property "${key}" is out of recess order (expected "${expectedKey}" here)`,
-        fix(fixer) {
-          return props.map((original, j) =>
-            fixer.replaceText(original, sourceCode.getText(sorted[j] as any)),
-          );
-        },
-      });
-    }
-  });
+    const conflicts = longhands.filter((longhand) =>
+      propertyByName.has(longhand),
+    );
+    if (conflicts.length === 0) continue;
+
+    context.report({
+      node: shorthandProperty.key,
+      message: `Do not mix CSS shorthand "${shorthand}" with ${conflicts.join(", ")}.`,
+    });
+  }
 }
 
 const localRules = {
@@ -423,46 +297,25 @@ const localRules = {
         };
       },
     },
-    "style-props-recess-order": {
+    "style-props-alphabetical-order": {
       meta: { fixable: "code" },
       create(context: Rule.RuleContext) {
         return {
           JSXAttribute(node: TSESTree.JSXAttribute) {
-            if (node.name.type !== AST_NODE_TYPES.JSXIdentifier) return;
-
-            const name = node.name?.name as StylePropName;
-
-            if (!STYLE_PROPS.has(name)) {
-              return;
-            }
-
-            if (
-              !node.value ||
-              node.value.type !== AST_NODE_TYPES.JSXExpressionContainer
-            ) {
-              return;
-            }
-
-            const expr = node.value.expression;
-
-            if (expr.type !== AST_NODE_TYPES.ObjectExpression) {
-              return;
-            }
-
-            if (name === "styles") {
-              expr.properties.forEach((slot) => {
-                if (
-                  slot.type === AST_NODE_TYPES.Property &&
-                  slot.value?.type === AST_NODE_TYPES.ObjectExpression
-                ) {
-                  checkAndFixStyleObject(context, slot.value);
-                }
-              });
-
-              return;
-            }
-
-            checkAndFixStyleObject(context, expr);
+            getStyleObjects(node).forEach((styleObject) =>
+              checkAndFixAlphabeticalStyleOrder(context, styleObject),
+            );
+          },
+        };
+      },
+    },
+    "style-props-no-shorthand-conflicts": {
+      create(context: Rule.RuleContext) {
+        return {
+          JSXAttribute(node: TSESTree.JSXAttribute) {
+            getStyleObjects(node).forEach((styleObject) =>
+              checkShorthandConflicts(context, styleObject),
+            );
           },
         };
       },
@@ -493,12 +346,14 @@ export default [
         { allowConstantExport: true },
       ],
       "@typescript-eslint/no-explicit-any": "off",
+      "no-dupe-keys": "error",
       "simple-import-sort/imports": "error",
       "simple-import-sort/exports": "error",
       "local/architecture-boundaries": "error",
       "local/no-parent-relative-imports": "error",
       "local/no-alias-for-same-dir": "error",
-      "local/style-props-recess-order": "error",
+      "local/style-props-alphabetical-order": "warn",
+      "local/style-props-no-shorthand-conflicts": "error",
     },
   },
 ];

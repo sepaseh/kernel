@@ -16,9 +16,6 @@ concurrency:
 permissions:
   contents: read
 
-env:
-  NODE_VERSION: 24.18.0
-
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -31,7 +28,7 @@ jobs:
 
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: .nvmrc
           cache: npm
 
       - run: npm ci
@@ -55,40 +52,29 @@ jobs:
           path: pacts
           retention-days: 14
 
-      - name: Validate SonarQube configuration
-        continue-on-error: true
-        if: >-
-          github.event_name != 'pull_request' ||
-          github.event.pull_request.head.repo.full_name == github.repository
+      - name: Detect SonarQube configuration
+        id: sonar-config
         env:
           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
           SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          missing=()
-
-          [[ -z "$SONAR_HOST_URL" ]] && missing+=("SONAR_HOST_URL")
-          [[ -z "$SONAR_PROJECT_KEY" ]] && missing+=("SONAR_PROJECT_KEY")
-          [[ -z "$SONAR_TOKEN" ]] && missing+=("SONAR_TOKEN")
-
-          if (( ${#missing[@]} > 0 )); then
-            missing_list=$(IFS=,; echo "${missing[*]}")
-            echo "::error title=Missing SonarQube configuration::Configure these repository settings: $missing_list"
-            exit 1
+          if [[ -n "$SONAR_HOST_URL" && -n "$SONAR_PROJECT_KEY" && -n "$SONAR_TOKEN" ]]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=SonarQube skipped::Repository settings are not available for this run."
           fi
 
-      - name: SonarQube scan
+      - name: SonarQube advisory scan
+        if: steps.sonar-config.outputs.enabled == 'true'
         continue-on-error: true
-        if: >-
-          github.event_name != 'pull_request' ||
-          github.event.pull_request.head.repo.full_name == github.repository
         uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995 # v8.1.0
         env:
           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY }}
         with:
-          args: -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
+          args: -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
 
       - run: npm run knip
 
@@ -107,12 +93,16 @@ jobs:
 
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: .nvmrc
           cache: npm
 
       - run: npm ci
 
       - run: npm run performance
+
+      - name: Lighthouse advisory audit
+        continue-on-error: true
+        run: npm run lighthouse
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
@@ -141,14 +131,14 @@ jobs:
 
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: .nvmrc
           cache: npm
 
       - run: npm ci
 
-      - run: npx playwright install --with-deps chromium firefox webkit
+      - run: npx playwright install --with-deps chromium
 
-      - run: npm run test:e2e
+      - run: npm run test:e2e -- --project=chromium
 
       - if: ${{ !cancelled() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

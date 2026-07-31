@@ -1,7 +1,6 @@
 name: Staging validation
 
 on:
-  deployment_status:
   workflow_dispatch:
     inputs:
       application_url:
@@ -15,27 +14,17 @@ on:
 
 concurrency:
   cancel-in-progress: true
-  group: staging-${{ github.event.deployment.id || inputs.application_url }}
+  group: staging-${{ inputs.application_url }}
 
 permissions:
   contents: read
 
 jobs:
   validate:
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (github.event.deployment_status.state == 'success' &&
-      github.event.deployment.environment == 'staging')
     runs-on: ubuntu-latest
     env:
-      NODE_VERSION: 24.18.0
-      STAGING_API_HEALTH_URL: >-
-        ${{ github.event_name == 'workflow_dispatch' &&
-        inputs.api_health_url || vars.STAGING_API_HEALTH_URL }}
-      STAGING_BASE_URL: >-
-        ${{ github.event_name == 'workflow_dispatch' &&
-        inputs.application_url ||
-        github.event.deployment_status.environment_url }}
+      STAGING_API_HEALTH_URL: ${{ inputs.api_health_url }}
+      STAGING_BASE_URL: ${{ inputs.application_url }}
 
     steps:
       - name: Validate staging targets
@@ -52,7 +41,7 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           cache: npm
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: .nvmrc
 
       - run: npm ci
 

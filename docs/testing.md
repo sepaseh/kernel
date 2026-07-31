@@ -47,22 +47,24 @@ separate because they run against the built application.
 - `npm test` runs Vitest once.
 - `npm run test:watch` starts Vitest in watch mode.
 - `npm run test:coverage` writes text, HTML, JSON summary, and LCOV reports.
+- `npm run test:contract` generates Pact consumer contracts.
 - `npm run test:e2e` builds the application and runs Playwright.
 - `npm run test:e2e:ui` opens Playwright's interactive UI.
 - `npm run test:e2e:report` opens the most recent HTML report.
 - `npm run test:e2e:update-snapshots` reviews and updates visual baselines.
-- `npm run performance` builds the app, checks bundle budgets, and runs
-  Lighthouse.
+- `npm run performance` builds the app and checks bundle-size budgets.
+- `npm run lighthouse` runs the local advisory Lighthouse audit after a build.
+- `npm run test:mutation`, `test:smoke`, and `test:staging` run specialized
+  checks that are scheduled or manually invoked outside the pull-request loop.
 
 Vitest loads the tracked `.env.test` file, which provides deterministic local
 API and application base URLs for unit, component, and API integration tests.
 These values take precedence over developer-specific `.env.local` settings, so
 tests never depend on or contact a configured development backend.
 
-Local Chromium and mobile E2E runs use the installed stable Chrome channel.
-Firefox and WebKit use Playwright's pinned browser builds. GitHub CI installs
-all three pinned engines for reproducibility. Install the required local
-browsers once with:
+Pull requests run the critical browser suite in Chromium. Firefox, WebKit,
+mobile, and visual projects remain available for focused local checks when a
+change warrants broader browser coverage. Install those browsers as needed:
 
 ```sh
 npx playwright install firefox webkit
@@ -81,12 +83,16 @@ The production build enforces two JavaScript size limits:
 - No individual JavaScript chunk may exceed 450 KB.
 - All emitted JavaScript chunks combined may not exceed 1.6 MB.
 
-Lighthouse audits the production login page and requires a performance score of
-at least 80, first contentful paint within 3.5 seconds, largest contentful paint
-within 4 seconds, time to interactive within 4 seconds, total blocking time
-below 300 milliseconds, and cumulative layout shift no greater than 0.1.
-Reports are written to `.lighthouseci/` and uploaded by CI for 14 days,
-including when the performance job fails.
+These limits catch unexpectedly large bundles without pretending that a CI
+preview server represents real production performance.
+
+CI also runs a non-blocking Lighthouse audit against the built login page and
+uploads its HTML and JSON reports for 14 days. Broad advisory thresholds flag
+only substantial regressions: a performance score below 65, FCP above 5s, LCP
+above 6s, TTI above 7s, TBT above 600ms, or CLS above 0.2. Runner variance may
+still affect results, so bundle-size budgets remain the blocking performance
+gate. Replace the preview target with a representative deployed URL when one
+exists.
 
 ## Conventions
 
@@ -122,9 +128,6 @@ Coverage uses Vitest's V8 provider and includes untested source files. Reports
 are written to `coverage/`, which is ignored by Git. Global thresholds preserve
 the established baseline across statements, branches, functions, and lines.
 Raise thresholds as coverage grows; never lower them to make a change pass.
-SonarQube reports a recommended target of at least 80% coverage on new code. Its
-quality gate is advisory and does not block CI.
-
 Coverage is a guardrail, not a quality score. Critical authentication, token
 refresh, authorization, and account-management branches should receive direct
 behavioral tests even when the global threshold is already satisfied.
@@ -138,21 +141,7 @@ commands, CI behavior, thresholds, and provider verification requirements.
 
 ## SonarQube
 
-CI sends the existing LCOV report to SonarQube and requires all of these GitHub
-repository settings:
-
-| Setting             | GitHub type         | Value                                       |
-| ------------------- | ------------------- | ------------------------------------------- |
-| `SONAR_HOST_URL`    | Repository variable | Base URL of the SonarQube service           |
-| `SONAR_PROJECT_KEY` | Repository variable | Key of the Kernel project in SonarQube      |
-| `SONAR_TOKEN`       | Repository secret   | Project analysis token created in SonarQube |
-
-Configure them under **Settings → Secrets and variables → Actions**. Store the
-token as a secret, never as a variable or committed file. CI reports the names
-of missing settings before analysis starts and continues the remaining checks;
-it never prints their values.
-
-The scan publishes findings without waiting for the configured quality gate.
-Scanner or gate failures are reported as errors but do not block CI. See
-[SonarQube Analysis](quality-gate.md) for the recommended new-code targets and
-project setup.
+SonarQube consumes the existing Vitest LCOV report and adds advisory analysis
+for new bugs, vulnerabilities, security hotspots, and maintainability issues.
+It does not replace ESLint, TypeScript, Vitest, or CodeQL and does not block CI.
+See [SonarQube](sonarqube.md) for repository settings and noise controls.

@@ -1,10 +1,16 @@
 name: DAST
 
 on:
-  schedule:
-    - cron: "0 3 1 * *"
   workflow_dispatch:
-
+    inputs:
+      target_url:
+        description: Authorized staging application URL
+        required: true
+        type: string
+      allowed_host:
+        description: Exact hostname permitted for the scan
+        required: true
+        type: string
 concurrency:
   cancel-in-progress: false
   group: staging-dast
@@ -14,13 +20,12 @@ permissions:
 
 jobs:
   zap:
-    environment: staging
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
-      DAST_ALLOWED_HOST: ${{ vars.STAGING_ALLOWED_HOST }}
+      DAST_ALLOWED_HOST: ${{ inputs.allowed_host }}
       DAST_PRODUCTION_HOST: ${{ vars.PRODUCTION_HOST }}
-      DAST_TARGET: ${{ vars.STAGING_BASE_URL }}
+      DAST_TARGET: ${{ inputs.target_url }}
 
     steps:
       - name: Validate authorized target

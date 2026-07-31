@@ -24,6 +24,8 @@ Install dependencies:
 npm install
 ```
 
+The exact Node.js version used by CI is recorded in `.nvmrc`.
+
 Create a local environment file:
 
 ```bash

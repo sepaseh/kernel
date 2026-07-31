@@ -6,7 +6,8 @@ review.
 ## Development setup
 
 Kernel uses Node.js 24.15.0 or newer in the Node.js 24 LTS line. If you use
-`nvm`, select the repository version before installing dependencies:
+`nvm`, select the exact repository version from `.nvmrc` before installing
+dependencies. CI reads the same file:
 
 ```bash
 nvm use
@@ -43,9 +44,10 @@ npm run audit
 npm run lint
 npm run format:check
 npm run test:coverage
+npm run test:contract
 npm run knip
-npm run build
-npm run test:e2e
+npm run performance
+npm run test:e2e -- --project=chromium
 ```
 
 Use `npm run format` and `npm run lint:fix` to apply safe automatic fixes.

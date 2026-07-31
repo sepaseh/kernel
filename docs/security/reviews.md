@@ -3,55 +3,31 @@
 Security checks are defense in depth and do not replace review by a qualified
 person.
 
-| Activity                                      | Frequency                                   | Owner                          | Evidence                               |
-| --------------------------------------------- | ------------------------------------------- | ------------------------------ | -------------------------------------- |
-| Dependency audit, CodeQL, and secret scanning | Every change                                | Maintainer                     | Required CI checks                     |
-| Staging DAST full scan                        | Monthly and before major releases           | Security reviewer              | Private workflow artifact              |
-| Threat-model review                           | Quarterly and on trust-boundary changes     | Security reviewer              | Reviewed document change               |
-| Authentication/session review                 | Quarterly and on auth changes               | Frontend and API owners        | Completed checklist                    |
-| Manual application security review            | At least annually and before major releases | Independent qualified reviewer | Private report and tracked remediation |
-| Rollback exercise                             | At least twice yearly                       | Release manager                | Exercise record                        |
-
-## DAST rules
-
-The `DAST` workflow runs an active OWASP ZAP full scan against the repository
-variable `STAGING_BASE_URL`. The target must be an explicitly authorized,
-disposable staging environment. Active scans may submit forms, create data,
-trigger email or OTP delivery, and place load on the API.
-
-Configure a protected GitHub environment named `staging`. Store
-`STAGING_BASE_URL`, `STAGING_ALLOWED_HOST`, and `PRODUCTION_HOST` as
-environment-scoped variables so repository-level values cannot redirect the
-scan. Require approval from a staging security owner before the job can start.
-
-Before enabling the schedule:
-
-1. Obtain written authorization from the application, API, hosting, CDN, and
-   security owners.
-2. Seed non-sensitive test data and disable real notifications or downstream
-   side effects.
-3. Confirm backups, rate limits, monitoring, and a cleanup procedure.
-4. Set `STAGING_BASE_URL` to the exact HTTPS application origin,
-   `STAGING_ALLOWED_HOST` to that origin's hostname, and `PRODUCTION_HOST` to the
-   production hostname. The workflow requires an exact staging-host match and
-   rejects the production host.
-5. Run the workflow manually and review the private artifact.
-
-The job fails on reported alerts. Do not suppress a rule merely to make the
-scan pass. Record a suppression only after review, with the rule ID, affected
-URL, evidence, owner, expiry date, and justification.
-
-Do not run active DAST against production. Authenticated scanning requires a
-separate least-privileged test account, explicit scope approval, and secure
-injection of short-lived credentials; never commit scan credentials.
+| Activity                                      | Frequency                    | Owner                          | Evidence                               |
+| --------------------------------------------- | ---------------------------- | ------------------------------ | -------------------------------------- |
+| Dependency audit, CodeQL, and secret scanning | Every change                 | Maintainer                     | Required CI checks                     |
+| Authorized DAST scan                          | Manually when staging exists | Security reviewer              | Private workflow artifact              |
+| Threat-model review                           | On trust-boundary changes    | Security reviewer              | Reviewed document change               |
+| Authentication/session review                 | On authentication changes    | Frontend and API owners        | Completed checklist                    |
+| Manual application security review            | Before a production launch   | Independent qualified reviewer | Private report and tracked remediation |
 
 ## Finding handling
 
 Triage every finding for exploitability, affected versions, data exposure, and
 release impact. Handle sensitive details through GitHub private vulnerability
 reporting. Assign an owner and due date, add regression coverage, and rerun the
-relevant scan after remediation.
+relevant check after remediation.
 
-Critical or actively exploited findings block deployment and trigger the
-incident process. High-severity findings block the affected release unless the
-security owner documents a time-limited exception with compensating controls.
+Critical or actively exploited findings block deployment. High-severity
+findings block the affected release unless the security owner documents a
+time-limited exception with compensating controls.
+
+Kernel keeps the DAST workflow only as a reusable template for downstream
+projects; it is not part of Kernel's active quality gate. The workflow has no
+schedule and can only be started manually.
+
+Before using the template, configure the repository variable `PRODUCTION_HOST`
+with the production hostname only, without a protocol or path. Each manual run
+still requires an explicitly authorized target and its exact allowed hostname.
+The fixed repository variable prevents the run from redefining production and
+must never match the scan target.

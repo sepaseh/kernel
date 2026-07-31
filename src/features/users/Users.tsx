@@ -344,10 +344,10 @@ export const UsersPage = () => {
     <>
       <div
         style={{
+          flexGrow: 1,
           minWidth: 0,
           paddingBlock: token.paddingMD,
           paddingInline: token.paddingSM,
-          flexGrow: 1,
         }}
         ref={tableContainerRef}
       >

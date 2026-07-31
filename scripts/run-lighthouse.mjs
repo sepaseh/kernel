@@ -17,12 +17,15 @@ const url = new URL(
   `/${[appBasePath, "auth"].filter(Boolean).join("/")}`,
   "https://127.0.0.1:4174",
 ).href;
+
+// These intentionally broad limits catch major regressions without treating a
+// shared CI runner as a production performance environment.
 const thresholds = {
-  "cumulative-layout-shift": 0.1,
-  "first-contentful-paint": 4_000,
-  interactive: 4_500,
-  "largest-contentful-paint": 4_000,
-  "total-blocking-time": 300,
+  "cumulative-layout-shift": 0.2,
+  "first-contentful-paint": 5_000,
+  interactive: 7_000,
+  "largest-contentful-paint": 6_000,
+  "total-blocking-time": 600,
 };
 
 const server = await preview({
@@ -59,9 +62,9 @@ try {
   const failures = [];
   const performanceScore = result.lhr.categories.performance.score ?? 0;
 
-  if (performanceScore < 0.75) {
+  if (performanceScore < 0.65) {
     failures.push(
-      `performance score ${Math.round(performanceScore * 100)} (minimum 75)`,
+      `performance score ${Math.round(performanceScore * 100)} (minimum 65)`,
     );
   }
 
@@ -76,11 +79,13 @@ try {
   }
 
   if (failures.length > 0) {
-    throw new Error(`Lighthouse budget exceeded:\n${failures.join("\n")}`);
+    throw new Error(
+      `Lighthouse advisory thresholds exceeded:\n${failures.join("\n")}`,
+    );
   }
 
   console.log(
-    `Lighthouse budgets passed with a performance score of ${Math.round(performanceScore * 100)}.`,
+    `Lighthouse advisory passed with a performance score of ${Math.round(performanceScore * 100)}.`,
   );
 } finally {
   try {

@@ -5,22 +5,25 @@
 /.github/ @sepaseh
 /package.json @sepaseh
 /package-lock.json @sepaseh
+/sonar-project.properties @sepaseh
+/docs/sonarqube.md @sepaseh
 
-# Release policy, version state, and generated release notes.
+# Optional manual release and environment tooling.
 /.release-please-manifest.json @sepaseh
 /CHANGELOG.md @sepaseh
 /docs/release-operations.md @sepaseh
 /docs/releasing.md @sepaseh
 /release-please-config.json @sepaseh
-
-# Production-like staging gate.
 /.github/workflows/staging.yml @sepaseh
 /docs/staging.md @sepaseh
 /staging.config.ts @sepaseh
 /staging/ @sepaseh
-
-# Security model, review evidence, and active scanning.
+/.github/workflows/deployment-smoke.yml @sepaseh
+/smoke.config.ts @sepaseh
+/smoke/ @sepaseh
 /.github/workflows/dast.yml @sepaseh
+
+# Security model and review evidence.
 /docs/security/ @sepaseh
 /SECURITY.md @sepaseh
 

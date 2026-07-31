@@ -1,7 +1,6 @@
 name: Deployment smoke tests
 
 on:
-  deployment_status:
   workflow_dispatch:
     inputs:
       application_url:
@@ -15,26 +14,17 @@ on:
 
 concurrency:
   cancel-in-progress: true
-  group: deployment-smoke-${{ github.event.deployment.environment || inputs.application_url }}
+  group: deployment-smoke-${{ inputs.application_url }}
 
 permissions:
   contents: read
 
 jobs:
   smoke:
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
     env:
-      NODE_VERSION: 24.18.0
-      SMOKE_API_HEALTH_URL: >-
-        ${{ github.event_name == 'workflow_dispatch' &&
-        inputs.api_health_url || vars.SMOKE_API_HEALTH_URL }}
-      SMOKE_BASE_URL: >-
-        ${{ github.event_name == 'workflow_dispatch' &&
-        inputs.application_url ||
-        github.event.deployment_status.environment_url }}
+      SMOKE_API_HEALTH_URL: ${{ inputs.api_health_url }}
+      SMOKE_BASE_URL: ${{ inputs.application_url }}
 
     steps:
       - name: Validate smoke-test targets
@@ -49,7 +39,7 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           cache: npm
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: .nvmrc
 
       - run: npm ci
 
