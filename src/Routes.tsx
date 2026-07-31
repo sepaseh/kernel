@@ -1,27 +1,60 @@
-import { FC, ReactNode, useEffect } from "react";
 import {
-  createBrowserRouter,
-  Navigate,
-  RouterProvider,
-} from "react-router-dom";
+  FC,
+  Fragment,
+  lazy,
+  ReactElement,
+  ReactNode,
+  Suspense,
+  useEffect,
+} from "react";
+import { createBrowserRouter, Navigate } from "react-router";
+import { RouterProvider } from "react-router/dom";
 
 import { baseUrl, RouteKey, routeTree } from "@/config";
 import { useAllowedRoutes, useCore } from "@/hooks";
-import { AuthLayout } from "@/layouts/Auth";
-import { DefaultLayout } from "@/layouts/Default";
-import { AccountPage } from "@/pages/Account";
-import { DashboardPage } from "@/pages/Dashboard";
-import { ForgotPassPage } from "@/pages/ForgotPass";
-import { LoginPage } from "@/pages/Login";
-import { NotFoundPage } from "@/pages/NotFound";
-import { RegisterPage } from "@/pages/Register";
-import { RolesPage } from "@/pages/Roles";
-import { UsersPage } from "@/pages/Users";
+import { NotFoundPage } from "@/pages/not-found";
+
+const AccountPage = lazy(async () => {
+  const { AccountPage } = await import("@/pages/account");
+  return { default: AccountPage };
+});
+const AuthLayout = lazy(async () => {
+  const { AuthLayout } = await import("@/layouts/auth");
+  return { default: AuthLayout };
+});
+const DashboardPage = lazy(async () => {
+  const { DashboardPage } = await import("@/pages/dashboard");
+  return { default: DashboardPage };
+});
+const DefaultLayout = lazy(async () => {
+  const { DefaultLayout } = await import("@/layouts/default");
+  return { default: DefaultLayout };
+});
+const ForgotPassPage = lazy(async () => {
+  const { ForgotPassPage } = await import("@/pages/forgot-pass");
+  return { default: ForgotPassPage };
+});
+const LoginPage = lazy(async () => {
+  const { LoginPage } = await import("@/pages/login");
+  return { default: LoginPage };
+});
+const RegisterPage = lazy(async () => {
+  const { RegisterPage } = await import("@/pages/register");
+  return { default: RegisterPage };
+});
+const RolesPage = lazy(async () => {
+  const { RolesPage } = await import("@/pages/roles");
+  return { default: RolesPage };
+});
+const UsersPage = lazy(async () => {
+  const { UsersPage } = await import("@/pages/users");
+  return { default: UsersPage };
+});
 
 const RouteWrapper: FC<{ route: RouteKey; children: ReactNode }> = ({
   route,
   children,
-}) => {
+}): ReactElement => {
   const { setCurrentRoute } = useCore();
   const allowedRoutes = useAllowedRoutes();
 
@@ -29,20 +62,26 @@ const RouteWrapper: FC<{ route: RouteKey; children: ReactNode }> = ({
     setCurrentRoute(route);
   }, [route, setCurrentRoute]);
 
-  if (allowedRoutes.has(route)) return children;
+  if (allowedRoutes.has(route)) return <Fragment>{children}</Fragment>;
 
   return <Navigate to={routeTree.root.path} replace />;
 };
 
 const wrapRoute = (route: RouteKey, element: ReactNode) => (
-  <RouteWrapper route={route}>{element}</RouteWrapper>
+  <RouteWrapper route={route}>
+    <Suspense fallback={null}>{element}</Suspense>
+  </RouteWrapper>
 );
 
 const router = createBrowserRouter(
   [
     {
       path: routeTree.auth.path,
-      element: <AuthLayout />,
+      element: (
+        <Suspense fallback={null}>
+          <AuthLayout />
+        </Suspense>
+      ),
       children: [
         {
           index: true,
@@ -60,7 +99,11 @@ const router = createBrowserRouter(
     },
     {
       path: routeTree.root.path,
-      element: <DefaultLayout />,
+      element: (
+        <Suspense fallback={null}>
+          <DefaultLayout />
+        </Suspense>
+      ),
       children: [
         {
           index: true,

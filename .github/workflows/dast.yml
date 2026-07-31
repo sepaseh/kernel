@@ -1,0 +1,63 @@
+name: DAST
+
+on:
+  schedule:
+    - cron: "0 3 1 * *"
+  workflow_dispatch:
+
+concurrency:
+  cancel-in-progress: false
+  group: staging-dast
+
+permissions:
+  contents: read
+
+jobs:
+  zap:
+    environment: staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      DAST_ALLOWED_HOST: ${{ vars.STAGING_ALLOWED_HOST }}
+      DAST_PRODUCTION_HOST: ${{ vars.PRODUCTION_HOST }}
+      DAST_TARGET: ${{ vars.STAGING_BASE_URL }}
+
+    steps:
+      - name: Validate authorized target
+        shell: bash
+        run: |
+          node -e '
+            const value = process.env.DAST_TARGET;
+            const allowedHost = process.env.DAST_ALLOWED_HOST?.toLowerCase();
+            const productionHost = process.env.DAST_PRODUCTION_HOST?.toLowerCase();
+            if (!value) throw new Error("STAGING_BASE_URL is required");
+            if (!allowedHost) throw new Error("STAGING_ALLOWED_HOST is required");
+            if (!productionHost) throw new Error("PRODUCTION_HOST is required");
+            const url = new URL(value);
+            if (url.protocol !== "https:") {
+              throw new Error("STAGING_BASE_URL must use HTTPS");
+            }
+            if (url.username || url.password) {
+              throw new Error("STAGING_BASE_URL must not contain credentials");
+            }
+            if (url.hostname.toLowerCase() !== allowedHost) {
+              throw new Error("STAGING_BASE_URL host is not explicitly allowed");
+            }
+            if (url.hostname.toLowerCase() === productionHost) {
+              throw new Error("DAST must not target the production host");
+            }
+          '
+
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+
+      - name: Run authorized ZAP full scan
+        uses: zaproxy/action-full-scan@bee4e5be916301228d2b1b2dcad73aab6fa6a25b # v0.13.0
+        with:
+          allow_issue_writing: false
+          artifact_name: staging-dast-${{ github.run_id }}
+          cmd_options: "-a"
+          docker_name: ghcr.io/zaproxy/zaproxy:2.17.0@sha256:c558ee87358911ab17278c70991e856f57793e115d9cd0f88ca475cf82907a1a
+          fail_action: true
+          target: ${{ env.DAST_TARGET }}

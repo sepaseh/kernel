@@ -9,7 +9,7 @@ React starter kit upgraded as a dashboard-ready foundation under the `kernel` pr
 | UI framework         | React 19 + TypeScript       |
 | Build tool           | Vite                        |
 | Component library    | Ant Design 6                |
-| Routing              | `react-router-dom` 7        |
+| Routing              | `react-router` 8.3          |
 | Internationalization | `i18next` + `react-i18next` |
 | HTTP                 | Axios                       |
 | Date handling        | Day.js + Jalaliday          |
@@ -44,6 +44,7 @@ npm run build      # typecheck and build for production
 npm run preview    # preview production build
 npm run lint       # run ESLint
 npm run lint:fix   # run ESLint with auto-fix
+npm run audit      # check dependencies for high-severity vulnerabilities
 npm run typecheck  # typecheck only
 npm run knip       # detect unused files, exports, and dependencies
 ```
@@ -134,7 +135,7 @@ Provider-neutral AI assistant guidance lives in `.agents/`. It documents project
 
 ## Icons
 
-Icons are centralized in `src/components/Icon.tsx`. Add new icon names to the internal `iconMap`, then render them with:
+Icons are centralized in `src/components/icon/Icon.tsx`. Add new icon names to the internal `iconMap`, then render them with:
 
 ```tsx
 <Icon name="user" />

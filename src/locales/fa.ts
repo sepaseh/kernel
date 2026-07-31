@@ -1,4 +1,5 @@
 export const fa = {
+  reload: "بارگذاری مجدد",
   account: "حساب کاربری",
   backHome: "بازگشت به خانه",
   backToLogin: "بازگشت به ورود",
@@ -39,7 +40,9 @@ export const fa = {
   lightMode: "حالت روشن",
   login: "ورود به سیستم",
   logout: "خروج",
+  menu: "منو",
   name: "نام",
+  networkError: "خطای شبکه. لطفاً اتصال اینترنت خود را بررسی کنید.",
   newPass: "رمز عبور جدید",
   no: "خیر",
   passsMismatch: "تکرار رمز عبور با رمز عبور جدید مطابقت ندارد.",
@@ -54,6 +57,7 @@ export const fa = {
   statusConfirm: "آیا از تغییر وضعیت مطمئن هستید؟",
   submit: "ثبت",
   update: "ویرایش",
+  unexpectedError: "خطای غیرمنتظره‌ای رخ داد.",
   username: "نام کاربری",
   users: "کاربران",
   yes: "بله",

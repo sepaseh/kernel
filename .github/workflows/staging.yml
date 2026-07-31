@@ -1,0 +1,70 @@
+name: Staging validation
+
+on:
+  deployment_status:
+  workflow_dispatch:
+    inputs:
+      application_url:
+        description: Staging application base URL
+        required: true
+        type: string
+      api_health_url:
+        description: Staging API health endpoint
+        required: true
+        type: string
+
+concurrency:
+  cancel-in-progress: true
+  group: staging-${{ github.event.deployment.id || inputs.application_url }}
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.deployment_status.state == 'success' &&
+      github.event.deployment.environment == 'staging')
+    runs-on: ubuntu-latest
+    env:
+      NODE_VERSION: 24.18.0
+      STAGING_API_HEALTH_URL: >-
+        ${{ github.event_name == 'workflow_dispatch' &&
+        inputs.api_health_url || vars.STAGING_API_HEALTH_URL }}
+      STAGING_BASE_URL: >-
+        ${{ github.event_name == 'workflow_dispatch' &&
+        inputs.application_url ||
+        github.event.deployment_status.environment_url }}
+
+    steps:
+      - name: Validate staging targets
+        run: |
+          if [[ -z "$STAGING_BASE_URL" || -z "$STAGING_API_HEALTH_URL" ]]; then
+            echo "STAGING_BASE_URL and STAGING_API_HEALTH_URL are required."
+            exit 1
+          fi
+
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          cache: npm
+          node-version: ${{ env.NODE_VERSION }}
+
+      - run: npm ci
+
+      - run: npx playwright install --with-deps chromium firefox webkit
+
+      - run: npm run test:staging
+
+      - if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: staging-validation-${{ github.run_id }}
+          path: |
+            playwright-report/staging
+            test-results/staging
+          retention-days: 14

@@ -1,0 +1,32 @@
+# Default reviewer for all repository changes.
+* @sepaseh
+
+# Require explicit review for automation and dependency policy changes.
+/.github/ @sepaseh
+/package.json @sepaseh
+/package-lock.json @sepaseh
+
+# Release policy, version state, and generated release notes.
+/.release-please-manifest.json @sepaseh
+/CHANGELOG.md @sepaseh
+/docs/release-operations.md @sepaseh
+/docs/releasing.md @sepaseh
+/release-please-config.json @sepaseh
+
+# Production-like staging gate.
+/.github/workflows/staging.yml @sepaseh
+/docs/staging.md @sepaseh
+/staging.config.ts @sepaseh
+/staging/ @sepaseh
+
+# Security model, review evidence, and active scanning.
+/.github/workflows/dast.yml @sepaseh
+/docs/security/ @sepaseh
+/SECURITY.md @sepaseh
+
+# Test-effectiveness and frontend/backend compatibility gates.
+/.github/workflows/mutation.yml @sepaseh
+/contract/ @sepaseh
+/docs/contract-testing.md @sepaseh
+/stryker.config.json @sepaseh
+/vitest.contract.config.ts @sepaseh

@@ -11,7 +11,10 @@ node_modules
 dist
 dist-ssr
 coverage
+.lighthouseci
 playwright-report
+pacts
+reports/mutation
 test-results
 blob-report
 *.local

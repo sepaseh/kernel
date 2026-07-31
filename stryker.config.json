@@ -1,0 +1,28 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "concurrency": 2,
+  "coverageAnalysis": "perTest",
+  "htmlReporter": {
+    "fileName": "reports/mutation/index.html"
+  },
+  "jsonReporter": {
+    "fileName": "reports/mutation/mutation.json"
+  },
+  "mutate": [
+    "src/api/token.ts",
+    "src/storage/state.ts",
+    "src/utils/error.ts",
+    "src/utils/transform.ts"
+  ],
+  "reporters": ["clear-text", "progress", "html", "json"],
+  "testRunner": "vitest",
+  "thresholds": {
+    "break": 80,
+    "high": 90,
+    "low": 80
+  },
+  "vitest": {
+    "configFile": "vitest.config.ts",
+    "related": true
+  }
+}

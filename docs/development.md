@@ -4,7 +4,7 @@ This project is a Vite React application written in TypeScript.
 
 ## Prerequisites
 
-- Node.js compatible with the versions required by the dependencies in `package-lock.json`
+- Node.js 24.15.0 or newer in the Node.js 24 LTS line
 - npm
 - Access to the backend API
 
@@ -57,6 +57,10 @@ Build the app:
 npm run build
 ```
 
+Production builds require `VITE_API_BASE_URL` and `VITE_APP_BASE_URL` from
+`.env.local` or the build environment. See [Deployment](deployment.md) for
+their validation rules.
+
 Check unused files, exports, and dependencies:
 
 ```bash
@@ -84,4 +88,4 @@ Keep feature code close to the existing structure:
 
 The application currently ships with English (`en`) and Persian (`fa`). Translation strings live in `src/locales/en.ts` and `src/locales/fa.ts`.
 
-Ant Design direction and locale are selected in `src/providers/Antd.tsx`. Day.js locale/calendar setup is handled in `src/providers/Core.tsx`, using the Jalali calendar for Persian.
+Ant Design direction and locale are selected in `src/providers/antd/Antd.tsx`. Day.js locale/calendar setup is handled in `src/providers/core/Core.tsx`, using the Jalali calendar for Persian.

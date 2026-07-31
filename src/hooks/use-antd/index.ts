@@ -1,0 +1,1 @@
+export { useAntd } from "./useAntd";
