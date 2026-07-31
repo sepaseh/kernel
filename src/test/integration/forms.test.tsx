@@ -113,9 +113,6 @@ describe("user identity form", () => {
     expect(mocks.messageSuccess).toHaveBeenCalledWith("userCreated");
     expect(mocks.goBack).toHaveBeenCalledOnce();
     expect(onFinish).toHaveBeenCalledOnce();
-
-    await user.click(screen.getByRole("button", { name: "cancel" }));
-    expect(mocks.goBack).toHaveBeenLastCalledWith();
   });
 
   it("rejects mismatched user passwords", async () => {
@@ -191,9 +188,6 @@ describe("role form", () => {
       }),
     );
     expect(mocks.messageError).toHaveBeenCalledWith("Role already exists");
-
-    await user.click(screen.getByRole("button", { name: "cancel" }));
-    expect(mocks.goBack).toHaveBeenLastCalledWith();
   });
 });
 
@@ -220,9 +214,6 @@ describe("user access forms", () => {
       }),
     );
     expect(mocks.messageSuccess).toHaveBeenCalledWith("passwordUpdated");
-
-    await user.click(screen.getByRole("button", { name: "cancel" }));
-    expect(mocks.goBack).toHaveBeenLastCalledWith();
   });
 
   it("submits the user's current roles", async () => {
@@ -246,9 +237,6 @@ describe("user access forms", () => {
     );
     expect(mocks.messageSuccess).toHaveBeenCalledWith("rolesUpdated");
     expect(onFinish).toHaveBeenCalledOnce();
-
-    await user.click(screen.getByRole("button", { name: "cancel" }));
-    expect(mocks.goBack).toHaveBeenLastCalledWith();
   });
 
   it("submits the user's current workspaces", async () => {
@@ -274,8 +262,56 @@ describe("user access forms", () => {
     );
     expect(mocks.messageSuccess).toHaveBeenCalledWith("workspacesUpdated");
     expect(onFinish).toHaveBeenCalledOnce();
-
-    await user.click(screen.getByRole("button", { name: "cancel" }));
-    expect(mocks.goBack).toHaveBeenLastCalledWith();
   });
+});
+
+describe("form cancellation", () => {
+  it.each([
+    {
+      hash: "#create",
+      name: "user",
+      ui: <UserForm onFinish={vi.fn()} />,
+    },
+    {
+      hash: "#create",
+      name: "role",
+      ui: <RoleForm onFinish={vi.fn()} options={{ permissions: [] }} />,
+    },
+    {
+      hash: "#password",
+      name: "password",
+      ui: <UserPasswordForm data={userData} />,
+    },
+    {
+      hash: "#roles",
+      name: "roles",
+      ui: (
+        <UserFormRole
+          data={userData}
+          onFinish={vi.fn()}
+          options={{ roles: [] }}
+        />
+      ),
+    },
+    {
+      hash: "#workspaces",
+      name: "workspaces",
+      ui: (
+        <UserWorkspaceForm
+          data={userData}
+          onFinish={vi.fn()}
+          options={{ workspaces: [] }}
+        />
+      ),
+    },
+  ])(
+    "closes the $name form without forwarding the event",
+    async ({ hash, ui }) => {
+      const { user } = renderAtHash(ui, hash);
+
+      await user.click(await screen.findByRole("button", { name: "cancel" }));
+
+      expect(mocks.goBack).toHaveBeenLastCalledWith();
+    },
+  );
 });
