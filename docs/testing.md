@@ -119,10 +119,11 @@ including when the performance job fails.
 ## Coverage
 
 Coverage uses Vitest's V8 provider and includes untested source files. Reports
-are written to `coverage/`, which is ignored by Git. The initial global
-threshold is intentionally low because Kernel is introducing coverage to an
-existing codebase. Raise thresholds as coverage grows; never lower them to make
-a change pass.
+are written to `coverage/`, which is ignored by Git. Global thresholds preserve
+the established baseline across statements, branches, functions, and lines.
+Raise thresholds as coverage grows; never lower them to make a change pass.
+SonarQube separately requires at least 80% coverage on new code through the
+mandatory quality gate.
 
 Coverage is a guardrail, not a quality score. Critical authentication, token
 refresh, authorization, and account-management branches should receive direct
