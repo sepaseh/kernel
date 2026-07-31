@@ -74,6 +74,12 @@ Explore shared UI and full-page layouts in isolation:
 npm run storybook
 ```
 
+Build the same static Storybook bundle validated by CI:
+
+```bash
+npm run build-storybook
+```
+
 Stories stay beside the component or layout they document. CI builds the
 static Storybook bundle so broken stories and configuration fail before merge.
 

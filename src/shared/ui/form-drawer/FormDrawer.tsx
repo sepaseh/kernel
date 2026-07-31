@@ -3,9 +3,11 @@ import { useTranslation } from "react-i18next";
 
 type FormDrawerProps = Omit<
   DrawerProps,
-  "closeIcon" | "footer" | "mask" | "styles"
+  "closeIcon" | "footer" | "mask" | "onClose" | "open" | "styles"
 > & {
+  onClose: NonNullable<DrawerProps["onClose"]>;
   onSubmit: () => void;
+  open: boolean;
   submitting: boolean;
 };
 

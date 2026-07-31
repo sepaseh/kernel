@@ -1,11 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Button, Form } from "antd";
+import type { ComponentProps } from "react";
 
 import { PasswordFields } from "./PasswordFields";
 
-const PasswordFieldsStory = ({ size }: { size?: "large" }) => (
+const PasswordFieldsStory = ({
+  passwordLabel,
+  size,
+}: ComponentProps<typeof PasswordFields>) => (
   <Form layout="vertical" style={{ width: 320 }}>
-    <PasswordFields size={size} />
+    <PasswordFields passwordLabel={passwordLabel} size={size} />
     <Button htmlType="submit" type="primary">
       Validate
     </Button>

@@ -3,8 +3,9 @@ import "@/assets/styles/vazirmatn.css";
 import "@/shared/i18n";
 
 import type { Preview } from "@storybook/react-vite";
-import { ConfigProvider, theme } from "antd";
 import { sb } from "storybook/test";
+
+import { PreviewFrame } from "./PreviewFrame";
 
 sb.mock(import("../src/features/account/api.ts"), { spy: true });
 sb.mock(import("../src/features/auth/api.ts"), { spy: true });
@@ -14,18 +15,12 @@ sb.mock(import("../src/features/users/api.ts"), { spy: true });
 const preview: Preview = {
   decorators: [
     (Story, context) => (
-      <ConfigProvider
+      <PreviewFrame
         direction={context.globals.direction}
-        theme={{
-          algorithm:
-            context.globals.theme === "dark"
-              ? theme.darkAlgorithm
-              : theme.defaultAlgorithm,
-          token: { colorPrimary: "#d70015", fontFamily: "inherit" },
-        }}
+        themeMode={context.globals.theme}
       >
         <Story />
-      </ConfigProvider>
+      </PreviewFrame>
     ),
   ],
   globalTypes: {
