@@ -57,11 +57,13 @@ const palettes: Record<Theme, Palette> = {
 const buildThemeConfig = (
   algorithm: ThemeConfig["algorithm"],
   p: Palette,
+  accessibleAccent?: string,
 ): ThemeConfig => ({
   algorithm,
   token: {
     ...p,
     ...token,
+    ...(accessibleAccent ? { colorLink: accessibleAccent } : {}),
     fontFamily: "inherit",
     colorBgElevated: p.colorBgContainer,
     screenXLMax: 1399,
@@ -79,12 +81,18 @@ const buildThemeConfig = (
       colorBgContainer: "transparent",
       colorSplit: "transparent",
       itemPaddingInline: 8,
+      ...(accessibleAccent
+        ? {
+            horizontalItemSelectedColor: accessibleAccent,
+            itemSelectedColor: accessibleAccent,
+          }
+        : {}),
     },
   },
 });
 
 const themeConfigs: Record<Theme, ThemeConfig> = {
-  dark: buildThemeConfig(antdTheme.darkAlgorithm, palettes.dark),
+  dark: buildThemeConfig(antdTheme.darkAlgorithm, palettes.dark, "#ff7a85"),
   light: buildThemeConfig(antdTheme.defaultAlgorithm, palettes.light),
 };
 

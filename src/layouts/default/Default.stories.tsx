@@ -6,7 +6,7 @@ import { mocked } from "storybook/test";
 import { CoreContext, CoreContextProps } from "@/app/contexts";
 import { AntdProvider } from "@/app/providers";
 import { AccountProps, getAccount } from "@/features/account";
-import { Theme } from "@/shared/config";
+import { Language, Theme } from "@/shared/config";
 
 import { DefaultLayout } from "./Default";
 
@@ -24,24 +24,29 @@ const account: AccountProps = {
 };
 
 const DefaultLayoutStory = ({
+  initialLanguage = "en",
+  initialTheme = "light",
   initialUser = account,
 }: {
+  initialLanguage?: Language;
+  initialTheme?: Theme;
   initialUser?: AccountProps;
 }) => {
-  const [theme, setTheme] = useState<Theme>("light");
+  const [language, setLanguage] = useState<Language>(initialLanguage);
+  const [theme, setTheme] = useState<Theme>(initialTheme);
   const [user, setUser] = useState<CoreContextProps["user"]>(initialUser);
   const value = useMemo<CoreContextProps>(
     () => ({
       currentRoute: "root",
-      language: "en",
+      language,
       setCurrentRoute: () => undefined,
-      setLanguage: () => undefined,
+      setLanguage,
       setTheme,
       setUser,
       theme,
       user,
     }),
-    [theme, user],
+    [language, theme, user],
   );
 
   return (
@@ -94,4 +99,5 @@ export const LoadingAccount: Story = {
 
 export const DarkRtl: Story = {
   globals: { direction: "rtl", theme: "dark" },
+  render: () => <DefaultLayoutStory initialLanguage="fa" initialTheme="dark" />,
 };

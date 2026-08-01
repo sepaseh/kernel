@@ -65,6 +65,19 @@ describe("workflow target validation", () => {
     ).not.toThrow();
   });
 
+  it("reports smoke variable names when a smoke host is not allowed", () => {
+    expect(() =>
+      validateSmokeTargets({
+        SMOKE_ALLOWED_API_HOST: staging.STAGING_ALLOWED_API_HOST,
+        SMOKE_ALLOWED_APP_HOST: staging.STAGING_ALLOWED_APP_HOST,
+        SMOKE_API_HEALTH_URL: staging.STAGING_API_HEALTH_URL,
+        SMOKE_BASE_URL: "https://other.example.com",
+        SMOKE_DEPLOYMENT_ID: "candidate",
+        SMOKE_EXPECTED_DEPLOYMENT_ID: "candidate",
+      }),
+    ).toThrow("SMOKE_BASE_URL host is not explicitly allowed");
+  });
+
   it("allows authorized staging DAST and blocks production", () => {
     const env = {
       DAST_ALLOWED_HOST: "staging.example.com",

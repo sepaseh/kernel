@@ -2,7 +2,7 @@
 # Optional post-edit helper for AI tools that provide JSON on stdin or in $INPUT.
 # It runs ESLint auto-fix on edited TypeScript/JavaScript files when available.
 
-if [ -z "${INPUT:-}" ]; then
+if [ -z "${INPUT:-}" ] && [ ! -t 0 ]; then
   INPUT=$(cat)
 fi
 

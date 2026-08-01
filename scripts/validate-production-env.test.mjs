@@ -25,6 +25,8 @@ describe("production environment validation", () => {
       "must use HTTPS",
     ],
     [{ ...valid, VITE_APP_BASE_URL: "app/" }, "must start and end with /"],
+    [{ ...valid, VITE_APP_BASE_URL: "" }, "must start and end with /"],
+    [{ ...valid, VITE_APP_BASE_URL: "/app" }, "must start and end with /"],
     [
       { ...valid, VITE_OBSERVABILITY_URL: "invalid" },
       "OBSERVABILITY_URL must be a valid",

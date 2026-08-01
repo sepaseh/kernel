@@ -53,12 +53,12 @@ npm run knip       # detect unused files, exports, and dependencies
 
 ## Environment
 
-| Variable                 | Description                                     | Fallback                |
-| ------------------------ | ----------------------------------------------- | ----------------------- |
-| `VITE_API_BASE_URL`      | Backend HTTP API base URL                       | `http://<current-host>` |
-| `VITE_APP_BASE_URL`      | Router basename / deployed base path            | empty string            |
-| `VITE_OBSERVABILITY_URL` | Optional HTTPS event collector                  | disabled                |
-| `VITE_RELEASE_ID`        | Immutable release identifier attached to events | `local`                 |
+| Variable                 | Description                                           | Fallback                |
+| ------------------------ | ----------------------------------------------------- | ----------------------- |
+| `VITE_API_BASE_URL`      | Backend HTTP API base URL (development fallback only) | `http://<current-host>` |
+| `VITE_APP_BASE_URL`      | Router basename / deployed base path                  | empty string            |
+| `VITE_OBSERVABILITY_URL` | Optional HTTPS event collector                        | disabled                |
+| `VITE_RELEASE_ID`        | Immutable release identifier attached to events       | `local`                 |
 
 Example values are available in `.env.example`.
 

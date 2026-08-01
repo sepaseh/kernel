@@ -73,7 +73,7 @@ export default defineConfig({
       VITE_RELEASE_ID: "e2e",
     },
     ignoreHTTPSErrors: true,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 120_000,
     url: baseURL,
   },

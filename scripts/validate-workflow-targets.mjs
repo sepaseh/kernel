@@ -29,35 +29,50 @@ export const parseHttpsTarget = (name, rawValue) => {
   return url;
 };
 
-export const validateStagingTargets = (env) => {
-  const appUrl = parseHttpsTarget("STAGING_BASE_URL", env.STAGING_BASE_URL);
+const stagingLabels = {
+  allowedApiHost: "STAGING_ALLOWED_API_HOST",
+  allowedAppHost: "STAGING_ALLOWED_APP_HOST",
+  apiHealthUrl: "STAGING_API_HEALTH_URL",
+  baseUrl: "STAGING_BASE_URL",
+};
+
+export const validateStagingTargets = (env, labels = stagingLabels) => {
+  const appUrl = parseHttpsTarget(labels.baseUrl, env.STAGING_BASE_URL);
   const apiUrl = parseHttpsTarget(
-    "STAGING_API_HEALTH_URL",
+    labels.apiHealthUrl,
     env.STAGING_API_HEALTH_URL,
   );
   const allowedAppHost = parseConfiguredHostname(
-    "STAGING_ALLOWED_APP_HOST",
+    labels.allowedAppHost,
     env.STAGING_ALLOWED_APP_HOST,
   );
   const allowedApiHost = parseConfiguredHostname(
-    "STAGING_ALLOWED_API_HOST",
+    labels.allowedApiHost,
     env.STAGING_ALLOWED_API_HOST,
   );
   if (appUrl.hostname.toLowerCase() !== allowedAppHost) {
-    throw new Error("STAGING_BASE_URL host is not explicitly allowed");
+    throw new Error(`${labels.baseUrl} host is not explicitly allowed`);
   }
   if (apiUrl.hostname.toLowerCase() !== allowedApiHost) {
-    throw new Error("STAGING_API_HEALTH_URL host is not explicitly allowed");
+    throw new Error(`${labels.apiHealthUrl} host is not explicitly allowed`);
   }
 };
 
 export const validateSmokeTargets = (env) => {
-  validateStagingTargets({
-    STAGING_ALLOWED_API_HOST: env.SMOKE_ALLOWED_API_HOST,
-    STAGING_ALLOWED_APP_HOST: env.SMOKE_ALLOWED_APP_HOST,
-    STAGING_API_HEALTH_URL: env.SMOKE_API_HEALTH_URL,
-    STAGING_BASE_URL: env.SMOKE_BASE_URL,
-  });
+  validateStagingTargets(
+    {
+      STAGING_ALLOWED_API_HOST: env.SMOKE_ALLOWED_API_HOST,
+      STAGING_ALLOWED_APP_HOST: env.SMOKE_ALLOWED_APP_HOST,
+      STAGING_API_HEALTH_URL: env.SMOKE_API_HEALTH_URL,
+      STAGING_BASE_URL: env.SMOKE_BASE_URL,
+    },
+    {
+      allowedApiHost: "SMOKE_ALLOWED_API_HOST",
+      allowedAppHost: "SMOKE_ALLOWED_APP_HOST",
+      apiHealthUrl: "SMOKE_API_HEALTH_URL",
+      baseUrl: "SMOKE_BASE_URL",
+    },
+  );
   if (!env.SMOKE_DEPLOYMENT_ID || !env.SMOKE_EXPECTED_DEPLOYMENT_ID) {
     throw new Error(
       "SMOKE_DEPLOYMENT_ID and SMOKE_EXPECTED_DEPLOYMENT_ID are required",

@@ -25,7 +25,12 @@ export default defineConfig({
         "src/features/**/types.ts",
         "src/shared/api/types.ts",
       ],
-      include: ["src/**/*.{ts,tsx}"],
+      include: [
+        "src/**/*.{ts,tsx}",
+        "scripts/check-bundle-size.mjs",
+        "scripts/validate-production-env.mjs",
+        "scripts/validate-workflow-targets.mjs",
+      ],
       provider: "v8",
       reporter: ["text", "json-summary", "html", "lcov"],
       thresholds: {
