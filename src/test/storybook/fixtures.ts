@@ -61,7 +61,6 @@ export const user: UserProps = {
   personnelCode: "1002",
   roleIds: ["option-1"],
   username: "sara",
-  workspaceIds: ["option-2"],
 };
 
 export const users: UserSummaryProps[] = [

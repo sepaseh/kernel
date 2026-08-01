@@ -1,0 +1,6 @@
+{
+  "ignore": [".agents", "node_modules", ".git"],
+  "name": "Kernel API",
+  "type": "collection",
+  "version": "1"
+}

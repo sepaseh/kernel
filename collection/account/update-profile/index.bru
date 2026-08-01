@@ -1,0 +1,55 @@
+meta {
+  name: Update Profile
+  type: http
+  seq: 2
+}
+
+patch {
+  url: {{base_url}}/account/update-profile
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+    "first_name": "علی",
+    "last_name": "رضایی",
+    "personnel_code": "EMP-1001"
+  }
+}
+
+docs {
+  ## Purpose
+
+  Partially updates the basic profile information of the authenticated user.
+
+  ## Authentication
+
+  Requires a valid access token.
+
+  ## Behavior
+
+  - Only fields included in the request body are updated.
+  - Omitted fields remain unchanged.
+  - At least one supported field must be provided.
+  - Supported fields are `first_name`, `last_name`, and `personnel_code`.
+  - `personnel_code` must remain unique when changed.
+  - Users do not have individual language preferences.
+  - Username and email are managed through their dedicated endpoints.
+  - Avatar management is not included until the file system contract is defined.
+
+  ## Response
+
+  - `200 OK` — Profile updated successfully.
+  - `400 Bad Request` — The request body is empty or contains invalid values.
+  - `401 Unauthorized` — The access token is missing, invalid, or expired.
+}

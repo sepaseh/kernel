@@ -38,29 +38,27 @@ apiClient.blob(url, config);
 
 ## Endpoint Examples
 
-| Helper                      | Method   | Endpoint                  |
-| --------------------------- | -------- | ------------------------- |
-| `login`                     | `POST`   | `/auth/login`             |
-| `getAccount`                | `GET`    | `/account/me`             |
-| `changePassword`            | `POST`   | `/auth/change-password`   |
-| `fetchUsers`                | `GET`    | `/users`                  |
-| `fetchUser`                 | `GET`    | `/users/:id`              |
-| `createUser`                | `POST`   | `/users`                  |
-| `updateUser`                | `PATCH`  | `/users/:id`              |
-| `deleteUser`                | `DELETE` | `/users/:id`              |
-| `updateUserRoles`           | `PUT`    | `/users/:id/roles`        |
-| `updateUserWorkspaces`      | `PUT`    | `/users/:id/workspaces`   |
-| `updateUserPassword`        | `PUT`    | `/users/:id/password`     |
-| `updateUserStatus`          | `PATCH`  | `/users/:id/status`       |
-| `updateUserSystemAdmin`     | `PATCH`  | `/users/:id/system-admin` |
-| `fetchUserRoleOptions`      | `GET`    | `/roles`                  |
-| `fetchUserWorkspaceOptions` | `GET`    | `/workspaces`             |
-| `fetchRoles`                | `GET`    | `/roles`                  |
-| `fetchRole`                 | `GET`    | `/roles/:id`              |
-| `createRole`                | `POST`   | `/roles`                  |
-| `updateRole`                | `PATCH`  | `/roles/:id`              |
-| `deleteRole`                | `DELETE` | `/roles/:id`              |
-| `fetchPermissions`          | `GET`    | `/permissions`            |
+| Helper                  | Method   | Endpoint                  |
+| ----------------------- | -------- | ------------------------- |
+| `login`                 | `POST`   | `/auth/login`             |
+| `getAccount`            | `GET`    | `/account/me`             |
+| `changePassword`        | `POST`   | `/auth/change-password`   |
+| `fetchUsers`            | `GET`    | `/users`                  |
+| `fetchUser`             | `GET`    | `/users/:id`              |
+| `createUser`            | `POST`   | `/users`                  |
+| `updateUser`            | `PATCH`  | `/users/:id`              |
+| `deleteUser`            | `DELETE` | `/users/:id`              |
+| `updateUserRoles`       | `PUT`    | `/users/:id/roles`        |
+| `updateUserPassword`    | `PUT`    | `/users/:id/password`     |
+| `updateUserStatus`      | `PATCH`  | `/users/:id/status`       |
+| `updateUserSystemAdmin` | `PATCH`  | `/users/:id/system-admin` |
+| `fetchUserRoleOptions`  | `GET`    | `/roles`                  |
+| `fetchRoles`            | `GET`    | `/roles`                  |
+| `fetchRole`             | `GET`    | `/roles/:id`              |
+| `createRole`            | `POST`   | `/roles`                  |
+| `updateRole`            | `PATCH`  | `/roles/:id`              |
+| `deleteRole`            | `DELETE` | `/roles/:id`              |
+| `fetchPermissions`      | `GET`    | `/permissions`            |
 
 ## Data Shape Notes
 

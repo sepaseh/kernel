@@ -71,8 +71,6 @@ export const en = {
   usernameUpdated: "Username updated successfully.",
   users: "Users",
   verifyEmail: "Verify email",
-  workspaces: "Workspaces",
-  workspacesUpdated: "User workspaces updated successfully.",
   rolesUpdated: "User roles updated successfully.",
   passwordUpdated: "User password updated successfully.",
   deleteUserConfirm: "Are you sure you want to delete this user?",

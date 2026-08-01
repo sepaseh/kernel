@@ -1,0 +1,54 @@
+meta {
+  name: OTP Request
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/auth/otp-request
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+    "mobile": "09123456789",
+    "purpose": "login"
+  }
+}
+
+docs {
+  ## Purpose
+
+  Requests a one-time password (OTP) for a supported authentication flow.
+
+  ## Authentication
+
+  Public endpoint.
+
+  ## Behavior
+
+  - Generates and sends an OTP for the specified mobile number and purpose.
+  - Supported purposes:
+    - `login`
+    - `register`
+    - `forgot_password`
+    - `verify_email`
+  - The mobile number must be in the supported format.
+  - Repeated OTP requests may progressively increase the resend delay.
+  - The client must always use the `remaining_seconds` value returned by the server and must not assume a fixed resend interval.
+  - OTP requests are rate-limited based on the mobile number and request IP address.
+  - Repeated requests may temporarily block further OTP delivery.
+  - The response does not reveal whether the mobile number belongs to an existing account.
+
+  ## Response
+
+  - `200 OK` — OTP request accepted.
+  - `400 Bad Request` — Request validation failed or the purpose is invalid.
+  - `429 Too Many Requests` — OTP request rate limit exceeded.
+}

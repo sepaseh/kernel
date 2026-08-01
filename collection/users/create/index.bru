@@ -1,0 +1,61 @@
+meta {
+  name: Create User
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/users
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "first_name": "علی",
+    "last_name": "رضایی",
+    "mobile": "09123456789",
+    "password": "password123",
+    "personnel_code": "EMP-1001"
+  }
+}
+
+docs {
+  ## Purpose
+
+  Creates a user through the administrative user-management flow.
+
+  ## Authentication
+
+  Requires a valid access token with permission to create users.
+
+  ## Behavior
+
+  - Mobile numbers must be unique.
+  - Password is required and must satisfy the configured password policy.
+  - `personnel_code` is required and must be unique.
+  - The user is created with `status="active"` by default.
+  - `is_system_admin` cannot be supplied during creation.
+  - The dedicated system-administrator endpoint is the only way to change `is_system_admin`.
+  - No language preference is stored for the user.
+  - Email cannot be assigned through this endpoint and requires the OTP verification flow.
+  - Username is configured later by the user through the account endpoint.
+  - Roles are assigned later through the dedicated role endpoint.
+  - Activation may be changed later only through the dedicated status endpoint.
+
+  ## Response
+
+  - `201 Created` — User created successfully.
+  - `400 Bad Request` — Request validation failed or a unique field is already in use.
+  - `401 Unauthorized` — Authentication is missing or invalid.
+  - `403 Forbidden` — The authenticated user cannot create users.
+}

@@ -83,7 +83,7 @@ The API layer includes reusable authentication and account endpoints alongside g
 | ------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | Auth    | `/auth/register`, `/auth/login`, `/auth/otp-request`, `/auth/forgot-password`, `/auth/refresh-token`, `/auth/change-password`, `/auth/logout` |
 | Account | `/account/me`, `/account/update-profile`, `/account/update-username`, `/account/request-email-verification`, `/account/verify-email`          |
-| Users   | `/users`, `/users/:id`, `/users/:id/roles`, `/users/:id/workspaces`, `/users/:id/password`, `/users/:id/status`, `/users/:id/system-admin`    |
+| Users   | `/users`, `/users/:id`, `/users/:id/roles`, `/users/:id/password`, `/users/:id/status`, `/users/:id/system-admin`                             |
 | Roles   | `/roles`, `/roles/:id`, `/permissions`                                                                                                        |
 
 Protected API requests automatically make one refresh attempt after a `401`.

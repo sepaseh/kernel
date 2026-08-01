@@ -1,4 +1,4 @@
-import { within } from "@testing-library/react";
+import { waitFor, within } from "@testing-library/react";
 import { MemoryRouter, useLocation } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -52,7 +52,7 @@ const mocks = vi.hoisted(() => {
     },
     core: {
       setUser,
-      user: account,
+      user: account as typeof account | null,
     },
     filterState: {
       filters: {},
@@ -94,7 +94,6 @@ vi.mock("@/features/users/api", () => ({
   fetchUser: vi.fn(),
   fetchUserRoleOptions: vi.fn(),
   fetchUsers: vi.fn(),
-  fetchUserWorkspaceOptions: vi.fn(),
   updateUserStatus: vi.fn(),
   updateUserSystemAdmin: vi.fn(),
 }));
@@ -108,9 +107,6 @@ vi.mock("@/features/users/forms/user-password/UserPassword", () => ({
 }));
 vi.mock("@/features/users/forms/user-role/UserRole", () => ({
   UserFormRole: () => null,
-}));
-vi.mock("@/features/users/forms/user-workspace/UserWorkspace", () => ({
-  UserWorkspaceForm: () => null,
 }));
 
 vi.mock("@/app/hooks", () => ({
@@ -166,7 +162,6 @@ beforeEach(() => {
   mocks.core.user = mocks.account;
   vi.mocked(api.deleteUser).mockResolvedValue(undefined);
   vi.mocked(api.fetchUserRoleOptions).mockResolvedValue([]);
-  vi.mocked(api.fetchUserWorkspaceOptions).mockResolvedValue([]);
   vi.mocked(api.changePassword).mockResolvedValue(undefined);
   vi.mocked(api.forgotPassword).mockResolvedValue(undefined);
   vi.mocked(api.getAccount).mockResolvedValue(mocks.account);
@@ -203,6 +198,20 @@ describe("authentication pages", () => {
       identifier: "ada",
       password: "secret",
     });
+    expect(screen.getByLabelText("location")).toHaveTextContent("/");
+  });
+
+  it("reports rejected login credentials without navigating", async () => {
+    vi.mocked(api.login).mockRejectedValueOnce(new Error("Invalid login"));
+    const { user } = renderPage(<LoginPage />);
+
+    await user.type(screen.getByLabelText("identifier"), "ada");
+    await user.type(screen.getByLabelText("password"), "incorrect");
+    await user.click(screen.getByRole("button", { name: "enter" }));
+
+    await waitFor(() =>
+      expect(mocks.messageError).toHaveBeenCalledWith("Invalid login"),
+    );
     expect(screen.getByLabelText("location")).toHaveTextContent("/");
   });
 
@@ -273,6 +282,14 @@ describe("authentication pages", () => {
 });
 
 describe("account page", () => {
+  it("renders nothing until an account is available", () => {
+    mocks.core.user = null;
+
+    renderPage(<AccountPage />);
+
+    expect(screen.queryByRole("heading", { name: "account" })).toBeNull();
+  });
+
   it("updates the account profile", async () => {
     const updatedAccount = { ...mocks.account, firstName: "Augusta" };
     vi.mocked(api.updateProfile).mockResolvedValue(updatedAccount);
@@ -350,9 +367,42 @@ describe("account page", () => {
       newPassword: "new-password",
     });
   });
+
+  it("reports profile update failures without replacing the account", async () => {
+    vi.mocked(api.updateProfile).mockRejectedValueOnce(
+      new Error("Profile unavailable"),
+    );
+    const { user } = renderPage(<AccountPage />);
+    const firstName = screen.getByLabelText("firstName");
+
+    await user.clear(firstName);
+    await user.type(firstName, "Augusta");
+    await user.click(
+      within(firstName.closest("form")!).getByRole("button", {
+        name: "update",
+      }),
+    );
+
+    await waitFor(() =>
+      expect(mocks.messageError).toHaveBeenCalledWith("Profile unavailable"),
+    );
+    expect(mocks.setUser).not.toHaveBeenCalled();
+  });
 });
 
 describe("roles page", () => {
+  it("reports a failure to load roles", async () => {
+    vi.mocked(api.fetchRoles).mockRejectedValueOnce(
+      new Error("Roles unavailable"),
+    );
+
+    renderPage(<RolesPage />);
+
+    await waitFor(() =>
+      expect(mocks.messageError).toHaveBeenCalledWith("Roles unavailable"),
+    );
+  });
+
   it("loads and displays roles", async () => {
     vi.mocked(api.fetchRoles).mockResolvedValue([
       {
@@ -404,6 +454,18 @@ describe("roles page", () => {
 });
 
 describe("users page", () => {
+  it("reports a failure to load users", async () => {
+    vi.mocked(api.fetchUsers).mockRejectedValueOnce(
+      new Error("Users unavailable"),
+    );
+
+    renderPage(<UsersPage />);
+
+    await waitFor(() =>
+      expect(mocks.messageError).toHaveBeenCalledWith("Users unavailable"),
+    );
+  });
+
   it("loads and displays users", async () => {
     vi.mocked(api.fetchUsers).mockResolvedValue({
       items: [
@@ -456,7 +518,6 @@ describe("users page", () => {
     vi.mocked(api.fetchUser).mockResolvedValue({
       ...userRecord,
       roleIds: [],
-      workspaceIds: [],
     });
     const { user } = renderPage(<UsersPage />);
 

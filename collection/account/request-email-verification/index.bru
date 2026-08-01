@@ -1,0 +1,50 @@
+meta {
+  name: Request Email Verification
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{base_url}}/account/request-email-verification
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+    "email": "user@example.com"
+  }
+}
+
+docs {
+  ## Purpose
+
+  Sends a verification code to an email address before assigning it to the authenticated user.
+
+  ## Authentication
+
+  Requires a valid access token.
+
+  ## Behavior
+
+  - Sends a verification code to the provided email address.
+  - The current profile email remains unchanged until verification succeeds.
+  - The same flow is used for both setting an email for the first time and changing an existing email.
+  - Repeated requests may be rate limited.
+
+  ## Response
+
+  - `200 OK` — Verification code sent successfully.
+  - `400 Bad Request` — The email is invalid or cannot be used.
+  - `401 Unauthorized` — The access token is missing, invalid, or expired.
+  - `429 Too Many Requests` — The request rate limit has been exceeded.
+}

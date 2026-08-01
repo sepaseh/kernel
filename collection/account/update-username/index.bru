@@ -1,0 +1,47 @@
+meta {
+  name: Update Username
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/account/update-username
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+    "username": "user"
+  }
+}
+
+docs {
+  ## Purpose
+
+  Updates the username of the authenticated user.
+
+  ## Authentication
+
+  Requires a valid access token.
+
+  ## Behavior
+
+  - Updates the username of the authenticated user.
+  - The username must be unique.
+
+  ## Response
+
+  - `200 OK` — Username updated successfully.
+  - `400 Bad Request` — The username is invalid or already in use.
+  - `401 Unauthorized` — The access token is missing, invalid, or expired.
+}

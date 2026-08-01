@@ -1,0 +1,51 @@
+meta {
+  name: Update User Status
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{base_url}}/users/{{user_id}}/status
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "status": "active"
+  }
+}
+
+docs {
+  ## Purpose
+
+  Updates the activation state of a user.
+
+  ## Authentication
+
+  Requires a valid access token with permission to update user activation.
+
+  ## Behavior
+
+  - `status` must be either `"active"` or `"inactive"`.
+  - The operation is idempotent.
+  - A successful request returns no response body.
+
+  ## Response
+
+  - `200 OK` — User activation updated successfully with no response body.
+  - `400 Bad Request` — `status` is missing or invalid.
+  - `401 Unauthorized` — Authentication is missing or invalid.
+  - `403 Forbidden` — The authenticated user cannot update user activation.
+  - `404 Not Found` — The user does not exist.
+  - `409 Conflict` — The activation change violates a system constraint.
+}

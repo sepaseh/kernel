@@ -1,0 +1,44 @@
+meta {
+  name: List Permissions
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/permissions
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  ## Purpose
+
+  Returns all permissions available for assignment to roles.
+
+  ## Authentication
+
+  Requires a valid access token with permission to read permissions.
+
+  ## Behavior
+
+  - Returns permissions grouped by resource.
+  - Each group contains `name`, `title`, and a `permissions` array.
+  - Each nested permission contains its assignable full `name` and display-ready `title`.
+  - Roles continue to store permission name values such as `users.read`.
+  - `SYSTEM_ADMIN` is a global capability and is not included in this assignable permission catalog.
+  - An authenticated `SYSTEM_ADMIN` can use every service without assigned role permissions.
+
+  ## Response
+
+  - `200 OK` — Permissions returned successfully.
+  - `401 Unauthorized` — Authentication is missing or invalid.
+  - `403 Forbidden` — The authenticated user cannot read permissions.
+}

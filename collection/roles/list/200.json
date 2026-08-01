@@ -1,0 +1,7 @@
+[
+  {
+    "id": "3ecb1f52-6d6e-43b9-a8fb-4e0772c9f863",
+    "name": "کاربر",
+    "permissions": ["users.read"]
+  }
+]

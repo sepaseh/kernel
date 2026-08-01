@@ -1,0 +1,40 @@
+meta {
+  name: Get Role
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{base_url}}/roles/{{role_id}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  ## Purpose
+
+  Returns a role by UUID.
+
+  ## Authentication
+
+  Requires a valid access token with permission to read roles.
+
+  ## Behavior
+
+  - The permissions field contains an array of permission name values.
+
+  ## Response
+
+  - `200 OK` — Role returned successfully.
+  - `401 Unauthorized` — Authentication is missing or invalid.
+  - `403 Forbidden` — The authenticated user cannot read roles.
+  - `404 Not Found` — The role does not exist.
+}

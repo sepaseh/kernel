@@ -1,0 +1,50 @@
+meta {
+  name: Update Role
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{base_url}}/roles/{{role_id}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "کاربر",
+    "permissions": []
+  }
+}
+
+docs {
+  ## Purpose
+
+  Updates a role by UUID.
+
+  ## Authentication
+
+  Requires a valid access token with permission to update roles.
+
+  ## Behavior
+
+  - The role name and permissions are replaced with the submitted values.
+  - permissions is an array of names returned by GET /permissions and may be empty.
+
+  ## Response
+
+  - `200 OK` — Role updated successfully.
+  - `400 Bad Request` — The role name or permissions are invalid.
+  - `401 Unauthorized` — Authentication is missing or invalid.
+  - `403 Forbidden` — The authenticated user cannot update roles.
+  - `404 Not Found` — The role does not exist.
+}

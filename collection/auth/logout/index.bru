@@ -1,0 +1,47 @@
+meta {
+  name: Logout
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{base_url}}/auth/logout
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+headers {
+  Accept: application/json
+}
+
+script:post-response {
+  if (res.getStatus() === 200) {
+    bru.deleteEnvVar("access_token");
+  }
+}
+
+docs {
+  ## Purpose
+
+  Signs out the authenticated user and revokes the current session.
+
+  ## Authentication
+
+  Requires a valid access token.
+
+  ## Behavior
+
+  - Invalidates the current authenticated session.
+  - Revokes the associated refresh session.
+  - No request body is required.
+  - This endpoint is idempotent. Calling it multiple times produces the same result.
+
+  ## Response
+
+  - `200 OK` — Logout successful with no response body.
+  - `401 Unauthorized` — Authentication is missing or invalid.
+}

@@ -1,0 +1,51 @@
+meta {
+  name: Change Password
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{base_url}}/auth/change-password
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "current_password": "CurrentPassword123!",
+    "new_password": "NewPassword123!"
+  }
+}
+
+docs {
+  ## Purpose
+  
+  Changes the password of the authenticated user.
+  
+  ## Authentication
+  
+  Requires a valid access token.
+  
+  ## Behavior
+  
+  - The current password must be valid.
+  - The new password must satisfy the configured password policy.
+  - The new password must be different from the current password.
+  - This endpoint is intended for users who already have a password.
+  - A successful request returns no response body.
+  
+  ## Response
+  
+  - `200 OK` — Password changed successfully with no response body.
+  - `400 Bad Request` — Request validation failed, the current password is incorrect, or the new password is invalid.
+  - `401 Unauthorized` — Authentication is missing or invalid.
+}

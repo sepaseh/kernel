@@ -24,7 +24,6 @@ export type UserSummaryProps = {
 
 export type UserProps = Omit<UserSummaryProps, "status"> & {
   roleIds: string[];
-  workspaceIds: string[];
 };
 
 export type CreateUserParams = {
@@ -41,10 +40,6 @@ export type UpdateUserParams = Partial<
 
 export type UserRoleParams = {
   roleIds: string[];
-};
-
-export type UserWorkspaceParams = {
-  workspaceIds: string[];
 };
 
 export type UserSystemAdminParams = {

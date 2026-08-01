@@ -1,0 +1,54 @@
+meta {
+  name: Update User System Administrator
+  type: http
+  seq: 9
+}
+
+patch {
+  url: {{base_url}}/users/{{user_id}}/system-admin
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "is_system_admin": true
+  }
+}
+
+docs {
+  ## Purpose
+
+  Grants or revokes the global `SYSTEM_ADMIN` capability for a user.
+
+  ## Authentication
+
+  Requires a valid access token belonging to an existing `SYSTEM_ADMIN`.
+
+  ## Behavior
+
+  - `is_system_admin` is required and must be a boolean.
+  - Setting `is_system_admin` to `true` grants the global `SYSTEM_ADMIN` capability.
+  - Setting `is_system_admin` to `false` revokes the global `SYSTEM_ADMIN` capability.
+  - `SYSTEM_ADMIN` is separate from roles and assignable permissions.
+  - This is the only endpoint allowed to change `is_system_admin`.
+  - The operation is idempotent.
+  - A successful request returns no response body.
+
+  ## Response
+
+  - `200 OK` — System-administrator capability updated successfully with no response body.
+  - `400 Bad Request` — `is_system_admin` is missing or invalid.
+  - `401 Unauthorized` — Authentication is missing or invalid.
+  - `403 Forbidden` — The authenticated user is not a `SYSTEM_ADMIN`.
+  - `404 Not Found` — The target user does not exist.
+}
