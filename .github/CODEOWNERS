@@ -1,7 +1,9 @@
 # Default reviewer for all repository changes.
 * @sepaseh
 
-# Require explicit review for automation and dependency policy changes.
+# Suggest the repository owner for automation and dependency policy changes.
+# Branch protection requires one approval but does not currently require that
+# approval to come from a Code Owner.
 /.github/ @sepaseh
 /package.json @sepaseh
 /package-lock.json @sepaseh

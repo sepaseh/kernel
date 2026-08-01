@@ -1,21 +1,21 @@
 {
-  "name": "react-base-ai-guidance",
-  "description": "Provider-neutral guidance for AI assistants working on react-base.",
+  "name": "kernel-ai-guidance",
+  "description": "Provider-neutral guidance for AI assistants working on Kernel.",
   "rules": [
-    ".ai/rules/code-quality.md",
-    ".ai/rules/git.md",
-    ".ai/rules/imports.md",
-    ".ai/rules/ordering.md",
-    ".ai/rules/react.md",
-    ".ai/rules/safety.md",
-    ".ai/rules/styling.md",
-    ".ai/rules/testing.md",
-    ".ai/rules/typescript.md"
+    ".agents/rules/code-quality.md",
+    ".agents/rules/git.md",
+    ".agents/rules/imports.md",
+    ".agents/rules/ordering.md",
+    ".agents/rules/react.md",
+    ".agents/rules/safety.md",
+    ".agents/rules/styling.md",
+    ".agents/rules/testing.md",
+    ".agents/rules/typescript.md"
   ],
   "optionalHooks": [
-    ".ai/hooks/block-dangerous.sh",
-    ".ai/hooks/post-edit-format.sh",
-    ".ai/hooks/quality-gate.sh"
+    ".agents/hooks/block-dangerous.sh",
+    ".agents/hooks/post-edit-format.sh",
+    ".agents/hooks/quality-gate.sh"
   ],
   "recommendedChecks": [
     "npm run typecheck",

@@ -66,6 +66,13 @@ API and application base URLs for unit, component, and API integration tests.
 These values take precedence over developer-specific `.env.local` settings, so
 tests never depend on or contact a configured development backend.
 
+Playwright builds its preview server with a separate deterministic environment
+defined in `playwright.config.ts`: the application base is `/`, the release ID
+is `e2e`, and the API origin is `https://api.example.com`. Browser tests
+intercept that reserved example origin. These explicit values override
+developer-specific `.env.local` settings and prevent local E2E runs from
+contacting a configured backend.
+
 Pull requests run the critical browser suite in Chromium. Firefox, WebKit,
 mobile, and visual projects remain available for focused local checks when a
 change warrants broader browser coverage. Install those browsers as needed:

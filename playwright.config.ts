@@ -66,6 +66,12 @@ export default defineConfig({
   },
   webServer: {
     command: "npm run build && npm run preview -- --host 127.0.0.1 --port 4173",
+    env: {
+      ...process.env,
+      VITE_API_BASE_URL: "https://api.example.com",
+      VITE_APP_BASE_URL: "/",
+      VITE_RELEASE_ID: "e2e",
+    },
     ignoreHTTPSErrors: true,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
