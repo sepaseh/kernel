@@ -154,6 +154,29 @@ describe("user identity form", () => {
     expect(mocks.messageSuccess).toHaveBeenCalledWith("userUpdated");
     expect(onFinish).toHaveBeenCalledOnce();
   });
+
+  it("keeps the user form open and reports creation failures", async () => {
+    vi.mocked(api.createUser).mockRejectedValueOnce(
+      new Error("Mobile already exists"),
+    );
+    const onFinish = vi.fn();
+    const { user } = renderAtHash(<UserForm onFinish={onFinish} />, "#create");
+
+    await user.type(await screen.findByLabelText("firstName"), "Ada");
+    await user.type(screen.getByLabelText("lastName"), "Lovelace");
+    await user.type(screen.getByLabelText("mobile"), "09120000000");
+    await user.type(screen.getByLabelText("personnelCode"), "1001");
+    await user.type(screen.getByLabelText("password"), syntheticCredential);
+    await user.type(screen.getByLabelText("confirmPass"), syntheticCredential);
+    await user.click(screen.getByRole("button", { name: "submit" }));
+
+    await waitFor(() =>
+      expect(mocks.messageError).toHaveBeenCalledWith("Mobile already exists"),
+    );
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(mocks.goBack).not.toHaveBeenCalled();
+    expect(onFinish).not.toHaveBeenCalled();
+  });
 });
 
 describe("role form", () => {
@@ -188,6 +211,47 @@ describe("role form", () => {
       }),
     );
     expect(mocks.messageError).toHaveBeenCalledWith("Role already exists");
+  });
+
+  it("prefills and updates an existing role", async () => {
+    const onFinish = vi.fn();
+    const { user } = renderAtHash(
+      <RoleForm
+        data={{
+          id: "role-1",
+          name: "Operators",
+          permissions: ["users.read"],
+        }}
+        onFinish={onFinish}
+        options={{
+          permissions: [
+            {
+              name: "users",
+              permissions: [{ name: "users.read", title: "Read users" }],
+              title: "Users",
+            },
+          ],
+        }}
+      />,
+      "#update",
+    );
+
+    const name = await screen.findByLabelText("name");
+    expect(name).toHaveValue("Operators");
+    expect(screen.getByLabelText("Read users")).toBeChecked();
+    await user.clear(name);
+    await user.type(name, "Administrators");
+    await user.click(screen.getByRole("button", { name: "submit" }));
+
+    await waitFor(() =>
+      expect(api.updateRole).toHaveBeenCalledWith("role-1", {
+        name: "Administrators",
+        permissions: ["users.read"],
+      }),
+    );
+    expect(mocks.messageSuccess).toHaveBeenCalledWith("roleUpdated");
+    expect(mocks.goBack).toHaveBeenCalledOnce();
+    expect(onFinish).toHaveBeenCalledOnce();
   });
 });
 
@@ -263,6 +327,70 @@ describe("user access forms", () => {
     expect(mocks.messageSuccess).toHaveBeenCalledWith("workspacesUpdated");
     expect(onFinish).toHaveBeenCalledOnce();
   });
+
+  it("reports a password update failure without closing", async () => {
+    vi.mocked(api.updateUserPassword).mockRejectedValueOnce(
+      new Error("Password rejected"),
+    );
+    const { user } = renderAtHash(
+      <UserPasswordForm data={userData} />,
+      "#password",
+    );
+
+    await user.type(
+      await screen.findByLabelText("newPass"),
+      replacementCredential,
+    );
+    await user.type(
+      screen.getByLabelText("confirmPass"),
+      replacementCredential,
+    );
+    await user.click(screen.getByRole("button", { name: "submit" }));
+
+    await waitFor(() =>
+      expect(mocks.messageError).toHaveBeenCalledWith("Password rejected"),
+    );
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(mocks.goBack).not.toHaveBeenCalled();
+  });
+});
+
+describe("form data guards", () => {
+  it.each([
+    {
+      hash: "#update",
+      name: "user",
+      ui: <UserForm onFinish={vi.fn()} />,
+    },
+    {
+      hash: "#update",
+      name: "role",
+      ui: <RoleForm onFinish={vi.fn()} options={{ permissions: [] }} />,
+    },
+    {
+      hash: "#password",
+      name: "password",
+      ui: <UserPasswordForm />,
+    },
+    {
+      hash: "#roles",
+      name: "roles",
+      ui: <UserFormRole onFinish={vi.fn()} options={{ roles: [] }} />,
+    },
+    {
+      hash: "#workspaces",
+      name: "workspaces",
+      ui: <UserWorkspaceForm onFinish={vi.fn()} options={{ workspaces: [] }} />,
+    },
+  ])(
+    "closes the $name form when its record is missing",
+    async ({ hash, ui }) => {
+      renderAtHash(ui, hash);
+
+      await waitFor(() => expect(mocks.goBack).toHaveBeenCalledOnce());
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    },
+  );
 });
 
 describe("form cancellation", () => {
