@@ -29,8 +29,10 @@ script:post-response {
   const responseBody = res.getBody();
   const payload = responseBody?.data ?? responseBody;
 
-  if (payload?.access_token) {
+  if (res.getStatus() === 201 && payload?.access_token) {
     bru.setEnvVar("access_token", payload.access_token);
+  } else {
+    bru.deleteEnvVar("access_token");
   }
 }
 
