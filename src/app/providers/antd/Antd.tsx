@@ -30,27 +30,37 @@ type Palette = Pick<
   | "colorTextPlaceholder"
 >;
 
+const algorithms = {
+  dark: antdTheme.darkAlgorithm,
+  light: antdTheme.defaultAlgorithm,
+} satisfies Record<Theme, ThemeConfig["algorithm"]>;
+
+const darkTokens = antdTheme.getDesignToken({ algorithm: algorithms.dark });
+const lightTokens = antdTheme.getDesignToken({ algorithm: algorithms.light });
+
 const token: Partial<GlobalToken> = {
-  colorLink: "#0a84ff",
-  colorPrimary: "#d70015",
+  colorLink: lightTokens.colorLink,
+  colorPrimary: lightTokens.colorPrimary,
 };
 
+// This palette is starter scaffolding. Remove it in a real project and use the
+// product's own brand colors; these defaults keep the starter aligned with Ant Design.
 const palettes: Record<Theme, Palette> = {
   light: {
-    colorBgBase: "#f9f9f9",
-    colorBgContainer: "#ffffff",
-    colorBorder: "#e5e5ea",
-    colorTextBase: "#2c2c2e",
-    colorTextDescription: "#48484a",
-    colorTextPlaceholder: "#6b6b70",
+    colorBgBase: lightTokens.colorBgBase,
+    colorBgContainer: lightTokens.colorBgContainer,
+    colorBorder: lightTokens.colorBorder,
+    colorTextBase: lightTokens.colorTextBase,
+    colorTextDescription: lightTokens.colorTextDescription,
+    colorTextPlaceholder: lightTokens.colorTextPlaceholder,
   },
   dark: {
-    colorBgBase: "#1c1c1e",
-    colorBgContainer: "#1a1a1a",
-    colorBorder: "#3a3a3c",
-    colorTextBase: "#ffffff",
-    colorTextDescription: "#aeaeb2",
-    colorTextPlaceholder: "#aeaeb2",
+    colorBgBase: darkTokens.colorBgBase,
+    colorBgContainer: darkTokens.colorBgContainer,
+    colorBorder: darkTokens.colorBorder,
+    colorTextBase: darkTokens.colorTextBase,
+    colorTextDescription: darkTokens.colorTextDescription,
+    colorTextPlaceholder: darkTokens.colorTextPlaceholder,
   },
 };
 
@@ -84,8 +94,8 @@ const buildThemeConfig = (
 });
 
 const themeConfigs: Record<Theme, ThemeConfig> = {
-  dark: buildThemeConfig(antdTheme.darkAlgorithm, palettes.dark),
-  light: buildThemeConfig(antdTheme.defaultAlgorithm, palettes.light),
+  dark: buildThemeConfig(algorithms.dark, palettes.dark),
+  light: buildThemeConfig(algorithms.light, palettes.light),
 };
 
 const localeConfigs = {

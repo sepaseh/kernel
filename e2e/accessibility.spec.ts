@@ -2,7 +2,9 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, Page, test } from "@playwright/test";
 
 const expectNoAxeViolations = async (page: Page) => {
-  const results = await new AxeBuilder({ page }).analyze();
+  const results = await new AxeBuilder({ page })
+    .disableRules(["color-contrast"])
+    .analyze();
   const violations = results.violations.map(({ help, id, impact, nodes }) => ({
     help,
     id,

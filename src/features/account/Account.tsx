@@ -224,9 +224,10 @@ export const AccountPage = () => {
               <Form.Item label={t("personnelCode")} name="personnelCode">
                 <Input />
               </Form.Item>
-              <Form.Item label={t("mobile")}>
+              <Form.Item htmlFor="account-mobile" label={t("mobile")}>
                 <Input
                   disabled
+                  id="account-mobile"
                   value={user.mobile}
                   style={{ direction: "ltr" }}
                 />

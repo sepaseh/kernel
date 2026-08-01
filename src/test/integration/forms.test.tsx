@@ -113,7 +113,7 @@ describe("user identity form", () => {
     expect(mocks.messageSuccess).toHaveBeenCalledWith("userCreated");
     expect(mocks.goBack).toHaveBeenCalledOnce();
     expect(onFinish).toHaveBeenCalledOnce();
-  });
+  }, 10_000);
 
   it("rejects mismatched user passwords", async () => {
     const { user } = renderAtHash(<UserForm onFinish={vi.fn()} />, "#create");

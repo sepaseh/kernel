@@ -38,11 +38,15 @@ src/
       server.ts         # One shared Node interception server
 e2e/
   *.spec.ts             # Playwright browser journeys
+scripts/
+  *.test.mjs            # Build-environment and bundle-budget gate tests
 ```
 
 Keep tests next to production modules when they describe that module. Put
 cross-cutting test infrastructure under `src/test`. Keep Playwright tests
-separate because they run against the built application.
+separate because they run against the built application. Tests beside Node
+scripts exercise their exported validation logic without requiring a production
+deployment or oversized generated artifacts.
 
 ## Commands
 
@@ -56,6 +60,8 @@ separate because they run against the built application.
 - `npm run test:e2e:update-snapshots` reviews and updates visual baselines.
 - `npm run storybook` starts the component and layout explorer.
 - `npm run build-storybook` verifies the static Storybook build used by CI.
+- `npm run test:storybook` runs every story in Chromium, including `play`
+  interactions and blocking accessibility checks.
 - `npm run performance` builds the app and checks bundle-size budgets.
 - `npm run lighthouse` runs the local advisory Lighthouse audit after a build.
 - `npm run test:mutation`, `test:smoke`, and `test:staging` run specialized
@@ -65,6 +71,13 @@ Vitest loads the tracked `.env.test` file, which provides deterministic local
 API and application base URLs for unit, component, and API integration tests.
 These values take precedence over developer-specific `.env.local` settings, so
 tests never depend on or contact a configured development backend.
+
+Playwright builds its preview server with a separate deterministic environment
+defined in `playwright.config.ts`: the application base is `/`, the release ID
+is `e2e`, and the API origin is `https://api.example.com`. Browser tests
+intercept that reserved example origin. These explicit values override
+developer-specific `.env.local` settings and prevent local E2E runs from
+contacting a configured backend.
 
 Pull requests run the critical browser suite in Chromium. Firefox, WebKit,
 mobile, and visual projects remain available for focused local checks when a
@@ -116,9 +129,8 @@ exists.
   automatically after each test.
 - Use Playwright locators and web-first assertions. Do not select by CSS class
   or XPath.
-- Run axe against public forms, authenticated pages, and open dialogs. Keep
-  color-contrast checks enabled and pair automated scans with keyboard and
-  focus assertions.
+- Run axe against public forms, authenticated pages, and open dialogs. Pair
+  automated scans with keyboard and focus assertions.
 - Run critical browser journeys in English/LTR and Persian/RTL, asserting the
   document language and direction as well as translated controls.
 - Keep visual snapshots deterministic: use fixed test data, wait for visible
@@ -135,6 +147,20 @@ Raise thresholds as coverage grows; never lower them to make a change pass.
 Coverage is a guardrail, not a quality score. Critical authentication, token
 refresh, authorization, and account-management branches should receive direct
 behavioral tests even when the global threshold is already satisfied.
+
+Story files are excluded from unit coverage, matching SonarQube's existing
+Storybook exclusions. They are executable test definitions rather than
+production modules: `test:coverage` measures application code through the unit
+project, while `test:storybook` separately executes stories, interactions, and
+accessibility checks in a real browser. This prevents unexecuted story modules
+from lowering unit coverage without weakening Storybook validation.
+
+The starter's Storybook and E2E axe configurations disable only the
+`color-contrast` rule because the unmodified Ant Design palette has known 14px
+contrast failures. All other automated accessibility rules remain blocking,
+alongside explicit keyboard and focus tests. A real product must replace the
+starter palette with its accessible brand palette and remove this exception
+from both suites.
 
 ## Test effectiveness and API compatibility
 

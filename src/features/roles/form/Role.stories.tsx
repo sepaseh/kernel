@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect, userEvent, within } from "storybook/test";
 
 import { permissions, roles } from "@/test/storybook/fixtures";
 import { StoryShell } from "@/test/storybook/StoryShell";
@@ -33,4 +34,21 @@ export const Update: Story = {
       <RoleForm {...args} />
     </StoryShell>
   ),
+};
+
+export const ValidationErrors: Story = {
+  args: { onFinish: () => undefined, options: { permissions } },
+  render: (args) => (
+    <StoryShell initialEntries={["/#create"]}>
+      <RoleForm {...args} />
+    </StoryShell>
+  ),
+  play: async ({ canvasElement }) => {
+    const body = within(canvasElement.ownerDocument.body);
+    await userEvent.click(body.getByRole("button", { name: /Submit|ثبت/ }));
+    await expect(body.getByLabelText(/Name|نام/)).toHaveAttribute(
+      "aria-invalid",
+      "true",
+    );
+  },
 };

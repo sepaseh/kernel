@@ -18,3 +18,24 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
+
+export const WithoutAuthenticatedUser: Story = {
+  render: () => (
+    <StoryShell initialEntries={["/account"]} initialUser={null}>
+      <AccountPage />
+    </StoryShell>
+  ),
+};
+
+export const DarkRtl: Story = {
+  globals: { direction: "rtl", theme: "dark" },
+  render: () => (
+    <StoryShell
+      initialEntries={["/account"]}
+      initialLanguage="fa"
+      initialTheme="dark"
+    >
+      <AccountPage />
+    </StoryShell>
+  ),
+};

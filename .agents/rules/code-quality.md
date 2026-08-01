@@ -9,7 +9,9 @@ Run the smallest check that covers the files you changed, then broaden before ha
 - Production build: `npm run build`
 - Unused code check: `npm run knip`
 
-For docs-only tasks, validation can usually be limited to `npm run lint` and `npm run knip`.
+For docs-only tasks, run `npm run format:check` and validate links and referenced
+commands. Code-only checks such as lint, typecheck, and Knip are unnecessary
+unless configuration or source files also changed.
 
 ## Autofix workflow
 

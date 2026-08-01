@@ -33,4 +33,4 @@ blob-report
 *.sw?
 
 # AI assistant local settings
-.ai/settings.local.json
+.agents/settings.local.json

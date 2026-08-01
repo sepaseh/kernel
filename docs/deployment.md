@@ -93,5 +93,11 @@ Before enabling them, configure their protected allowed-host variables. For
 deployment smoke, set `SMOKE_ALLOWED_APP_HOST`, `SMOKE_ALLOWED_API_HOST`, and
 `SMOKE_EXPECTED_DEPLOYMENT_ID`; the expected identifier must match the
 immutable `deployment_id` supplied for the run.
+
+All three workflows validate HTTPS, credentials, canonical hostnames, and
+allow-listed targets through `scripts/validate-workflow-targets.mjs`. Smoke
+validation additionally requires the requested and expected immutable
+deployment identifiers to match; DAST validation explicitly rejects the
+configured production hostname.
 See [Staging](staging.md) and [Release operations](release-operations.md) before
 using them against an authorized environment.

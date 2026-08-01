@@ -13,7 +13,7 @@ type StoryShellProps = {
   initialEntries?: string[];
   initialLanguage?: Language;
   initialTheme?: Theme;
-  initialUser?: AccountProps;
+  initialUser?: AccountProps | null;
 };
 
 export const StoryShell = ({
@@ -25,7 +25,9 @@ export const StoryShell = ({
 }: StoryShellProps) => {
   const [language, setLanguage] = useState(initialLanguage);
   const [theme, setTheme] = useState(initialTheme);
-  const [user, setUser] = useState<CoreContextProps["user"]>(initialUser);
+  const [user, setUser] = useState<CoreContextProps["user"]>(
+    initialUser ?? undefined,
+  );
   const value = useMemo<CoreContextProps>(
     () => ({
       currentRoute: "root",

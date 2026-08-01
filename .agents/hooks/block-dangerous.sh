@@ -18,7 +18,7 @@ if echo "$CMD" | grep -qE 'git (push.*(--force([^-]|$)|-f( |$)|-F( |$))|reset --
   exit 2
 fi
 
-if echo "$CMD" | grep -qE 'git push.*(origin|upstream).*(main|master)(\s|$)'; then
+if echo "$CMD" | grep -qE 'git push.*(origin|upstream).*(main|master)([[:space:]]|$)'; then
   echo "Direct push to main/master blocked. Ask the user first." >&2
   exit 2
 fi

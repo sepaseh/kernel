@@ -1,6 +1,9 @@
 # AI Guidance
 
-This folder contains provider-neutral guidance for AI coding assistants working on `react-base`.
+This folder contains provider-neutral guidance for AI coding assistants working on `kernel`.
+
+The repository-root `AGENTS.md` is the discovery entry point. This directory
+contains the detailed, provider-neutral rules and optional hook implementations.
 
 ## How to use these files
 

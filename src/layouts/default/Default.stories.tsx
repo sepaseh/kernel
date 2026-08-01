@@ -6,7 +6,7 @@ import { mocked } from "storybook/test";
 import { CoreContext, CoreContextProps } from "@/app/contexts";
 import { AntdProvider } from "@/app/providers";
 import { AccountProps, getAccount } from "@/features/account";
-import { Theme } from "@/shared/config";
+import { Language, Theme } from "@/shared/config";
 
 import { DefaultLayout } from "./Default";
 
@@ -23,21 +23,32 @@ const account: AccountProps = {
   username: "admin",
 };
 
-const DefaultLayoutStory = () => {
-  const [theme, setTheme] = useState<Theme>("light");
-  const [user, setUser] = useState<CoreContextProps["user"]>(account);
+const DefaultLayoutStory = ({
+  initialLanguage = "en",
+  initialTheme = "light",
+  initialUser = account,
+}: {
+  initialLanguage?: Language;
+  initialTheme?: Theme;
+  initialUser?: AccountProps | null;
+}) => {
+  const [language, setLanguage] = useState<Language>(initialLanguage);
+  const [theme, setTheme] = useState<Theme>(initialTheme);
+  const [user, setUser] = useState<CoreContextProps["user"]>(
+    initialUser ?? undefined,
+  );
   const value = useMemo<CoreContextProps>(
     () => ({
       currentRoute: "root",
-      language: "en",
+      language,
       setCurrentRoute: () => undefined,
-      setLanguage: () => undefined,
+      setLanguage,
       setTheme,
       setUser,
       theme,
       user,
     }),
-    [theme, user],
+    [language, theme, user],
   );
 
   return (
@@ -79,4 +90,16 @@ export const Desktop: Story = {};
 
 export const Mobile: Story = {
   globals: { viewport: { value: "mobile1", isRotated: false } },
+};
+
+export const LoadingAccount: Story = {
+  beforeEach() {
+    mocked(getAccount).mockReturnValue(new Promise(() => undefined));
+  },
+  render: () => <DefaultLayoutStory initialUser={null} />,
+};
+
+export const DarkRtl: Story = {
+  globals: { direction: "rtl", theme: "dark" },
+  render: () => <DefaultLayoutStory initialLanguage="fa" initialTheme="dark" />,
 };

@@ -35,69 +35,12 @@ jobs:
       SMOKE_EXPECTED_DEPLOYMENT_ID: ${{ vars.SMOKE_EXPECTED_DEPLOYMENT_ID }}
 
     steps:
-      - name: Validate smoke-test targets
-        shell: bash
-        run: |
-          node -e '
-            const parseConfiguredHostname = (name, rawValue) => {
-              if (!rawValue || rawValue !== rawValue.trim()) {
-                throw new Error(`${name} must be a hostname without whitespace`);
-              }
-              const normalized = rawValue.toLowerCase();
-              const hostnamePattern =
-                /^(?=.{1,253}$)(?!-)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)*[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
-              if (!hostnamePattern.test(normalized)) {
-                throw new Error(`${name} must contain a hostname only`);
-              }
-              const parsed = new URL(`https://${rawValue}`);
-              if (parsed.hostname !== normalized) {
-                throw new Error(`${name} must be a canonical hostname only`);
-              }
-              return parsed.hostname;
-            };
-            const parseTarget = (name, rawValue) => {
-              if (!rawValue) throw new Error(`${name} is required`);
-              const url = new URL(rawValue);
-              if (url.protocol !== "https:") {
-                throw new Error(`${name} must use HTTPS`);
-              }
-              if (url.username || url.password) {
-                throw new Error(`${name} must not contain credentials`);
-              }
-              return url;
-            };
-            const appUrl = parseTarget("SMOKE_BASE_URL", process.env.SMOKE_BASE_URL);
-            const apiUrl = parseTarget(
-              "SMOKE_API_HEALTH_URL",
-              process.env.SMOKE_API_HEALTH_URL,
-            );
-            const allowedAppHost = parseConfiguredHostname(
-              "SMOKE_ALLOWED_APP_HOST",
-              process.env.SMOKE_ALLOWED_APP_HOST,
-            );
-            const allowedApiHost = parseConfiguredHostname(
-              "SMOKE_ALLOWED_API_HOST",
-              process.env.SMOKE_ALLOWED_API_HOST,
-            );
-            if (appUrl.hostname !== allowedAppHost) {
-              throw new Error("SMOKE_BASE_URL host is not explicitly allowed");
-            }
-            if (apiUrl.hostname !== allowedApiHost) {
-              throw new Error("SMOKE_API_HEALTH_URL host is not explicitly allowed");
-            }
-            const deploymentId = process.env.SMOKE_DEPLOYMENT_ID;
-            const expectedDeploymentId = process.env.SMOKE_EXPECTED_DEPLOYMENT_ID;
-            if (!deploymentId || !expectedDeploymentId) {
-              throw new Error(
-                "SMOKE_DEPLOYMENT_ID and SMOKE_EXPECTED_DEPLOYMENT_ID are required",
-              );
-            }
-            if (deploymentId !== expectedDeploymentId) {
-              throw new Error("The smoke targets do not match the expected deployment");
-            }
-          '
-
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Validate smoke-test targets
+        run: node scripts/validate-workflow-targets.mjs smoke
 
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:

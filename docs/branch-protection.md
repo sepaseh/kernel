@@ -21,7 +21,12 @@ Protection also:
 - Prevents force-pushes.
 - Prevents deletion of `main`.
 
-An approving review is not required for ordinary changes while the repository
-has only one active maintainer. Enable at least one approval and Code Owner
-review when another maintainer can review pull requests without blocking all
-development.
+One approving review is required for every pull request. Code Owner review is
+not currently a separate requirement, so any collaborator with review
+permission may provide the approval. Enable required Code Owner review when
+ownership must be enforced rather than used only for automatic reviewer
+suggestions.
+
+GitHub currently permits squash, merge-commit, and rebase merges. Squash merge
+is preferred for ordinary changes because the pull-request title then becomes
+the single Conventional Commit consumed by Release Please.

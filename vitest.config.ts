@@ -1,7 +1,12 @@
+import path from "node:path";
+
+import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
+import { playwright } from "@vitest/browser-playwright";
 import { defineConfig } from "vitest/config";
 
 import { srcPath } from "./tooling/paths.ts";
 
+// More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
   resolve: {
     alias: {
@@ -9,18 +14,23 @@ export default defineConfig({
     },
   },
   test: {
-    clearMocks: true,
     coverage: {
       exclude: [
         "src/**/*.d.ts",
         "src/**/*.test.{ts,tsx}",
+        "src/**/*.stories.{ts,tsx}",
         "src/**/index.ts",
         "src/main.tsx",
         "src/test/**",
         "src/features/**/types.ts",
         "src/shared/api/types.ts",
       ],
-      include: ["src/**/*.{ts,tsx}"],
+      include: [
+        "src/**/*.{ts,tsx}",
+        "scripts/check-bundle-size.mjs",
+        "scripts/validate-production-env.mjs",
+        "scripts/validate-workflow-targets.mjs",
+      ],
       provider: "v8",
       reporter: ["text", "json-summary", "html", "lcov"],
       thresholds: {
@@ -30,14 +40,46 @@ export default defineConfig({
         statements: 68,
       },
     },
-    environment: "jsdom",
-    environmentOptions: {
-      jsdom: {
-        url: "http://localhost/",
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: "unit",
+          clearMocks: true,
+          environment: "jsdom",
+          environmentOptions: {
+            jsdom: {
+              url: "http://localhost/",
+            },
+          },
+          include: ["src/**/*.test.{ts,tsx}", "scripts/**/*.test.mjs"],
+          restoreMocks: true,
+          setupFiles: ["./src/test/setup.ts"],
+        },
       },
-    },
-    include: ["src/**/*.test.{ts,tsx}"],
-    restoreMocks: true,
-    setupFiles: ["./src/test/setup.ts"],
+      {
+        extends: true,
+        plugins: [
+          storybookTest({
+            configDir: path.join(import.meta.dirname, ".storybook"),
+          }),
+        ],
+        test: {
+          name: "storybook",
+          browser: {
+            enabled: true,
+            headless: true,
+            provider: playwright(
+              process.env.CI ? {} : { launchOptions: { channel: "chrome" } },
+            ),
+            instances: [
+              {
+                browser: "chromium",
+              },
+            ],
+          },
+        },
+      },
+    ],
   },
 });

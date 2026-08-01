@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect, userEvent, within } from "storybook/test";
 
 import { StoryShell } from "@/test/storybook/StoryShell";
 
@@ -25,3 +26,17 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
+
+export const ValidationErrors: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: /Log in|ورود/ }));
+    await expect(
+      canvas.getByLabelText(/Username, email or mobile|نام کاربری/),
+    ).toHaveAttribute("aria-invalid", "true");
+    await expect(canvas.getByLabelText(/Password|رمز عبور/)).toHaveAttribute(
+      "aria-invalid",
+      "true",
+    );
+  },
+};
