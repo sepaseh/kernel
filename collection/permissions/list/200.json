@@ -1,0 +1,270 @@
+[
+  {
+    "name": "ai_module_options",
+    "permissions": [
+      {
+        "name": "ai_module_options.create",
+        "title": "ایجاد گزینه ماژول هوش مصنوعی"
+      },
+      {
+        "name": "ai_module_options.delete",
+        "title": "حذف گزینه ماژول هوش مصنوعی"
+      },
+      {
+        "name": "ai_module_options.read",
+        "title": "مشاهده گزینه‌های ماژول هوش مصنوعی"
+      },
+      {
+        "name": "ai_module_options.update",
+        "title": "ویرایش گزینه ماژول هوش مصنوعی"
+      }
+    ],
+    "title": "گزینه‌های ماژول هوش مصنوعی"
+  },
+  {
+    "name": "ai_modules",
+    "permissions": [
+      {
+        "name": "ai_modules.create",
+        "title": "ایجاد ماژول هوش مصنوعی"
+      },
+      {
+        "name": "ai_modules.delete",
+        "title": "حذف ماژول هوش مصنوعی"
+      },
+      {
+        "name": "ai_modules.read",
+        "title": "مشاهده ماژول‌های هوش مصنوعی"
+      },
+      {
+        "name": "ai_modules.update",
+        "title": "ویرایش ماژول هوش مصنوعی"
+      }
+    ],
+    "title": "ماژول‌های هوش مصنوعی"
+  },
+  {
+    "name": "clients",
+    "permissions": [
+      {
+        "name": "clients.read",
+        "title": "مشاهده مشتریان"
+      }
+    ],
+    "title": "مشتریان"
+  },
+  {
+    "name": "holidays",
+    "permissions": [
+      {
+        "name": "holidays.create",
+        "title": "ایجاد تعطیلی"
+      },
+      {
+        "name": "holidays.delete",
+        "title": "حذف تعطیلی"
+      },
+      {
+        "name": "holidays.read",
+        "title": "مشاهده تعطیلات"
+      }
+    ],
+    "title": "تعطیلات"
+  },
+  {
+    "name": "identity_verifications",
+    "permissions": [
+      {
+        "name": "identity_verifications.read",
+        "title": "مشاهده درخواست‌های احراز هویت"
+      },
+      {
+        "name": "identity_verifications.update",
+        "title": "بررسی درخواست‌های احراز هویت"
+      }
+    ],
+    "title": "احراز هویت"
+  },
+  {
+    "name": "languages",
+    "permissions": [
+      {
+        "name": "languages.read",
+        "title": "مشاهده زبان‌ها"
+      },
+      {
+        "name": "languages.update",
+        "title": "ویرایش زبان سیستم"
+      }
+    ],
+    "title": "زبان‌ها"
+  },
+  {
+    "name": "permissions",
+    "permissions": [
+      {
+        "name": "permissions.read",
+        "title": "مشاهده دسترسی‌ها"
+      }
+    ],
+    "title": "دسترسی‌ها"
+  },
+  {
+    "name": "policies",
+    "permissions": [
+      {
+        "name": "policies.create",
+        "title": "ایجاد سیاست"
+      },
+      {
+        "name": "policies.read",
+        "title": "مشاهده سیاست‌ها"
+      }
+    ],
+    "title": "سیاست‌ها"
+  },
+  {
+    "name": "rejection_reasons",
+    "permissions": [
+      {
+        "name": "rejection_reasons.create",
+        "title": "ایجاد دلیل رد"
+      },
+      {
+        "name": "rejection_reasons.delete",
+        "title": "حذف دلیل رد"
+      },
+      {
+        "name": "rejection_reasons.read",
+        "title": "مشاهده دلایل رد"
+      },
+      {
+        "name": "rejection_reasons.update",
+        "title": "ویرایش دلیل رد"
+      }
+    ],
+    "title": "دلایل رد"
+  },
+  {
+    "name": "reports",
+    "permissions": [
+      {
+        "name": "reports.read",
+        "title": "مشاهده گزارش‌ها"
+      }
+    ],
+    "title": "گزارش‌ها"
+  },
+  {
+    "name": "roles",
+    "permissions": [
+      {
+        "name": "roles.create",
+        "title": "ایجاد نقش"
+      },
+      {
+        "name": "roles.delete",
+        "title": "حذف نقش"
+      },
+      {
+        "name": "roles.read",
+        "title": "مشاهده نقش‌ها"
+      },
+      {
+        "name": "roles.update",
+        "title": "ویرایش نقش"
+      }
+    ],
+    "title": "نقش‌ها"
+  },
+  {
+    "name": "services",
+    "permissions": [
+      {
+        "name": "services.read",
+        "title": "مشاهده خدمات"
+      },
+      {
+        "name": "services.update",
+        "title": "ویرایش خدمات"
+      }
+    ],
+    "title": "خدمات"
+  },
+  {
+    "name": "sessions",
+    "permissions": [
+      {
+        "name": "sessions.export",
+        "title": "خروجی نشست‌ها"
+      },
+      {
+        "name": "sessions.read",
+        "title": "مشاهده نشست‌ها"
+      },
+      {
+        "name": "sessions.update",
+        "title": "مدیریت نشست‌ها"
+      }
+    ],
+    "title": "نشست‌ها"
+  },
+  {
+    "name": "settings",
+    "permissions": [
+      {
+        "name": "settings.read",
+        "title": "مشاهده تنظیمات"
+      },
+      {
+        "name": "settings.update",
+        "title": "ویرایش تنظیمات"
+      }
+    ],
+    "title": "تنظیمات"
+  },
+  {
+    "name": "users",
+    "permissions": [
+      {
+        "name": "users.create",
+        "title": "ایجاد کاربر"
+      },
+      {
+        "name": "users.delete",
+        "title": "حذف کاربر"
+      },
+      {
+        "name": "users.read",
+        "title": "مشاهده کاربران"
+      },
+      {
+        "name": "users.update",
+        "title": "ویرایش کاربر"
+      }
+    ],
+    "title": "کاربران"
+  },
+  {
+    "name": "workspaces",
+    "permissions": [
+      {
+        "name": "workspaces.create",
+        "title": "ایجاد فضای کاری"
+      },
+      {
+        "name": "workspaces.delete",
+        "title": "حذف فضای کاری"
+      },
+      {
+        "name": "workspaces.read",
+        "title": "مشاهده فضاهای کاری"
+      },
+      {
+        "name": "workspaces.update",
+        "title": "ویرایش فضای کاری"
+      }
+    ],
+    "title": "فضاهای کاری"
+  }
+]

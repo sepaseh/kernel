@@ -1,0 +1,12 @@
+{
+  "email": "user@example.com",
+  "first_name": "علی",
+  "id": "2dc56d6f-6b5a-4e0d-9b0b-9a1c9d7f8d41",
+  "is_system_admin": true,
+  "last_name": "رضایی",
+  "mobile": "09123456789",
+  "permissions": ["users.read", "users.create", "users.update"],
+  "personnel_code": "EMP-1001",
+  "status": "active",
+  "username": "user"
+}

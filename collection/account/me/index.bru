@@ -1,0 +1,42 @@
+meta {
+  name: Me
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/account/me
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{user_token}}
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  ## Purpose
+
+  Returns the profile of the currently authenticated user.
+
+  ## Authentication
+
+  Requires a valid access token.
+
+  ## Behavior
+
+  - Returns the authenticated user's profile, including `personnel_code` and `is_system_admin`.
+  - `is_system_admin` indicates whether the user has the global `SYSTEM_ADMIN` capability.
+  - An authenticated `SYSTEM_ADMIN` can use every service without assigned role permissions.
+  - No per-user language preference is returned; the system language applies to every user.
+  - No request body or query parameters are required.
+
+  ## Response
+
+  - `200 OK` — User profile returned successfully.
+  - `401 Unauthorized` — The access token is missing, invalid, or expired.
+}

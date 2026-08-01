@@ -1,0 +1,59 @@
+meta {
+  name: List Users
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/users
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{user_token}}
+}
+
+headers {
+  Accept: application/json
+}
+
+params:query {
+  email:
+  mobile:
+  name:
+  offset: 0
+  size: 12
+  status:
+  username:
+}
+
+docs {
+  ## Purpose
+
+  Returns a paginated list of users.
+
+  ## Authentication
+
+  Requires a valid access token with permission to read users.
+
+  ## Behavior
+
+  - `offset` specifies the number of users to skip and defaults to `0`.
+  - `size` specifies the maximum number of users to return and defaults to `12`.
+  - `email`, `mobile`, and `username` are optional exact-match filters.
+  - `status` is an optional activation-state filter accepting `active` or `inactive`.
+  - `name` performs a case-insensitive partial match against `first_name` and `last_name`.
+  - Provided filters are combined with AND logic.
+  - Invalid pagination values are ignored and replaced with their defaults.
+  - Invalid, empty, or unsupported query parameters are ignored.
+  - Each item includes summary profile data, personnel code, activation state, and `is_system_admin`.
+  - `is_system_admin` represents the global `SYSTEM_ADMIN` capability and is separate from role permissions.
+  - Roles are returned only when requesting a specific user.
+
+  ## Response
+
+  - `200 OK` — Users returned successfully.
+  - `401 Unauthorized` — Authentication is missing or invalid.
+  - `403 Forbidden` — The authenticated user cannot read users.
+}

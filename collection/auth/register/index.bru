@@ -1,0 +1,61 @@
+meta {
+  name: Register
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/auth/register
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+    "first_name": "علی",
+    "last_name": "رضایی",
+    "mobile": "09123456789",
+    "otp": "123456",
+    "password": "password123"
+  }
+}
+
+script:post-response {
+  const responseBody = res.getBody();
+  const payload = responseBody?.data ?? responseBody;
+
+  if (payload?.access_token) {
+    bru.setEnvVar("user_token", payload.access_token);
+  }
+}
+
+docs {
+  ## Purpose
+
+  Creates a new account after verifying the registration OTP.
+
+  ## Authentication
+
+  Public endpoint.
+
+  ## Behavior
+
+  - A valid OTP requested with the `register` purpose is required.
+  - The issued access token has `principal_type: "user"`.
+  - The mobile number must not already belong to an existing account.
+  - The user's basic profile is created using the provided first and last name.
+  - Password is required and must satisfy the configured password policy.
+  - A successful registration authenticates the newly created user.
+  - The access token is returned in the response.
+  - The refresh token is issued through the configured HttpOnly cookie.
+
+  ## Response
+
+  - `201 Created` — Account created and authentication completed successfully.
+  - `400 Bad Request` — Request validation failed, the mobile number is already registered, the OTP is invalid, or the password does not satisfy the password policy.
+}

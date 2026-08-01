@@ -1,0 +1,12 @@
+{
+  "email": "user@example.com",
+  "first_name": "علی",
+  "id": "2dc56d6f-6b5a-4e0d-9b0b-9a1c9d7f8d41",
+  "is_system_admin": true,
+  "last_name": "رضایی",
+  "mobile": "09123456789",
+  "personnel_code": "EMP-1001",
+  "role_ids": ["3ecb1f52-6d6e-43b9-a8fb-4e0772c9f863"],
+  "username": "user",
+  "workspace_ids": ["7f52e2eb-6a8d-4eef-9954-2ca53e16ec67"]
+}

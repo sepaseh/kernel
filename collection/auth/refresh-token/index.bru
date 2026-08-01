@@ -1,0 +1,47 @@
+meta {
+  name: Refresh Token
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{base_url}}/auth/refresh-token
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+}
+
+script:post-response {
+  const responseBody = res.getBody();
+  const payload = responseBody?.data ?? responseBody;
+
+  if (payload?.access_token) {
+    bru.setEnvVar("user_token", payload.access_token);
+  }
+}
+
+docs {
+  ## Purpose
+
+  Issues a new access token using the refresh token cookie.
+
+  ## Authentication
+
+  Requires a valid refresh token cookie.
+
+  ## Behavior
+
+  - No request body is required.
+  - The refresh token is read from the cookie.
+  - A successful request issues a new access token.
+  - The refreshed access token preserves `principal_type: "user"`.
+  - The returned access token is stored as `user_token` in the Bruno environment.
+
+  ## Response
+
+  - `200 OK` — Access token refreshed.
+  - `401 Unauthorized` — Refresh token is missing, invalid, or expired.
+}

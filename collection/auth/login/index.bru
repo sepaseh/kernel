@@ -1,0 +1,58 @@
+meta {
+  name: Login
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/auth/login
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+    "identifier": "09123456789",
+    "password": "password123"
+  }
+}
+
+script:post-response {
+  const responseBody = res.getBody();
+  const payload = responseBody?.data ?? responseBody;
+
+  if (payload?.access_token) {
+    bru.setEnvVar("user_token", payload.access_token);
+  }
+}
+
+docs {
+  ## Purpose
+
+  Authenticates a user using an identifier and password.
+
+  ## Authentication
+
+  Public endpoint.
+
+  ## Behavior
+
+  - The identifier is validated as a mobile number in this project.
+  - The backend setting `AUTH_IDENTIFIER_TYPE=mobile` defines this validation rule.
+  - The supplied credentials must be valid.
+  - Password authentication must be enabled for the account.
+  - A successful request returns an access token.
+  - The issued access token has `principal_type: "user"`.
+  - The refresh token is issued through the configured HttpOnly cookie.
+  - The response must not reveal whether the identifier or password was incorrect.
+
+  ## Response
+
+  - `200 OK` — Authentication successful.
+  - `400 Bad Request` — Request validation failed or the credentials are invalid.
+}

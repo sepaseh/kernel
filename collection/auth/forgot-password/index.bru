@@ -1,0 +1,50 @@
+meta {
+  name: Forgot Password
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{base_url}}/auth/forgot-password
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+    "mobile": "09123456789",
+    "otp": "123456",
+    "password": "NewPassword123!"
+  }
+}
+
+docs {
+  ## Purpose
+
+  Resets the password of a user who cannot access their account with the existing password.
+
+  ## Authentication
+
+  Public endpoint. Identity is verified using the OTP included in the request.
+
+  ## Behavior
+
+  - An OTP must first be requested using the OTP Request endpoint with the `forgot_password` purpose.
+  - The mobile number must belong to an existing user.
+  - The OTP must be valid, unexpired, and issued for the same mobile number and purpose.
+  - The new password must satisfy the configured password policy.
+  - The OTP becomes unusable after a successful password reset.
+  - The current password is not required.
+  - A successful password reset does not create an authenticated session.
+  - The user must sign in using the new password.
+
+  ## Response
+
+  - `200 OK` — Password reset successfully with no response body.
+  - `400 Bad Request` — Request validation failed, the OTP is invalid or expired, the mobile number is invalid, or the password does not satisfy the password policy.
+}

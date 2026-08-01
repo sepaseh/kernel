@@ -1,0 +1,42 @@
+meta {
+  name: Delete User
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{base_url}}/users/{{user_id}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{user_token}}
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  ## Purpose
+
+  Deletes a user by UUID.
+
+  ## Authentication
+
+  Requires a valid access token with permission to delete users.
+
+  ## Behavior
+
+  - A successful request returns no response body.
+  - Deletion fails when it violates a protected system constraint.
+
+  ## Response
+
+  - `200 OK` — User deleted successfully with no response body.
+  - `401 Unauthorized` — Authentication is missing or invalid.
+  - `403 Forbidden` — The authenticated user cannot delete users.
+  - `404 Not Found` — The user does not exist.
+  - `409 Conflict` — The user cannot be deleted because of a system constraint.
+}

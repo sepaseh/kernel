@@ -1,0 +1,50 @@
+meta {
+  name: Create Role
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/roles
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{user_token}}
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "کاربر",
+    "permissions": []
+  }
+}
+
+docs {
+  ## Purpose
+
+  Creates a role.
+
+  ## Authentication
+
+  Requires a valid access token with permission to create roles.
+
+  ## Behavior
+
+  - Role names must be unique.
+  - The server generates the role UUID.
+  - Permissions is an array of names returned by GET /permissions and may be empty.
+
+  ## Response
+
+  - `201 Created` — Role created successfully.
+  - `400 Bad Request` — The role name or permissions are invalid.
+  - `401 Unauthorized` — Authentication is missing or invalid.
+  - `403 Forbidden` — The authenticated user cannot create roles.
+}

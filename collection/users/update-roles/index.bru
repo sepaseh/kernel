@@ -1,0 +1,54 @@
+meta {
+  name: Update User Roles
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{base_url}}/users/{{user_id}}/roles
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{user_token}}
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "role_ids": [
+      "{{role_id}}"
+    ]
+  }
+}
+
+docs {
+  ## Purpose
+
+  Replaces the complete role assignment of a user.
+
+  ## Authentication
+
+  Requires a valid access token with permission to update user roles.
+
+  ## Behavior
+
+  - Every role ID must reference an existing role.
+  - Roles omitted from `role_ids` are removed from the user.
+  - The operation is idempotent.
+  - A successful request returns no response body.
+
+  ## Response
+
+  - `200 OK` — User roles updated successfully with no response body.
+  - `400 Bad Request` — The role-ID list is missing or invalid.
+  - `401 Unauthorized` — Authentication is missing or invalid.
+  - `403 Forbidden` — The authenticated user cannot update user roles.
+  - `404 Not Found` — The user does not exist.
+  - `409 Conflict` — The role change violates a system constraint.
+}

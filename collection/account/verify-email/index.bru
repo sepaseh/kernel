@@ -1,0 +1,52 @@
+meta {
+  name: Verify Email
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{base_url}}/account/verify-email
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{user_token}}
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+    "email": "user@example.com",
+    "otp": "123456"
+  }
+}
+
+docs {
+  ## Purpose
+
+  Verifies an email address and assigns it to the authenticated user.
+
+  ## Authentication
+
+  Requires a valid access token.
+
+  ## Behavior
+
+  - Verifies the code previously sent to the provided email address.
+  - The email must match the address used in the verification request.
+  - If the user has no email, the verified email is added to the profile.
+  - If the user already has an email, it is replaced only after successful verification.
+  - The existing profile email remains unchanged when verification fails.
+  - The email is stored only after verification succeeds.
+
+  ## Response
+
+  - `200 OK` — Email verified and assigned successfully with no response body.
+  - `400 Bad Request` — The request is invalid or the verification code is invalid or expired.
+  - `401 Unauthorized` — The access token is missing, invalid, or expired.
+}

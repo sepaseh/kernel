@@ -1,0 +1,41 @@
+meta {
+  name: Get User
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{base_url}}/users/{{user_id}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{user_token}}
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  ## Purpose
+
+  Returns a user by UUID.
+
+  ## Authentication
+
+  Requires a valid access token with permission to read users.
+
+  ## Behavior
+
+  - Returns profile data, personnel code, `is_system_admin`, and assigned role and workspace IDs for the requested user.
+  - `is_system_admin` represents the global `SYSTEM_ADMIN` capability and is separate from role permissions.
+
+  ## Response
+
+  - `200 OK` — User returned successfully.
+  - `401 Unauthorized` — Authentication is missing or invalid.
+  - `403 Forbidden` — The authenticated user cannot read users.
+  - `404 Not Found` — The user does not exist.
+}

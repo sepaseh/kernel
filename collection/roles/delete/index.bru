@@ -1,0 +1,43 @@
+meta {
+  name: Delete Role
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{base_url}}/roles/{{role_id}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{user_token}}
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  ## Purpose
+
+  Permanently deletes a role by UUID.
+
+  ## Authentication
+
+  Requires a valid access token with permission to delete roles.
+
+  ## Behavior
+
+  - A successful request returns no response body.
+  - The role can be deleted only when it has no user-role assignments.
+  - Move or remove all role assignments before deleting the role.
+
+  ## Response
+
+  - `200 OK` — Role deleted successfully with no response body.
+  - `401 Unauthorized` — Authentication is missing or invalid.
+  - `403 Forbidden` — The authenticated user cannot delete roles.
+  - `404 Not Found` — The role does not exist.
+  - `409 Conflict` — The role is assigned to one or more users.
+}

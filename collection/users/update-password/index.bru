@@ -1,0 +1,53 @@
+meta {
+  name: Update User Password
+  type: http
+  seq: 10
+}
+
+put {
+  url: {{base_url}}/users/{{user_id}}/password
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{user_token}}
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "password": "NewPassword123!"
+  }
+}
+
+docs {
+  ## Purpose
+
+  Replaces a user's password.
+
+  ## Authentication
+
+  Requires a valid access token belonging to an existing `SYSTEM_ADMIN`.
+
+  ## Behavior
+
+  - `password` is required and must satisfy the configured password policy.
+  - The frontend sends the new password directly; no confirmation field is part of the API contract.
+  - The password must be stored only as a secure password hash.
+  - Password values and password hashes must never be returned.
+  - The operation is idempotent.
+  - A successful request returns no response body.
+
+  ## Response
+
+  - `200 OK` — Password updated successfully with no response body.
+  - `400 Bad Request` — The password is missing or does not satisfy the password policy.
+  - `401 Unauthorized` — Authentication is missing or invalid.
+  - `403 Forbidden` — The authenticated user is not a `SYSTEM_ADMIN`.
+  - `404 Not Found` — The target user does not exist.
+}
