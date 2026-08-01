@@ -11,7 +11,7 @@ get {
 }
 
 auth:bearer {
-  token: {{user_token}}
+  token: {{access_token}}
 }
 
 headers {
@@ -21,7 +21,7 @@ headers {
 docs {
   ## Purpose
 
-  Returns a paginated list of workspaces.
+  Returns a list of workspaces.
 
   ## Authentication
 

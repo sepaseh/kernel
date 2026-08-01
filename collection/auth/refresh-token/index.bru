@@ -19,7 +19,7 @@ script:post-response {
   const payload = responseBody?.data ?? responseBody;
 
   if (payload?.access_token) {
-    bru.setEnvVar("user_token", payload.access_token);
+    bru.setEnvVar("access_token", payload.access_token);
   }
 }
 
@@ -38,7 +38,7 @@ docs {
   - The refresh token is read from the cookie.
   - A successful request issues a new access token.
   - The refreshed access token preserves `principal_type: "user"`.
-  - The returned access token is stored as `user_token` in the Bruno environment.
+  - The returned access token is stored as `access_token` in the Bruno environment.
 
   ## Response
 

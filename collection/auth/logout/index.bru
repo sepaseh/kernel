@@ -11,7 +11,7 @@ post {
 }
 
 auth:bearer {
-  token: {{user_token}}
+  token: {{access_token}}
 }
 
 headers {
@@ -19,7 +19,9 @@ headers {
 }
 
 script:post-response {
-  bru.deleteEnvVar("user_token");
+  if (res.getStatus() === 200) {
+    bru.deleteEnvVar("access_token");
+  }
 }
 
 docs {

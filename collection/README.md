@@ -28,7 +28,7 @@ rather than a feature page.
 ## First run
 
 Run the login request with a local test account. Its post-response script stores
-the returned access token as `user_token` in the active environment. The
+the returned access token as `access_token` in the active environment. The
 remaining authenticated requests use that token.
 
 Saved response files sit beside each request and are named after their HTTP
