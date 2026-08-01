@@ -22,7 +22,7 @@ export const PreviewFrame = ({
       theme={{
         algorithm:
           themeMode === "dark" ? theme.darkAlgorithm : theme.defaultAlgorithm,
-        token: { colorPrimary: "#d70015", fontFamily: "inherit" },
+        token: { fontFamily: "inherit" },
       }}
     >
       <div dir={direction}>{children}</div>
