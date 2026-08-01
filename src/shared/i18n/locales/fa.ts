@@ -68,8 +68,6 @@ export const fa = {
   userCreated: "کاربر با موفقیت ایجاد شد.",
   userDeleted: "کاربر با موفقیت حذف شد.",
   userUpdated: "کاربر با موفقیت به‌روزرسانی شد.",
-  workspaces: "فضاهای کاری",
-  workspacesUpdated: "فضاهای کاری کاربر با موفقیت به‌روزرسانی شد.",
   rolesUpdated: "نقش‌های کاربر با موفقیت به‌روزرسانی شد.",
   passwordUpdated: "رمز عبور کاربر با موفقیت به‌روزرسانی شد.",
   deleteUserConfirm: "آیا از حذف این کاربر مطمئن هستید؟",

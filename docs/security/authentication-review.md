@@ -30,7 +30,7 @@ cookie, token, account-recovery, or identity-provider change.
 - [ ] Password and OTP reset artifacts are single-use, short-lived, and never
       exposed in logs or URLs beyond the minimum required flow.
 - [ ] Authorization is enforced server-side for every object and operation,
-      including object ownership and tenant/workspace boundaries.
+      including object ownership and tenant boundaries.
 - [ ] Authentication responses and errors do not enable account enumeration.
 - [ ] Session creation, refresh, revocation, privilege changes, and suspicious
       failures create protected audit events.

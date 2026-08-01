@@ -94,7 +94,6 @@ vi.mock("@/features/users/api", () => ({
   fetchUser: vi.fn(),
   fetchUserRoleOptions: vi.fn(),
   fetchUsers: vi.fn(),
-  fetchUserWorkspaceOptions: vi.fn(),
   updateUserStatus: vi.fn(),
   updateUserSystemAdmin: vi.fn(),
 }));
@@ -108,9 +107,6 @@ vi.mock("@/features/users/forms/user-password/UserPassword", () => ({
 }));
 vi.mock("@/features/users/forms/user-role/UserRole", () => ({
   UserFormRole: () => null,
-}));
-vi.mock("@/features/users/forms/user-workspace/UserWorkspace", () => ({
-  UserWorkspaceForm: () => null,
 }));
 
 vi.mock("@/app/hooks", () => ({
@@ -166,7 +162,6 @@ beforeEach(() => {
   mocks.core.user = mocks.account;
   vi.mocked(api.deleteUser).mockResolvedValue(undefined);
   vi.mocked(api.fetchUserRoleOptions).mockResolvedValue([]);
-  vi.mocked(api.fetchUserWorkspaceOptions).mockResolvedValue([]);
   vi.mocked(api.changePassword).mockResolvedValue(undefined);
   vi.mocked(api.forgotPassword).mockResolvedValue(undefined);
   vi.mocked(api.getAccount).mockResolvedValue(mocks.account);
@@ -523,7 +518,6 @@ describe("users page", () => {
     vi.mocked(api.fetchUser).mockResolvedValue({
       ...userRecord,
       roleIds: [],
-      workspaceIds: [],
     });
     const { user } = renderPage(<UsersPage />);
 

@@ -9,12 +9,7 @@ import {
 } from "@/test/storybook/fixtures";
 import { StoryShell } from "@/test/storybook/StoryShell";
 
-import {
-  fetchUser,
-  fetchUserRoleOptions,
-  fetchUsers,
-  fetchUserWorkspaceOptions,
-} from "./api";
+import { fetchUser, fetchUserRoleOptions, fetchUsers } from "./api";
 import { UsersPage } from "./Users";
 
 const meta = {
@@ -22,7 +17,6 @@ const meta = {
     mocked(fetchUser).mockResolvedValue(user);
     mocked(fetchUserRoleOptions).mockResolvedValue(userOptions);
     mocked(fetchUsers).mockResolvedValue({ items: users, total: users.length });
-    mocked(fetchUserWorkspaceOptions).mockResolvedValue(userOptions);
   },
   component: UsersPage,
   render: () => (

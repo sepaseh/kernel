@@ -36,21 +36,14 @@ describe("user API helper contracts", () => {
     expect(apiClient.del).toHaveBeenCalledWith("/users/user-1");
   });
 
-  it("maps option endpoints", async () => {
+  it("maps the role options endpoint", async () => {
     await users.fetchUserRoleOptions();
     expect(apiClient.get).toHaveBeenCalledWith("/roles");
-    await users.fetchUserWorkspaceOptions();
-    expect(apiClient.get).toHaveBeenCalledWith("/workspaces");
   });
 
   it.each([
     [users.updateUserPassword, "/password", { password: "secret" }],
     [users.updateUserRoles, "/roles", { roleIds: ["role-1"] }],
-    [
-      users.updateUserWorkspaces,
-      "/workspaces",
-      { workspaceIds: ["workspace-1"] },
-    ],
   ])("maps PUT subresource operation", async (operation, suffix, params) => {
     await operation("user-1", params as never);
     expect(apiClient.put).toHaveBeenCalledWith(

@@ -191,9 +191,6 @@ test.describe("role and user management", () => {
     await page.route("https://api.example.com/roles", async (route) => {
       await route.fulfill({ contentType: "application/json", json: [] });
     });
-    await page.route("https://api.example.com/workspaces", async (route) => {
-      await route.fulfill({ contentType: "application/json", json: [] });
-    });
     await page.route(
       /https:\/\/api\.example\.com\/users(?:\?.*)?$/,
       async (route) => {
@@ -218,7 +215,7 @@ test.describe("role and user management", () => {
           });
           await route.fulfill({
             contentType: "application/json",
-            json: { ...users[0], role_ids: [], workspace_ids: [] },
+            json: { ...users[0], role_ids: [] },
           });
           return;
         }
@@ -240,7 +237,7 @@ test.describe("role and user management", () => {
         users[0] = { ...users[0], first_name: "Augusta" };
         await route.fulfill({
           contentType: "application/json",
-          json: { ...users[0], role_ids: [], workspace_ids: [] },
+          json: { ...users[0], role_ids: [] },
         });
         return;
       }
@@ -256,7 +253,7 @@ test.describe("role and user management", () => {
 
       await route.fulfill({
         contentType: "application/json",
-        json: { ...users[0], role_ids: [], workspace_ids: [] },
+        json: { ...users[0], role_ids: [] },
       });
     });
     await page.goto("/users");

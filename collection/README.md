@@ -18,8 +18,7 @@ along with the saved responses available for those operations.
 - Roles: list, create, details, update, and delete.
 - Permissions: list.
 - Users: list, create, details, update, delete, status, system-admin, password,
-  roles, and workspaces.
-- Workspaces: list, used as options when assigning a user to workspaces.
+  and roles.
 
 The frontend refreshes an expired access token through `/auth/refresh-token`,
 so that request is included even though it is handled by the shared API client

@@ -12,14 +12,14 @@ describe("case transforms", () => {
         first_name: "Ada",
         onComplete: callback,
         role_ids: ["role-1"],
-        workspace: { created_at: 1 },
+        profile: { created_at: 1 },
       }),
     ).toEqual({
       displayName: "Ada",
       firstName: "Ada",
       onComplete: callback,
       roleIds: ["role-1"],
-      workspace: { createdAt: 1 },
+      profile: { createdAt: 1 },
     });
   });
 
@@ -28,12 +28,12 @@ describe("case transforms", () => {
       toSnakeCase({
         firstName: "Ada",
         roles: [{ roleId: "role-1" }],
-        workspace: { createdAt: 1 },
+        profile: { createdAt: 1 },
       }),
     ).toEqual({
       first_name: "Ada",
       roles: [{ role_id: "role-1" }],
-      workspace: { created_at: 1 },
+      profile: { created_at: 1 },
     });
   });
 

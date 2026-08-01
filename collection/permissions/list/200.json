@@ -244,27 +244,5 @@
       }
     ],
     "title": "کاربران"
-  },
-  {
-    "name": "workspaces",
-    "permissions": [
-      {
-        "name": "workspaces.create",
-        "title": "ایجاد فضای کاری"
-      },
-      {
-        "name": "workspaces.delete",
-        "title": "حذف فضای کاری"
-      },
-      {
-        "name": "workspaces.read",
-        "title": "مشاهده فضاهای کاری"
-      },
-      {
-        "name": "workspaces.update",
-        "title": "ویرایش فضای کاری"
-      }
-    ],
-    "title": "فضاهای کاری"
   }
 ]

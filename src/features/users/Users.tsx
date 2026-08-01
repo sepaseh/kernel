@@ -24,7 +24,6 @@ import { useActionPermissions, useAntd, useCore } from "@/app/hooks";
 import { UserForm } from "@/features/users/forms/user/User";
 import { UserPasswordForm } from "@/features/users/forms/user-password/UserPassword";
 import { UserFormRole } from "@/features/users/forms/user-role/UserRole";
-import { UserWorkspaceForm } from "@/features/users/forms/user-workspace/UserWorkspace";
 import { modalKeys } from "@/shared/config";
 import { useFilterParams } from "@/shared/hooks";
 import { getErrorMessage } from "@/shared/lib";
@@ -36,7 +35,6 @@ import {
   fetchUser,
   fetchUserRoleOptions,
   fetchUsers,
-  fetchUserWorkspaceOptions,
   updateUserStatus,
   updateUserSystemAdmin,
 } from "./api";
@@ -55,7 +53,6 @@ export const UsersPage = () => {
   const [roles, setRoles] = useState<UserOptionProps[]>([]);
   const [selectedData, setSelectedData] = useState<UserProps>();
   const [total, setTotal] = useState(0);
-  const [workspaces, setWorkspaces] = useState<UserOptionProps[]>([]);
   const { messageAPI, modalAPI } = useAntd();
   const { canCreateUsers, canDeleteUsers, canUpdateUsers } =
     useActionPermissions();
@@ -247,16 +244,6 @@ export const UsersPage = () => {
                   type="text"
                 />
               </Tooltip>
-              <Tooltip title={t("workspaces")}>
-                <Button
-                  aria-label={t("workspaces")}
-                  icon={<Icon name="home" />}
-                  onClick={() =>
-                    void openUserDrawer(record.id, modalKeys.workspaces)
-                  }
-                  type="text"
-                />
-              </Tooltip>
             </>
           )}
           {isSystemAdmin && (
@@ -319,12 +306,7 @@ export const UsersPage = () => {
 
     void (async () => {
       try {
-        const [roleOptions, workspaceOptions] = await Promise.all([
-          fetchUserRoleOptions(),
-          fetchUserWorkspaceOptions(),
-        ]);
-        setRoles(roleOptions);
-        setWorkspaces(workspaceOptions);
+        setRoles(await fetchUserRoleOptions());
       } catch (error) {
         messageAPI.error(getErrorMessage(error));
       }
@@ -445,11 +427,6 @@ export const UsersPage = () => {
         data={selectedData}
         onFinish={fetchData}
         options={{ roles }}
-      />
-      <UserWorkspaceForm
-        data={selectedData}
-        onFinish={fetchData}
-        options={{ workspaces }}
       />
       <UserPasswordForm data={selectedData} />
     </>

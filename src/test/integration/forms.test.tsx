@@ -8,7 +8,6 @@ import * as usersApi from "@/features/users/api";
 import { UserForm } from "@/features/users/forms/user/User";
 import { UserPasswordForm } from "@/features/users/forms/user-password/UserPassword";
 import { UserFormRole } from "@/features/users/forms/user-role/UserRole";
-import { UserWorkspaceForm } from "@/features/users/forms/user-workspace/UserWorkspace";
 import { UserProps } from "@/features/users/types";
 import { render, screen } from "@/test/render";
 
@@ -28,7 +27,6 @@ vi.mock("@/features/users/api", () => ({
   updateUser: vi.fn(),
   updateUserPassword: vi.fn(),
   updateUserRoles: vi.fn(),
-  updateUserWorkspaces: vi.fn(),
 }));
 
 const api = { ...rolesApi, ...usersApi };
@@ -61,7 +59,6 @@ const userData: UserProps = {
   personnelCode: "1001",
   roleIds: ["role-1"],
   username: "ada",
-  workspaceIds: ["workspace-1"],
 };
 const mismatchedCredential = "mismatched-test-credential";
 const replacementCredential = "replacement-test-credential";
@@ -85,7 +82,6 @@ beforeEach(() => {
   vi.mocked(api.updateUser).mockResolvedValue(userData);
   vi.mocked(api.updateUserPassword).mockResolvedValue(undefined);
   vi.mocked(api.updateUserRoles).mockResolvedValue(undefined);
-  vi.mocked(api.updateUserWorkspaces).mockResolvedValue(undefined);
 });
 
 describe("user identity form", () => {
@@ -303,31 +299,6 @@ describe("user access forms", () => {
     expect(onFinish).toHaveBeenCalledOnce();
   });
 
-  it("submits the user's current workspaces", async () => {
-    const onFinish = vi.fn();
-    const { user } = renderAtHash(
-      <UserWorkspaceForm
-        data={userData}
-        onFinish={onFinish}
-        options={{
-          workspaces: [{ id: "workspace-1", name: "Analytical Engine" }],
-        }}
-      />,
-      "#workspaces",
-    );
-
-    await screen.findByText("Analytical Engine");
-    await user.click(screen.getByRole("button", { name: "submit" }));
-
-    await waitFor(() =>
-      expect(api.updateUserWorkspaces).toHaveBeenCalledWith("user-1", {
-        workspaceIds: ["workspace-1"],
-      }),
-    );
-    expect(mocks.messageSuccess).toHaveBeenCalledWith("workspacesUpdated");
-    expect(onFinish).toHaveBeenCalledOnce();
-  });
-
   it("reports a password update failure without closing", async () => {
     vi.mocked(api.updateUserPassword).mockRejectedValueOnce(
       new Error("Password rejected"),
@@ -377,11 +348,6 @@ describe("form data guards", () => {
       name: "roles",
       ui: <UserFormRole onFinish={vi.fn()} options={{ roles: [] }} />,
     },
-    {
-      hash: "#workspaces",
-      name: "workspaces",
-      ui: <UserWorkspaceForm onFinish={vi.fn()} options={{ workspaces: [] }} />,
-    },
   ])(
     "closes the $name form when its record is missing",
     async ({ hash, ui }) => {
@@ -418,17 +384,6 @@ describe("form cancellation", () => {
           data={userData}
           onFinish={vi.fn()}
           options={{ roles: [] }}
-        />
-      ),
-    },
-    {
-      hash: "#workspaces",
-      name: "workspaces",
-      ui: (
-        <UserWorkspaceForm
-          data={userData}
-          onFinish={vi.fn()}
-          options={{ workspaces: [] }}
         />
       ),
     },

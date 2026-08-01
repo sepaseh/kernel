@@ -12,7 +12,6 @@ import {
   UserStatusParams,
   UserSummaryProps,
   UserSystemAdminParams,
-  UserWorkspaceParams,
 } from "./types";
 
 export const createUser = async (
@@ -39,12 +38,6 @@ export const fetchUsers = async (
   return apiClient.get<{ items: UserSummaryProps[]; total: number }>("/users", {
     params: toSnakeCase(params),
   });
-};
-
-export const fetchUserWorkspaceOptions = async (): Promise<
-  UserOptionProps[]
-> => {
-  return apiClient.get<UserOptionProps[]>("/workspaces");
 };
 
 export const updateUser = async (
@@ -80,11 +73,4 @@ export const updateUserSystemAdmin = async (
   params: UserSystemAdminParams,
 ): Promise<void> => {
   return apiClient.patch<void>(`/users/${id}/system-admin`, params);
-};
-
-export const updateUserWorkspaces = async (
-  id: string,
-  params: UserWorkspaceParams,
-): Promise<void> => {
-  return apiClient.put<void>(`/users/${id}/workspaces`, params);
 };
