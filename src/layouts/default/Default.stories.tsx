@@ -30,11 +30,13 @@ const DefaultLayoutStory = ({
 }: {
   initialLanguage?: Language;
   initialTheme?: Theme;
-  initialUser?: AccountProps;
+  initialUser?: AccountProps | null;
 }) => {
   const [language, setLanguage] = useState<Language>(initialLanguage);
   const [theme, setTheme] = useState<Theme>(initialTheme);
-  const [user, setUser] = useState<CoreContextProps["user"]>(initialUser);
+  const [user, setUser] = useState<CoreContextProps["user"]>(
+    initialUser ?? undefined,
+  );
   const value = useMemo<CoreContextProps>(
     () => ({
       currentRoute: "root",
@@ -94,7 +96,7 @@ export const LoadingAccount: Story = {
   beforeEach() {
     mocked(getAccount).mockReturnValue(new Promise(() => undefined));
   },
-  render: () => <DefaultLayoutStory initialUser={undefined} />,
+  render: () => <DefaultLayoutStory initialUser={null} />,
 };
 
 export const DarkRtl: Story = {
