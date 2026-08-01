@@ -30,7 +30,7 @@ const mocks = vi.hoisted(() => {
       setTheme: vi.fn(),
       setUser: vi.fn(),
       theme: "light",
-      user: account,
+      user: account as typeof account | undefined,
     },
   };
 });
@@ -125,5 +125,38 @@ describe("DefaultLayout", () => {
     );
     expect(clearAccessToken).toHaveBeenCalledOnce();
     expect(mocks.core.setUser).toHaveBeenCalledWith();
+  });
+
+  it("shows a loading state while the account is unavailable", () => {
+    mocks.core.user = undefined;
+    vi.mocked(getAccount).mockReturnValueOnce(new Promise(() => undefined));
+
+    const { container } = renderLayout();
+
+    expect(container.querySelector(".ant-spin")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "kernel" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("changes theme from the account menu", async () => {
+    const { user } = renderLayout();
+
+    await user.click(screen.getByRole("button", { name: "account" }));
+    await user.click(await screen.findByText("darkMode"));
+
+    expect(mocks.core.setTheme).toHaveBeenCalledWith("dark");
+  });
+
+  it("clears the local session even when remote logout fails", async () => {
+    vi.mocked(logout).mockRejectedValueOnce(new Error("Offline"));
+    const { user } = renderLayout();
+
+    await user.click(screen.getByRole("button", { name: "account" }));
+    await user.click(await screen.findByText("logout"));
+
+    await waitFor(() => expect(clearAccessToken).toHaveBeenCalledOnce());
+    expect(mocks.core.setUser).toHaveBeenLastCalledWith();
+    expect(screen.getByLabelText("location")).toHaveTextContent("/auth");
   });
 });

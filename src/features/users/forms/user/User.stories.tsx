@@ -40,8 +40,11 @@ export const ValidationErrors: Story = {
     </StoryShell>
   ),
   play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    await userEvent.click(canvas.getByRole("button", { name: "Submit" }));
-    await expect(canvas.getAllByText(/Please enter/)).not.toHaveLength(0);
+    const body = within(canvasElement.ownerDocument.body);
+    await userEvent.click(body.getByRole("button", { name: /Submit|ثبت/ }));
+    await expect(body.getByLabelText(/^First name$|^نام$/)).toHaveAttribute(
+      "aria-invalid",
+      "true",
+    );
   },
 };

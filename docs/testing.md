@@ -60,6 +60,8 @@ deployment or oversized generated artifacts.
 - `npm run test:e2e:update-snapshots` reviews and updates visual baselines.
 - `npm run storybook` starts the component and layout explorer.
 - `npm run build-storybook` verifies the static Storybook build used by CI.
+- `npm run test:storybook` runs every story in Chromium, including `play`
+  interactions and blocking accessibility checks.
 - `npm run performance` builds the app and checks bundle-size budgets.
 - `npm run lighthouse` runs the local advisory Lighthouse audit after a build.
 - `npm run test:mutation`, `test:smoke`, and `test:staging` run specialized
@@ -146,6 +148,13 @@ Raise thresholds as coverage grows; never lower them to make a change pass.
 Coverage is a guardrail, not a quality score. Critical authentication, token
 refresh, authorization, and account-management branches should receive direct
 behavioral tests even when the global threshold is already satisfied.
+
+Story files are excluded from unit coverage, matching SonarQube's existing
+Storybook exclusions. They are executable test definitions rather than
+production modules: `test:coverage` measures application code through the unit
+project, while `test:storybook` separately executes stories, interactions, and
+accessibility checks in a real browser. This prevents unexecuted story modules
+from lowering unit coverage without weakening Storybook validation.
 
 ## Test effectiveness and API compatibility
 

@@ -45,6 +45,9 @@ The live suite verifies:
 
 The workflow rejects missing, non-HTTPS, or credential-bearing target URLs and
 retains traces, screenshots, video, and HTML reports when tests fail.
+The shared validation logic lives in `scripts/validate-workflow-targets.mjs`
+and is unit-tested; staging, smoke, and DAST workflows call the same validator
+instead of maintaining separate inline URL parsers.
 
 To run the same gate locally:
 

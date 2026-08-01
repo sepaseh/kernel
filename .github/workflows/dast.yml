@@ -24,54 +24,12 @@ jobs:
       DAST_TARGET: ${{ inputs.target_url }}
 
     steps:
-      - name: Validate authorized target
-        shell: bash
-        run: |
-          node -e '
-            const value = process.env.DAST_TARGET;
-            const parseConfiguredHostname = (name, rawValue) => {
-              if (!rawValue || rawValue !== rawValue.trim()) {
-                throw new Error(`${name} must be a hostname without whitespace`);
-              }
-              const normalized = rawValue.toLowerCase();
-              const hostnamePattern =
-                /^(?=.{1,253}$)(?!-)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)*[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
-              if (!hostnamePattern.test(normalized)) {
-                throw new Error(`${name} must contain a hostname only`);
-              }
-              const parsed = new URL(`https://${rawValue}`);
-              if (parsed.hostname !== normalized) {
-                throw new Error(`${name} must be a canonical hostname only`);
-              }
-              return parsed.hostname;
-            };
-            if (!value) throw new Error("target_url is required");
-            const allowedHost = parseConfiguredHostname(
-              "STAGING_ALLOWED_APP_HOST",
-              process.env.DAST_ALLOWED_HOST,
-            );
-            const productionHost = parseConfiguredHostname(
-              "PRODUCTION_HOST",
-              process.env.DAST_PRODUCTION_HOST,
-            );
-            const url = new URL(value);
-            if (url.protocol !== "https:") {
-              throw new Error("target_url must use HTTPS");
-            }
-            if (url.username || url.password) {
-              throw new Error("target_url must not contain credentials");
-            }
-            if (url.hostname.toLowerCase() !== allowedHost) {
-              throw new Error("target_url host is not explicitly allowed");
-            }
-            if (url.hostname.toLowerCase() === productionHost) {
-              throw new Error("DAST must not target the production host");
-            }
-          '
-
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+
+      - name: Validate authorized target
+        run: node scripts/validate-workflow-targets.mjs dast
 
       - name: Run authorized ZAP full scan
         uses: zaproxy/action-full-scan@3c58388149901b9a03b7718852c5ba889646c27c # v0.13.0
