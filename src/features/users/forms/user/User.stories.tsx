@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect, userEvent, within } from "storybook/test";
 
 import { user } from "@/test/storybook/fixtures";
 import { StoryShell } from "@/test/storybook/StoryShell";
@@ -29,4 +30,18 @@ export const Update: Story = {
       <UserForm {...args} />
     </StoryShell>
   ),
+};
+
+export const ValidationErrors: Story = {
+  args: { onFinish: () => undefined },
+  render: (args) => (
+    <StoryShell initialEntries={["/#create"]}>
+      <UserForm {...args} />
+    </StoryShell>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "Submit" }));
+    await expect(canvas.getAllByText(/Please enter/)).not.toHaveLength(0);
+  },
 };

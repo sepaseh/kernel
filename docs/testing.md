@@ -38,11 +38,15 @@ src/
       server.ts         # One shared Node interception server
 e2e/
   *.spec.ts             # Playwright browser journeys
+scripts/
+  *.test.mjs            # Build-environment and bundle-budget gate tests
 ```
 
 Keep tests next to production modules when they describe that module. Put
 cross-cutting test infrastructure under `src/test`. Keep Playwright tests
-separate because they run against the built application.
+separate because they run against the built application. Tests beside Node
+scripts exercise their exported validation logic without requiring a production
+deployment or oversized generated artifacts.
 
 ## Commands
 

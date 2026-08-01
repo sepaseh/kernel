@@ -36,7 +36,7 @@ export default defineConfig({
         url: "http://localhost/",
       },
     },
-    include: ["src/**/*.test.{ts,tsx}"],
+    include: ["src/**/*.test.{ts,tsx}", "scripts/**/*.test.mjs"],
     restoreMocks: true,
     setupFiles: ["./src/test/setup.ts"],
   },

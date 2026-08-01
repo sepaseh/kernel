@@ -23,9 +23,13 @@ const account: AccountProps = {
   username: "admin",
 };
 
-const DefaultLayoutStory = () => {
+const DefaultLayoutStory = ({
+  initialUser = account,
+}: {
+  initialUser?: AccountProps;
+}) => {
   const [theme, setTheme] = useState<Theme>("light");
-  const [user, setUser] = useState<CoreContextProps["user"]>(account);
+  const [user, setUser] = useState<CoreContextProps["user"]>(initialUser);
   const value = useMemo<CoreContextProps>(
     () => ({
       currentRoute: "root",
@@ -79,4 +83,15 @@ export const Desktop: Story = {};
 
 export const Mobile: Story = {
   globals: { viewport: { value: "mobile1", isRotated: false } },
+};
+
+export const LoadingAccount: Story = {
+  beforeEach() {
+    mocked(getAccount).mockReturnValue(new Promise(() => undefined));
+  },
+  render: () => <DefaultLayoutStory initialUser={undefined} />,
+};
+
+export const DarkRtl: Story = {
+  globals: { direction: "rtl", theme: "dark" },
 };
