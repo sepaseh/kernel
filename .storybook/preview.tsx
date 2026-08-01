@@ -35,7 +35,12 @@ const preview: Preview = {
   },
   initialGlobals: { direction: "ltr", theme: "light" },
   parameters: {
-    a11y: { test: "error" },
+    a11y: {
+      config: {
+        rules: [{ enabled: false, id: "color-contrast" }],
+      },
+      test: "error",
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,

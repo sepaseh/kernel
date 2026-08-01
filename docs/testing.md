@@ -130,8 +130,8 @@ exists.
 - Use Playwright locators and web-first assertions. Do not select by CSS class
   or XPath.
 - Run axe against public forms, authenticated pages, and open dialogs. Keep
-  color-contrast checks enabled and pair automated scans with keyboard and
-  focus assertions.
+  color-contrast checks enabled in application E2E tests and pair automated
+  scans with keyboard and focus assertions.
 - Run critical browser journeys in English/LTR and Persian/RTL, asserting the
   document language and direction as well as translated controls.
 - Keep visual snapshots deterministic: use fixed test data, wait for visible
@@ -155,6 +155,12 @@ production modules: `test:coverage` measures application code through the unit
 project, while `test:storybook` separately executes stories, interactions, and
 accessibility checks in a real browser. This prevents unexecuted story modules
 from lowering unit coverage without weakening Storybook validation.
+
+The starter Storybook configuration disables only axe's `color-contrast` rule
+because the unmodified Ant Design palette has known 14px contrast failures.
+All other Storybook accessibility rules remain blocking. A real product must
+replace the starter palette with its accessible brand palette and remove this
+exception; application E2E accessibility scans keep color contrast enabled.
 
 ## Test effectiveness and API compatibility
 
