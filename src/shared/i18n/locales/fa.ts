@@ -67,6 +67,7 @@ export const fa = {
   systemAdminUpdated: "دسترسی مدیر سیستم با موفقیت به‌روزرسانی شد.",
   userCreated: "کاربر با موفقیت ایجاد شد.",
   userDeleted: "کاربر با موفقیت حذف شد.",
+  userManagement: "مدیریت کاربران",
   userUpdated: "کاربر با موفقیت به‌روزرسانی شد.",
   rolesUpdated: "نقش‌های کاربر با موفقیت به‌روزرسانی شد.",
   passwordUpdated: "رمز عبور کاربر با موفقیت به‌روزرسانی شد.",

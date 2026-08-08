@@ -10,6 +10,7 @@ import {
   fetchRoles,
   updateRole,
 } from "./api";
+import { RoleMutationParams } from "./types";
 
 vi.mock("@/shared/api", () => ({
   apiClient: {
@@ -29,7 +30,10 @@ beforeEach(() => {
 
 describe("roles API", () => {
   it("creates, updates, and deletes roles", async () => {
-    const params = { name: "Operators", permissions: ["users.read"] };
+    const params = {
+      name: "Operators",
+      permissions: ["users.read"],
+    } satisfies RoleMutationParams;
 
     await createRole(params);
     await updateRole("role-1", params);

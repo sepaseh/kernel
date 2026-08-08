@@ -7,6 +7,7 @@ const routeState = vi.hoisted(() => ({
     "account",
     "auth",
     "forgotPassword",
+    "notFound",
     "register",
     "roles",
     "root",
