@@ -1,21 +1,22 @@
-﻿import { useMemo } from "react";
+import { useMemo } from "react";
 
-import { RouteKey } from "@/app/config";
+import { AccessRule, RouteKey, routeTree } from "@/app/config";
+import { AccountProps } from "@/features/account";
 
 import { useCore } from "./useCore";
 
-const ROUTE_RULES: Record<RouteKey, string> = {
-  account: "auth",
-  auth: "public",
-  forgotPassword: "public",
-  notFound: "public",
-  register: "public",
-  roles: "roles.read",
-  root: "auth",
-  users: "users.read",
-};
+const ROUTE_KEYS = Object.keys(routeTree) as RouteKey[];
 
-const ROUTE_KEYS = Object.keys(ROUTE_RULES) as RouteKey[];
+export const hasAccess = (
+  access: AccessRule,
+  user?: AccountProps,
+): boolean => {
+  if (access === "public") return true;
+  if (!user) return false;
+  if (access === "authenticated" || user.isSystemAdmin) return true;
+
+  return user.permissions.includes(access);
+};
 
 export const useAllowedRoutes = (): ReadonlySet<RouteKey> => {
   const { user } = useCore();
@@ -23,16 +24,9 @@ export const useAllowedRoutes = (): ReadonlySet<RouteKey> => {
   return useMemo(
     () =>
       new Set(
-        ROUTE_KEYS.filter((route) => {
-          const access = ROUTE_RULES[route];
-
-          if (access === "public") return true;
-          if (!user) return false;
-          if (access === "auth") return true;
-          if (user.isSystemAdmin) return true;
-
-          return user.permissions.includes(access);
-        }),
+        ROUTE_KEYS.filter((route) =>
+          hasAccess(routeTree[route].permissions.access, user),
+        ),
       ),
     [user],
   );

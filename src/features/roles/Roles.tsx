@@ -14,7 +14,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router";
 
-import { useActionPermissions, useAntd } from "@/app/hooks";
+import { useAntd, useRoutePermissions } from "@/app/hooks";
 import { RoleForm } from "@/features/roles/form/Role";
 import { modalKeys } from "@/shared/config";
 import { getErrorMessage } from "@/shared/lib";
@@ -30,8 +30,7 @@ export const RolesPage = () => {
   const [permissions, setPermissions] = useState<PermissionGroupProps[]>([]);
   const [selectedData, setSelectedData] = useState<RoleProps>();
   const { messageAPI, modalAPI } = useAntd();
-  const { canCreateRoles, canDeleteRoles, canUpdateRoles } =
-    useActionPermissions();
+  const { canCreate, canDelete, canUpdate } = useRoutePermissions("roles");
   const { pathname, search } = useLocation();
   const token = useAntdToken();
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -101,7 +100,7 @@ export const RolesPage = () => {
       key: "actions",
       render: (_, record) => (
         <Flex justify="center">
-          {canUpdateRoles && (
+          {canUpdate && (
             <Tooltip title={t("update")}>
               <Button
                 aria-label={t("update")}
@@ -111,7 +110,7 @@ export const RolesPage = () => {
               />
             </Tooltip>
           )}
-          {canDeleteRoles && (
+          {canDelete && (
             <Tooltip title={t("delete")}>
               <Button
                 aria-label={t("delete")}
@@ -134,7 +133,7 @@ export const RolesPage = () => {
   }, [fetchData]);
 
   useEffect(() => {
-    if (!canCreateRoles && !canUpdateRoles) return;
+    if (!canCreate && !canUpdate) return;
 
     void (async () => {
       try {
@@ -143,7 +142,7 @@ export const RolesPage = () => {
         messageAPI.error(getErrorMessage(error));
       }
     })();
-  }, [canCreateRoles, canUpdateRoles, messageAPI]);
+  }, [canCreate, canUpdate, messageAPI]);
 
   useEffect(() => {
     const scrollRegion =
@@ -182,7 +181,7 @@ export const RolesPage = () => {
           size="small"
         />
       </div>
-      {canCreateRoles && (
+      {canCreate && (
         <ConfigProvider theme={{ token: { colorPrimary: token.colorSuccess } }}>
           <FloatButton
             aria-label={t("create")}
