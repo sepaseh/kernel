@@ -1,3 +1,5 @@
+import type { PermissionKey } from "@/features/roles";
+
 export type AccountProps = {
   email: null | string;
   firstName: string;
@@ -5,7 +7,7 @@ export type AccountProps = {
   isSystemAdmin: boolean;
   lastName: string;
   mobile: string;
-  permissions: string[];
+  permissions: PermissionKey[];
   personnelCode: null | string;
   status: string;
   username: null | string;
