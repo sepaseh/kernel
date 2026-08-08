@@ -51,8 +51,11 @@ vi.mock("@/shared/api", () => ({
 vi.mock("@/app/hooks", () => ({
   useAllowedNavigation: () => [
     { route: "root" },
-    { route: "users" },
-    { route: "roles" },
+    {
+      children: [{ route: "users" }, { route: "roles" }],
+      key: "userManagement",
+      label: "userManagement",
+    },
   ],
   useCore: () => mocks.core,
 }));

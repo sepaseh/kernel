@@ -98,8 +98,11 @@ export type NavigationItem =
 
 export const navigationTree: readonly NavigationItem[] = [
   { route: "root" },
-  { route: "users" },
-  { route: "roles" },
+  {
+    children: [{ route: "users" }, { route: "roles" }],
+    key: "userManagement",
+    label: "userManagement",
+  },
 ];
 
 export const baseUrl: string = import.meta.env.VITE_APP_BASE_URL ?? "";

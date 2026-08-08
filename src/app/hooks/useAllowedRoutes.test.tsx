@@ -111,6 +111,13 @@ describe("useAllowedRoutes", () => {
   it("derives navigation entries from the navigation tree", () => {
     expect(
       renderAllowedNavigation(createUser({ permissions: ["users.read"] })),
-    ).toEqual([{ route: "root" }, { route: "users" }]);
+    ).toEqual([
+      { route: "root" },
+      {
+        children: [{ route: "users" }],
+        key: "userManagement",
+        label: "userManagement",
+      },
+    ]);
   });
 });
