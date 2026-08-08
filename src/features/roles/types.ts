@@ -1,16 +1,26 @@
+export type PermissionKey =
+  | "roles.create"
+  | "roles.delete"
+  | "roles.read"
+  | "roles.update"
+  | "users.create"
+  | "users.delete"
+  | "users.read"
+  | "users.update";
+
 export type RoleProps = {
   id: string;
   name: string;
-  permissions: string[];
+  permissions: PermissionKey[];
 };
 
 export type RoleMutationParams = {
   name: string;
-  permissions: string[];
+  permissions: PermissionKey[];
 };
 
 type PermissionProps = {
-  name: string;
+  name: PermissionKey;
   title: string;
 };
 

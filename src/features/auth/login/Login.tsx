@@ -10,12 +10,15 @@ import { LoginParams } from "@/features/auth/types";
 import { getErrorMessage } from "@/shared/lib";
 import { Icon } from "@/shared/ui/icon";
 
+import { useLoginStyles } from "./styles";
+
 export const LoginPage = () => {
   const { t } = useTranslation();
   const [submitting, setSubmitting] = useState(false);
   const { messageAPI } = useAntd();
   const [form] = Form.useForm<LoginParams>();
   const navigate = useNavigate();
+  const { styles } = useLoginStyles();
 
   const submit = async (values: LoginParams) => {
     if (submitting) return;
@@ -64,10 +67,10 @@ export const LoginPage = () => {
           rules={[{ required: true }]}
         >
           <Input
+            className={styles.input}
             onPressEnter={handleSubmitTrigger}
             placeholder={t("identifier")}
             size="large"
-            style={{ direction: "ltr" }}
           />
         </Form.Item>
         <Form.Item<LoginParams>
@@ -76,10 +79,10 @@ export const LoginPage = () => {
           rules={[{ required: true }]}
         >
           <Input.Password
+            classNames={{ input: styles.input }}
             onPressEnter={handleSubmitTrigger}
             placeholder={t("password")}
             size="large"
-            styles={{ input: { direction: "ltr" } }}
             type="password"
           />
         </Form.Item>

@@ -66,6 +66,7 @@ export const en = {
   unexpectedError: "An unexpected error occurred.",
   userCreated: "User created successfully.",
   userDeleted: "User deleted successfully.",
+  userManagement: "User management",
   userUpdated: "User updated successfully.",
   username: "Username",
   usernameUpdated: "Username updated successfully.",
