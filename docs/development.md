@@ -40,6 +40,23 @@ Vite is configured with `--host`, so the development server can be reached from 
 
 ## Quality Checks
 
+Before every commit, run the complete local CI suite. Do not create a commit
+until every command succeeds:
+
+```bash
+npm run audit
+npm run typecheck
+npm run lint
+npm run format:check
+npm run test:coverage
+npm run test:contract
+npm run knip
+npm run performance
+npm run build-storybook
+npm run test:storybook
+npm run test:e2e -- --project=chromium
+```
+
 Run type checking:
 
 ```bash

@@ -18,9 +18,17 @@
     ".agents/hooks/quality-gate.sh"
   ],
   "recommendedChecks": [
+    "npm run audit",
     "npm run typecheck",
     "npm run lint",
+    "npm run format:check",
+    "npm run test:coverage",
+    "npm run test:contract",
+    "npm run knip",
     "npm run build",
-    "npm run knip"
+    "npm run performance",
+    "npm run build-storybook",
+    "npm run test:storybook",
+    "npm run test:e2e -- --project=chromium"
   ]
 }

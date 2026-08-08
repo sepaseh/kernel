@@ -35,8 +35,8 @@ so pull request titles must also follow the format when squash merging. See
 
 ## Required checks
 
-Run the same core checks used by continuous integration before opening a pull
-request:
+Run the same complete checks used by continuous integration before every
+commit; do not create the commit unless all of them pass:
 
 ```bash
 npm run typecheck
@@ -47,6 +47,8 @@ npm run test:coverage
 npm run test:contract
 npm run knip
 npm run performance
+npm run build-storybook
+npm run test:storybook
 npm run test:e2e -- --project=chromium
 ```
 
