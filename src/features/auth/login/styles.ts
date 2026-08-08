@@ -1,13 +1,15 @@
 import { createStyles } from "antd-style";
 
-export const useLoginStyles = createStyles({
-  input: {
-    direction: "ltr",
-    textAlign: "left",
+export const loginInputStyles = {
+  direction: "ltr",
+  textAlign: "left",
 
-    "&::placeholder": {
-      direction: "rtl",
-      textAlign: "right",
-    },
+  "&::placeholder": {
+    direction: "rtl",
+    textAlign: "right",
   },
+} as const;
+
+export const useLoginStyles = createStyles({
+  input: loginInputStyles,
 });
