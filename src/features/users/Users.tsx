@@ -20,7 +20,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router";
 
-import { useActionPermissions, useAntd, useCore } from "@/app/hooks";
+import { useAntd, useCore, useRoutePermissions } from "@/app/hooks";
 import { UserForm } from "@/features/users/forms/user/User";
 import { UserPasswordForm } from "@/features/users/forms/user-password/UserPassword";
 import { UserFormRole } from "@/features/users/forms/user-role/UserRole";
@@ -54,8 +54,7 @@ export const UsersPage = () => {
   const [selectedData, setSelectedData] = useState<UserProps>();
   const [total, setTotal] = useState(0);
   const { messageAPI, modalAPI } = useAntd();
-  const { canCreateUsers, canDeleteUsers, canUpdateUsers } =
-    useActionPermissions();
+  const { canCreate, canDelete, canUpdate } = useRoutePermissions("users");
   const { user } = useCore();
   const { filters, setFilters } = useFilterParams<UserListParams>();
   const { pathname, search } = useLocation();
@@ -204,7 +203,7 @@ export const UsersPage = () => {
       align: "center",
       dataIndex: "status",
       render: (_, record) =>
-        canUpdateUsers ? (
+        canUpdate ? (
           <Button
             color={record.status === "active" ? "green" : "red"}
             onClick={() => handleStatus(record)}
@@ -222,7 +221,7 @@ export const UsersPage = () => {
       key: "actions",
       render: (_, record) => (
         <>
-          {canUpdateUsers && (
+          {canUpdate && (
             <>
               <Tooltip title={t("update")}>
                 <Button
@@ -268,7 +267,7 @@ export const UsersPage = () => {
               </Tooltip>
             </>
           )}
-          {canDeleteUsers && (
+          {canDelete && (
             <Tooltip title={t("delete")}>
               <Button
                 aria-label={t("delete")}
@@ -302,7 +301,7 @@ export const UsersPage = () => {
   }, [fetchData]);
 
   useEffect(() => {
-    if (!canUpdateUsers) return;
+    if (!canUpdate) return;
 
     void (async () => {
       try {
@@ -311,7 +310,7 @@ export const UsersPage = () => {
         messageAPI.error(getErrorMessage(error));
       }
     })();
-  }, [canUpdateUsers, messageAPI]);
+  }, [canUpdate, messageAPI]);
 
   useEffect(() => {
     const scrollRegion =
@@ -406,7 +405,7 @@ export const UsersPage = () => {
           size="small"
         />
       </div>
-      {canCreateUsers && (
+      {canCreate && (
         <ConfigProvider theme={{ token: { colorPrimary: token.colorSuccess } }}>
           <FloatButton
             aria-label={t("create")}

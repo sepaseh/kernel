@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { CoreContext, CoreContextProps } from "@/app/contexts";
 import { AccountProps } from "@/features/account/types";
 
-import { useAllowedRoutes } from "./useAllowedRoutes";
+import { useAllowedNavigation, useAllowedRoutes } from "./useAllowedRoutes";
 
 const createUser = (overrides: Partial<AccountProps> = {}): AccountProps => ({
   email: null,
@@ -37,6 +37,24 @@ const renderAllowedRoutes = (user?: AccountProps) => {
   );
 
   return renderHook(useAllowedRoutes, { wrapper }).result.current;
+};
+
+const renderAllowedNavigation = (user?: AccountProps) => {
+  const value: CoreContextProps = {
+    currentRoute: "root",
+    language: "en",
+    setCurrentRoute: () => undefined,
+    setLanguage: () => undefined,
+    setTheme: () => undefined,
+    setUser: () => undefined,
+    theme: "light",
+    user,
+  };
+  const wrapper = ({ children }: { children: ReactNode }) => (
+    <CoreContext.Provider value={value}>{children}</CoreContext.Provider>
+  );
+
+  return renderHook(useAllowedNavigation, { wrapper }).result.current;
 };
 
 describe("useAllowedRoutes", () => {
@@ -88,5 +106,18 @@ describe("useAllowedRoutes", () => {
         "users",
       ]),
     );
+  });
+
+  it("derives navigation entries from the navigation tree", () => {
+    expect(
+      renderAllowedNavigation(createUser({ permissions: ["users.read"] })),
+    ).toEqual([
+      { route: "root" },
+      {
+        children: [{ route: "users" }],
+        key: "userManagement",
+        label: "userManagement",
+      },
+    ]);
   });
 });

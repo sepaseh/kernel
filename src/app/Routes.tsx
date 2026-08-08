@@ -7,10 +7,10 @@ import {
   Suspense,
   useEffect,
 } from "react";
-import { createBrowserRouter, Navigate } from "react-router";
+import { createBrowserRouter, Navigate, RouteObject } from "react-router";
 import { RouterProvider } from "react-router/dom";
 
-import { baseUrl, RouteKey, routeTree } from "@/app/config";
+import { baseUrl, RouteKey, RouteLayout, routeTree } from "@/app/config";
 import { useAllowedRoutes, useCore } from "@/app/hooks";
 import { NotFoundPage } from "@/app/not-found/NotFound";
 
@@ -73,6 +73,33 @@ const wrapRoute = (route: RouteKey, element: ReactNode) => (
   </RouteWrapper>
 );
 
+const pageRegistry = {
+  account: <AccountPage />,
+  auth: <LoginPage />,
+  forgotPassword: <ForgotPassPage />,
+  notFound: <NotFoundPage />,
+  register: <RegisterPage />,
+  roles: <RolesPage />,
+  root: <DashboardPage />,
+  users: <UsersPage />,
+} satisfies Record<RouteKey, ReactNode>;
+
+const routeKeys = Object.keys(routeTree) as RouteKey[];
+
+const createPageRoute = (route: RouteKey): RouteObject => {
+  const definition = routeTree[route];
+  const element = wrapRoute(route, pageRegistry[route]);
+
+  return "index" in definition && definition.index
+    ? { element, index: true }
+    : { element, path: definition.path };
+};
+
+const createLayoutRoutes = (layout: RouteLayout): RouteObject[] =>
+  routeKeys
+    .filter((route) => routeTree[route].layout === layout)
+    .map(createPageRoute);
+
 const router = createBrowserRouter(
   [
     {
@@ -82,20 +109,7 @@ const router = createBrowserRouter(
           <AuthLayout />
         </Suspense>
       ),
-      children: [
-        {
-          index: true,
-          element: wrapRoute("auth", <LoginPage />),
-        },
-        {
-          path: routeTree.forgotPassword.path,
-          element: wrapRoute("forgotPassword", <ForgotPassPage />),
-        },
-        {
-          path: routeTree.register.path,
-          element: wrapRoute("register", <RegisterPage />),
-        },
-      ],
+      children: createLayoutRoutes("auth"),
     },
     {
       path: routeTree.root.path,
@@ -104,26 +118,9 @@ const router = createBrowserRouter(
           <DefaultLayout />
         </Suspense>
       ),
-      children: [
-        {
-          index: true,
-          element: wrapRoute("root", <DashboardPage />),
-        },
-        {
-          path: routeTree.users.path,
-          element: wrapRoute("users", <UsersPage />),
-        },
-        {
-          path: routeTree.roles.path,
-          element: wrapRoute("roles", <RolesPage />),
-        },
-        {
-          path: routeTree.account.path,
-          element: wrapRoute("account", <AccountPage />),
-        },
-      ],
+      children: createLayoutRoutes("default"),
     },
-    { path: routeTree.notFound.path, element: <NotFoundPage /> },
+    ...createLayoutRoutes("standalone"),
   ],
   { basename: baseUrl },
 );

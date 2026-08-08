@@ -10,6 +10,7 @@ import { LoginPage } from "@/features/auth/login";
 import { RegisterPage } from "@/features/auth/register";
 import { RolesPage } from "@/features/roles";
 import * as rolesApi from "@/features/roles/api";
+import { RoleProps } from "@/features/roles/types";
 import { UsersPage } from "@/features/users";
 import * as usersApi from "@/features/users/api";
 import { render, screen } from "@/test/render";
@@ -34,13 +35,17 @@ const mocks = vi.hoisted(() => {
   const setUser = vi.fn();
 
   return {
-    actionPermissions: {
-      canCreateRoles: false,
-      canCreateUsers: false,
-      canDeleteRoles: false,
-      canDeleteUsers: false,
-      canUpdateRoles: false,
-      canUpdateUsers: false,
+    routePermissions: {
+      roles: {
+        canCreate: false,
+        canDelete: false,
+        canUpdate: false,
+      },
+      users: {
+        canCreate: false,
+        canDelete: false,
+        canUpdate: false,
+      },
     },
     account,
     antd: {
@@ -110,9 +115,10 @@ vi.mock("@/features/users/forms/user-role/UserRole", () => ({
 }));
 
 vi.mock("@/app/hooks", () => ({
-  useActionPermissions: () => mocks.actionPermissions,
   useAntd: () => mocks.antd,
   useCore: () => mocks.core,
+  useRoutePermissions: (route: keyof typeof mocks.routePermissions) =>
+    mocks.routePermissions[route],
 }));
 
 vi.mock("@/shared/hooks", () => ({
@@ -120,6 +126,7 @@ vi.mock("@/shared/hooks", () => ({
 }));
 
 vi.mock("antd-style", () => ({
+  createStyles: () => () => ({ styles: { input: "login-input" } }),
   useAntdToken: () => ({
     colorSuccess: "#00aa00",
     marginMD: 16,
@@ -151,13 +158,15 @@ const renderPage = (page: React.ReactNode) =>
 
 beforeEach(() => {
   vi.clearAllMocks();
-  Object.assign(mocks.actionPermissions, {
-    canCreateRoles: false,
-    canCreateUsers: false,
-    canDeleteRoles: false,
-    canDeleteUsers: false,
-    canUpdateRoles: false,
-    canUpdateUsers: false,
+  Object.assign(mocks.routePermissions.roles, {
+    canCreate: false,
+    canDelete: false,
+    canUpdate: false,
+  });
+  Object.assign(mocks.routePermissions.users, {
+    canCreate: false,
+    canDelete: false,
+    canUpdate: false,
   });
   mocks.core.user = mocks.account;
   vi.mocked(api.deleteUser).mockResolvedValue(undefined);
@@ -419,12 +428,12 @@ describe("roles page", () => {
   });
 
   it("updates and deletes roles when permitted", async () => {
-    Object.assign(mocks.actionPermissions, {
-      canCreateRoles: true,
-      canDeleteRoles: true,
-      canUpdateRoles: true,
+    Object.assign(mocks.routePermissions.roles, {
+      canCreate: true,
+      canDelete: true,
+      canUpdate: true,
     });
-    const role = {
+    const role: RoleProps = {
       id: "role-1",
       name: "Operators",
       permissions: ["users.read"],
@@ -494,10 +503,10 @@ describe("users page", () => {
   });
 
   it("manages users when permitted", { timeout: 15_000 }, async () => {
-    Object.assign(mocks.actionPermissions, {
-      canCreateUsers: true,
-      canDeleteUsers: true,
-      canUpdateUsers: true,
+    Object.assign(mocks.routePermissions.users, {
+      canCreate: true,
+      canDelete: true,
+      canUpdate: true,
     });
     mocks.core.user = { ...mocks.account, isSystemAdmin: true };
     const userRecord = {
