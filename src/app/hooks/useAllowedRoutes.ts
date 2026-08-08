@@ -1,6 +1,12 @@
 import { useMemo } from "react";
 
-import { AccessRule, RouteKey, routeTree } from "@/app/config";
+import {
+  AccessRule,
+  NavigationItem,
+  navigationTree,
+  RouteKey,
+  routeTree,
+} from "@/app/config";
 import { AccountProps } from "@/features/account";
 
 import { useCore } from "./useCore";
@@ -27,4 +33,26 @@ export const useAllowedRoutes = (): ReadonlySet<RouteKey> => {
       ),
     [user],
   );
+};
+
+const filterNavigation = (
+  items: readonly NavigationItem[],
+  user?: AccountProps,
+): NavigationItem[] =>
+  items.flatMap<NavigationItem>((item): NavigationItem[] => {
+    if ("route" in item) {
+      return hasAccess(routeTree[item.route].permissions.access, user)
+        ? [item]
+        : [];
+    }
+
+    const children = filterNavigation(item.children, user);
+
+    return children.length ? [{ ...item, children }] : [];
+  });
+
+export const useAllowedNavigation = (): NavigationItem[] => {
+  const { user } = useCore();
+
+  return useMemo(() => filterNavigation(navigationTree, user), [user]);
 };

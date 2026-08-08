@@ -49,7 +49,11 @@ vi.mock("@/shared/api", () => ({
 }));
 
 vi.mock("@/app/hooks", () => ({
-  useAllowedRoutes: () => new Set(["account", "root", "roles", "users"]),
+  useAllowedNavigation: () => [
+    { route: "root" },
+    { route: "users" },
+    { route: "roles" },
+  ],
   useCore: () => mocks.core,
 }));
 

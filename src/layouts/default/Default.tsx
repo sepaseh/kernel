@@ -7,6 +7,7 @@ import {
   Flex,
   Grid,
   Menu,
+  MenuProps,
   Spin,
   Typography,
 } from "antd";
@@ -15,8 +16,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, Outlet, useNavigate } from "react-router";
 
-import { RouteKey, routeTree } from "@/app/config";
-import { useAllowedRoutes, useCore } from "@/app/hooks";
+import { NavigationItem, routeTree } from "@/app/config";
+import { useAllowedNavigation, useCore } from "@/app/hooks";
 import { getAccount } from "@/features/account";
 import { logout } from "@/features/auth";
 import { clearAccessToken, setUnauthorizedHandler } from "@/shared/api";
@@ -31,21 +32,30 @@ export const DefaultLayout = () => {
   const { currentRoute, setTheme, setUser, theme: coreTheme, user } = useCore();
   const token = useAntdToken();
   const navigate = useNavigate();
-  const allowedRoutes = useAllowedRoutes();
+  const allowedNavigation = useAllowedNavigation();
   const darkMode = coreTheme === "dark";
 
-  const menuItemLabels: Partial<Record<RouteKey, string>> = {
-    root: t("dashboard"),
-    users: t("users"),
-    roles: t("roles"),
-  };
+  const createMenuItems = (
+    items: readonly NavigationItem[],
+  ): MenuProps["items"] =>
+    items.map((item) => {
+      if ("route" in item) {
+        const { label, path } = routeTree[item.route];
 
-  const menuItems = (Object.entries(menuItemLabels) as [RouteKey, string][])
-    .filter(([key]) => allowedRoutes.has(key))
-    .map(([key, label]) => ({
-      key,
-      label: <Link to={routeTree[key].path}>{label}</Link>,
-    }));
+        return {
+          key: item.route,
+          label: <Link to={path}>{t(label)}</Link>,
+        };
+      }
+
+      return {
+        children: createMenuItems(item.children),
+        key: item.key,
+        label: t(item.label),
+      };
+    });
+
+  const menuItems = createMenuItems(allowedNavigation);
 
   const clearSession = useCallback(() => {
     clearAccessToken();
