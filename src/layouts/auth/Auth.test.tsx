@@ -21,7 +21,7 @@ vi.mock("@/app/hooks", () => ({
 vi.mock("antd-style", () => ({
   useAntdToken: () => ({
     colorBgBase: "#ffffff",
-    colorBgContainer: "#ffffff",
+    colorBgContainer: "#fafafa",
     colorBgLayout: "#f5f5f5",
     paddingSM: 8,
     screenXS: 480,
@@ -45,7 +45,7 @@ describe("AuthLayout", () => {
       backgroundColor: "#f5f5f5",
     });
     expect(screen.getByRole("main").firstElementChild).toHaveStyle({
-      backgroundColor: "#ffffff",
+      backgroundColor: "#fafafa",
     });
     expect(clearAccessToken).toHaveBeenCalledOnce();
     expect(mocks.setUser).toHaveBeenCalledWith();

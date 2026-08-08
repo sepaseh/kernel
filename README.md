@@ -101,12 +101,17 @@ user returns to the login page.
 
 Permission contracts live in `src/features/roles/types.ts`; route and action
 permission mappings live in `src/app/config/routes.ts`. Every route declares
-its public, authenticated, or permission-gated access rule and its available
-CRUD-style actions:
+its public, authenticated, or permission-gated `permissions.access` rule.
+Permission-gated routes use `.read` permissions for access and can expose
+create, delete, and update actions through `useRoutePermissions`:
 
 ```ts
-"roles.create" | "roles.delete" | "roles.read" | "roles.update";
-"users.create" | "users.delete" | "users.read" | "users.update";
+// Route access
+"roles.read" | "users.read";
+
+// Route actions
+"roles.create" | "roles.delete" | "roles.update";
+"users.create" | "users.delete" | "users.update";
 ```
 
 Password pages/actions only require a valid auth token.
