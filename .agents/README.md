@@ -15,7 +15,9 @@ contains the detailed, provider-neutral rules and optional hook implementations.
 
 ## Core checks
 
-Run the smallest useful check first, then broaden when needed:
+Run the smallest useful check first while developing. Before every commit, run
+the complete local CI suite listed in [the Git workflow rule](rules/git.md);
+do not create a commit until every required check passes.
 
 ```bash
 npm run typecheck
