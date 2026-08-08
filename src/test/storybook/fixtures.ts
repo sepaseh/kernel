@@ -24,7 +24,7 @@ export const sampleAccount: AccountProps = {
 
 export const roles: RoleProps[] = [
   { id: "role-admin", name: "Administrator", permissions: ["users.read"] },
-  { id: "role-editor", name: "Editor", permissions: ["content.write"] },
+  { id: "role-editor", name: "Editor", permissions: ["roles.update"] },
 ];
 
 export const permissions: PermissionGroupProps[] = [
@@ -32,17 +32,17 @@ export const permissions: PermissionGroupProps[] = [
     name: "users",
     permissions: [
       { name: "users.read", title: "View users" },
-      { name: "users.write", title: "Manage users" },
+      { name: "users.update", title: "Manage users" },
     ],
     title: "Users",
   },
   {
-    name: "content",
+    name: "roles",
     permissions: [
-      { name: "content.read", title: "View content" },
-      { name: "content.write", title: "Manage content" },
+      { name: "roles.read", title: "View roles" },
+      { name: "roles.update", title: "Manage roles" },
     ],
-    title: "Content",
+    title: "Roles",
   },
 ];
 
