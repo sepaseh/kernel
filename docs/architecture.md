@@ -32,7 +32,10 @@ It also synchronizes language and theme with local storage and configures Day.js
 Route definitions are centralized in `src/app/config/routes.ts`. Each `routeTree`
 entry owns its path, route access rule, and action permission mapping, making it
 the single source of truth for routing and client-side authorization. The router
-is created in `src/app/Routes.tsx` with `createBrowserRouter`.
+is created in `src/app/Routes.tsx` with `createBrowserRouter` by grouping
+`routeTree` entries according to their declared layout. The same configuration
+exports `navigationTree`, which controls the menu hierarchy without duplicating
+paths or labels in a layout component.
 
 The app uses two layouts:
 
@@ -44,6 +47,8 @@ The app uses two layouts:
 `useAllowedRoutes` derives visible and accessible routes from each entry's
 `permissions.access` value. Features use `useRoutePermissions(route)` to derive
 named action booleans such as `canCreate` and `canUpdate` from the same entry.
+`useAllowedNavigation` filters `navigationTree` recursively, so empty menu
+groups are omitted and nested groups are supported.
 `public` routes are always reachable, `authenticated` routes require a signed-in
 user, and permission-gated routes require the declared permission unless the
 user is a system administrator. These browser checks improve the user
