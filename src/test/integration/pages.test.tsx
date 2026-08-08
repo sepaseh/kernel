@@ -125,6 +125,7 @@ vi.mock("@/shared/hooks", () => ({
 }));
 
 vi.mock("antd-style", () => ({
+  createStyles: () => () => ({ styles: { input: "login-input" } }),
   useAntdToken: () => ({
     colorSuccess: "#00aa00",
     marginMD: 16,
