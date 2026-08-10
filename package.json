@@ -39,7 +39,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "antd": "^6.5.2",
+    "antd": "^6.5.3",
     "antd-style": "^4.1.0",
     "axios": "^1.19.0",
     "dayjs": "^1.11.21",
