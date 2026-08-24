@@ -39,16 +39,16 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "antd": "^6.5.2",
+    "antd": "^6.6.1",
     "antd-style": "^4.1.0",
     "axios": "^1.19.0",
-    "dayjs": "^1.11.21",
-    "i18next": "^26.3.6",
+    "dayjs": "^1.11.23",
+    "i18next": "^26.4.0",
     "jalaliday": "^3.1.1",
     "lodash": "^4.18.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "react-i18next": "^17.0.11",
+    "react-i18next": "^17.0.12",
     "react-router": "^8.3.0"
   },
   "devDependencies": {
