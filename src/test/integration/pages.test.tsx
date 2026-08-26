@@ -117,7 +117,10 @@ vi.mock("@/features/users/forms/user-role/UserRole", () => ({
 vi.mock("@/app/hooks", () => ({
   useAntd: () => mocks.antd,
   useCore: () => mocks.core,
-  useRoutePermissions: (route: keyof typeof mocks.routePermissions) =>
+}));
+
+vi.mock("@/app/lib", () => ({
+  getRoutePermissions: (route: keyof typeof mocks.routePermissions) =>
     mocks.routePermissions[route],
 }));
 

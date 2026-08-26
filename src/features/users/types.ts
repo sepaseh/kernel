@@ -1,6 +1,6 @@
 type UserStatus = "active" | "inactive";
 
-export type UserListParams = {
+export type ListUsersQuery = {
   email?: string;
   mobile?: string;
   name?: string;
@@ -10,7 +10,7 @@ export type UserListParams = {
   username?: string;
 };
 
-export type UserSummaryProps = {
+export type UserSummary = {
   email: null | string;
   firstName: string;
   id: string;
@@ -22,11 +22,11 @@ export type UserSummaryProps = {
   username: null | string;
 };
 
-export type UserProps = Omit<UserSummaryProps, "status"> & {
+export type User = Omit<UserSummary, "status"> & {
   roleIds: string[];
 };
 
-export type CreateUserParams = {
+export type CreateUserRequest = {
   firstName: string;
   lastName: string;
   mobile: string;
@@ -34,27 +34,36 @@ export type CreateUserParams = {
   personnelCode: string;
 };
 
-export type UpdateUserParams = Partial<
-  Pick<CreateUserParams, "firstName" | "lastName" | "mobile" | "personnelCode">
+export type UpdateUserRequest = Partial<
+  Pick<CreateUserRequest, "firstName" | "lastName" | "mobile" | "personnelCode">
 >;
 
-export type UserRoleParams = {
+export type UserRoleRequest = {
   roleIds: string[];
 };
 
-export type UserSystemAdminParams = {
+export type UserSystemAdminRequest = {
   isSystemAdmin: boolean;
 };
 
-export type UserPasswordParams = {
+export type UserPasswordRequest = {
   password: string;
 };
 
-export type UserStatusParams = {
+export type UserStatusRequest = {
   status: UserStatus;
 };
 
-export type UserOptionProps = {
+export type UserOption = {
   id: string;
   name: string;
 };
+
+export type CreateUserParams = CreateUserRequest;
+export type UpdateUserParams = UpdateUserRequest;
+export type UserListParams = ListUsersQuery;
+export type UserOptionProps = UserOption;
+export type UserPasswordParams = UserPasswordRequest;
+export type UserProps = User;
+export type UserRoleParams = UserRoleRequest;
+export type UserSummaryProps = UserSummary;

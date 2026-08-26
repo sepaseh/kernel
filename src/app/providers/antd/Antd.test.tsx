@@ -1,8 +1,7 @@
 import { theme as antdTheme } from "antd";
-import { useContext } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { AntdContext } from "@/app/contexts";
+import { useAntd } from "@/app/hooks/useAntd";
 import { render, screen } from "@/test/render";
 
 import { AntdProvider } from "./Antd";
@@ -20,13 +19,11 @@ vi.mock("@/app/hooks", () => ({
 }));
 
 const Consumer = () => {
-  const value = useContext(AntdContext);
+  const { messageAPI, modalAPI, notificationAPI } = useAntd();
 
   return (
     <output aria-label="antd-context">
-      {value?.messageAPI && value.modalAPI && value.notificationAPI
-        ? "ready"
-        : "missing"}
+      {messageAPI && modalAPI && notificationAPI ? "ready" : "missing"}
     </output>
   );
 };

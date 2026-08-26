@@ -14,7 +14,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router";
 
-import { useAntd, useRoutePermissions } from "@/app/hooks";
+import { useAntd, useCore } from "@/app/hooks";
+import { getRoutePermissions } from "@/app/lib";
 import { RoleForm } from "@/features/roles/form/Role";
 import { modalKeys } from "@/shared/config";
 import { getErrorMessage } from "@/shared/lib";
@@ -30,7 +31,11 @@ export const RolesPage = () => {
   const [permissions, setPermissions] = useState<PermissionGroupProps[]>([]);
   const [selectedData, setSelectedData] = useState<RoleProps>();
   const { messageAPI, modalAPI } = useAntd();
-  const { canCreate, canDelete, canUpdate } = useRoutePermissions("roles");
+  const { user } = useCore();
+  const { canCreate, canDelete, canUpdate } = getRoutePermissions(
+    "roles",
+    user,
+  );
   const { pathname, search } = useLocation();
   const token = useAntdToken();
   const tableContainerRef = useRef<HTMLDivElement>(null);

@@ -8,24 +8,25 @@ export type PermissionKey =
   | "users.read"
   | "users.update";
 
-export type RoleProps = {
+export type Role = {
   id: string;
   name: string;
   permissions: PermissionKey[];
 };
 
-export type RoleMutationParams = {
-  name: string;
-  permissions: PermissionKey[];
-};
+export type RoleRequest = Pick<Role, "name" | "permissions">;
 
-type PermissionProps = {
+type Permission = {
   name: PermissionKey;
   title: string;
 };
 
-export type PermissionGroupProps = {
+export type PermissionGroup = {
   name: string;
-  permissions: PermissionProps[];
+  permissions: Permission[];
   title: string;
 };
+
+export type PermissionGroupProps = PermissionGroup;
+export type RoleMutationParams = RoleRequest;
+export type RoleProps = Role;

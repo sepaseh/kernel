@@ -50,7 +50,11 @@ vi.mock("@/shared/api", () => ({
 }));
 
 vi.mock("@/app/hooks", () => ({
-  useAllowedNavigation: () => [
+  useCore: () => mocks.core,
+}));
+
+vi.mock("@/app/lib", () => ({
+  getAllowedNavigation: () => [
     { route: "root" },
     {
       children: [{ route: "users" }, { route: "roles" }],
@@ -58,7 +62,6 @@ vi.mock("@/app/hooks", () => ({
       label: "userManagement",
     },
   ],
-  useCore: () => mocks.core,
 }));
 
 vi.mock("antd-style", () => ({

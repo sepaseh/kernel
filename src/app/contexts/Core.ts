@@ -1,20 +1,22 @@
 import { createContext } from "react";
 
 import { RouteKey } from "@/app/config";
-import { AccountProps } from "@/features/account/types";
+import { type Account } from "@/features/account/types";
 import { Language, Theme } from "@/shared/config";
 
-export type CoreContextProps = {
+export type CoreContextValue = {
   currentRoute: RouteKey;
   language: Language;
   setCurrentRoute: (route: RouteKey) => void;
   setLanguage: (language: Language) => void;
   setTheme: (theme: Theme) => void;
-  setUser: (user?: AccountProps) => void;
+  setUser: (user?: Account) => void;
   theme: Theme;
-  user?: AccountProps;
+  user?: Account;
 };
 
-export const CoreContext = createContext<CoreContextProps | undefined>(
+export const CoreContext = createContext<CoreContextValue | undefined>(
   undefined,
 );
+
+export type CoreContextProps = CoreContextValue;

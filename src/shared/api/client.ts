@@ -179,7 +179,7 @@ const patch = async <T>(
 
 const post = async <T>(
   url: string,
-  data?: Record<string, unknown>,
+  data?: FormData | Record<string, unknown>,
   config?: AxiosRequestConfig,
 ): Promise<T> => {
   const response = await api.post<T>(url, toSnakeCase(data), config);
@@ -188,7 +188,7 @@ const post = async <T>(
 
 const put = async <T>(
   url: string,
-  data?: Record<string, unknown>,
+  data?: FormData | Record<string, unknown>,
   config?: AxiosRequestConfig,
 ): Promise<T> => {
   const response = await api.put<T>(url, toSnakeCase(data), config);

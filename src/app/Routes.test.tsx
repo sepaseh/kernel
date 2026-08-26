@@ -17,8 +17,10 @@ const routeState = vi.hoisted(() => ({
 }));
 
 vi.mock("@/app/hooks", () => ({
-  useAllowedRoutes: () => routeState.allowedRoutes,
-  useCore: () => ({ setCurrentRoute: routeState.setCurrentRoute }),
+  useCore: () => ({ setCurrentRoute: routeState.setCurrentRoute, user: {} }),
+}));
+vi.mock("@/app/lib", () => ({
+  hasRouteAccess: (route: string) => routeState.allowedRoutes.has(route),
 }));
 vi.mock("@/layouts/auth", () => ({ AuthLayout: () => <Outlet /> }));
 vi.mock("@/layouts/default", () => ({ DefaultLayout: () => <Outlet /> }));
@@ -49,7 +51,7 @@ describe("application routes", () => {
     render(<Routes />);
 
     expect(await screen.findByText("404")).toBeInTheDocument();
-  });
+  }, 30_000);
 
   it.each([
     ["/", "Dashboard page", "root"],

@@ -20,7 +20,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router";
 
-import { useAntd, useCore, useRoutePermissions } from "@/app/hooks";
+import { useAntd, useCore } from "@/app/hooks";
+import { getRoutePermissions } from "@/app/lib";
 import { UserForm } from "@/features/users/forms/user/User";
 import { UserPasswordForm } from "@/features/users/forms/user-password/UserPassword";
 import { UserFormRole } from "@/features/users/forms/user-role/UserRole";
@@ -54,8 +55,11 @@ export const UsersPage = () => {
   const [selectedData, setSelectedData] = useState<UserProps>();
   const [total, setTotal] = useState(0);
   const { messageAPI, modalAPI } = useAntd();
-  const { canCreate, canDelete, canUpdate } = useRoutePermissions("users");
   const { user } = useCore();
+  const { canCreate, canDelete, canUpdate } = getRoutePermissions(
+    "users",
+    user,
+  );
   const { filters, setFilters } = useFilterParams<UserListParams>();
   const { pathname, search } = useLocation();
   const token = useAntdToken();

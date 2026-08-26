@@ -4,7 +4,7 @@ import jalaliday from "jalaliday";
 import { FC, ReactNode, useCallback, useEffect, useState } from "react";
 
 import { RouteKey } from "@/app/config";
-import { CoreContext, CoreContextProps } from "@/app/contexts";
+import { CoreContext, CoreContextValue } from "@/app/contexts";
 import { Language, storageKeys, Theme } from "@/shared/config";
 import { i18nInstance } from "@/shared/i18n";
 import { faDayjs } from "@/shared/i18n/locales";
@@ -25,25 +25,18 @@ type CoreProviderProps = {
   children: ReactNode;
 };
 
-type StateProps = Pick<
-  CoreContextProps,
-  "currentRoute" | "language" | "theme" | "user"
->;
-
 export const CoreProvider: FC<CoreProviderProps> = ({ children }) => {
-  const [state, setState] = useState<StateProps>({
-    currentRoute: "root",
-    language: getLanguage(),
-    theme: getTheme(),
-  });
-  const { currentRoute, language, theme, user } = state;
+  const [currentRoute, setCurrentRouteState] = useState<RouteKey>("root");
+  const [language, setLanguageState] = useState<Language>(getLanguage());
+  const [theme, setThemeState] = useState<Theme>(getTheme());
+  const [user, setUserState] = useState<CoreContextValue["user"]>();
 
-  const setUser: CoreContextProps["setUser"] = useCallback((user) => {
-    setState((prev) => ({ ...prev, user }));
+  const setUser: CoreContextValue["setUser"] = useCallback((user) => {
+    setUserState(user);
   }, []);
 
   const setCurrentRoute = useCallback((currentRoute: RouteKey) => {
-    setState((prev) => ({ ...prev, currentRoute }));
+    setCurrentRouteState(currentRoute);
   }, []);
 
   const setLanguage = (language: Language, fromStorage?: boolean) => {
@@ -51,13 +44,13 @@ export const CoreProvider: FC<CoreProviderProps> = ({ children }) => {
 
     i18nInstance.changeLanguage(language);
 
-    setState((prev) => ({ ...prev, language }));
+    setLanguageState(language);
   };
 
   const setTheme = (theme: Theme, fromStorage?: boolean) => {
     if (!fromStorage) setThemeStorage(theme);
 
-    setState((prev) => ({ ...prev, theme }));
+    setThemeState(theme);
   };
 
   useLocalStorageWatcher(storageKeys.language, () => {
