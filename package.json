@@ -23,6 +23,8 @@
     "knip": "knip",
     "performance": "npm run build && npm run bundle:size",
     "preview": "vite preview",
+    "server": "node server/server.cjs",
+    "server:test": "node --test server/*.test.cjs",
     "test": "vitest run --project=unit",
     "test:contract": "vitest run --config=vitest.contract.config.ts",
     "test:coverage": "vitest run --project=unit --coverage",

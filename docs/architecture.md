@@ -25,7 +25,10 @@ It also synchronizes language and theme with local storage and configures Day.js
 
 ### Ant Design Provider
 
-`AntdProvider` configures Ant Design for the current language and theme. It is the place to change global component tokens or locale behavior.
+`AntdProvider` configures Ant Design for the current language and theme and
+mounts Ant Design's application boundary. Components obtain message, modal,
+notification, and token APIs through `useAntd`, which delegates to
+`AntdApp.useApp` rather than a project-owned context.
 
 ## Routing
 
@@ -42,13 +45,14 @@ The app uses two layouts:
 - `AuthLayout` for `/auth`
 - `DefaultLayout` for authenticated application pages
 
-`SetCurrentRoute` wraps each route element and updates `CoreProvider` with the active route key. Navigation components should prefer `routeTree` rather than hard-coded paths.
+`RouteWrapper` wraps each route element and updates `CoreProvider` with the active route key. Navigation components should prefer `routeTree` rather than hard-coded paths. The root router error boundary reports route and layout failures through observability and renders the shared application fallback.
 
-`useAllowedRoutes` derives visible and accessible routes from each entry's
-`permissions.access` value. Features use `useRoutePermissions(route)` to derive
-named action booleans such as `canCreate` and `canUpdate` from the same entry.
-`useAllowedNavigation` filters `navigationTree` recursively, so empty menu
-groups are omitted and nested groups are supported.
+Pure policy functions in `src/app/lib/access.ts` evaluate route access, derive
+named action booleans such as `canCreate` and `canUpdate`, and filter
+`navigationTree` recursively. Router, layout, and feature components pass the
+current account to these functions directly; access policy does not depend on
+React hooks. Empty navigation groups are omitted and nested groups are
+supported.
 `public` routes are always reachable, `authenticated` routes require a signed-in
 user, and permission-gated routes require the declared permission unless the
 user is a system administrator. These browser checks improve the user
@@ -101,3 +105,11 @@ variable WOFF2 from `src/assets/fonts/vazirmatn` and uses weights 100–900 with
 builds; the application does not depend on an external font provider.
 
 Prefer Ant Design components and theme tokens for new UI so layout, spacing, RTL behavior, and dark/light themes stay consistent.
+
+## Local API Boundary
+
+The Bruno collection defines the executable HTTP boundary. Feature API modules
+and types consume it, Pact tests protect selected consumer contracts, and the
+dependency-free server under `server/` reads it directly for local development.
+The mock server is a development adapter, not part of the browser application or
+production deployment architecture. See the [collection guide](collection-guide.md).

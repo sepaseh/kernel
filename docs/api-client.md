@@ -12,7 +12,7 @@ The API layer uses `src/shared/api/client.ts` as a small Axios wrapper around th
 - Automatic snake_case request body conversion
 - Manual snake_case query parameter conversion where endpoints pass `params`
 - Configurable unauthorized handler for `401` responses
-- Typed helpers for JSON and blob responses
+- Typed helpers for JSON, `FormData`, and blob responses
 
 ## Client Helpers
 
@@ -24,6 +24,10 @@ apiClient.patch<T>(url, data, config);
 apiClient.del<T>(url, config);
 apiClient.blob(url, config);
 ```
+
+`post` and `put` accept either plain request objects or `FormData`. Wire-case
+conversion applies recursively to plain objects; browser-native `FormData`
+instances pass through unchanged.
 
 ## Starter Modules
 
@@ -70,3 +74,8 @@ apiClient.blob(url, config);
 ## Adding Modules
 
 Add endpoint helpers to the owning feature's `api.ts`. Put only transport-level code used by multiple features in `src/shared/api`; do not create a global domain-service barrel.
+
+Update the corresponding Bruno operation and saved response before changing an
+observable endpoint contract. The local mock reloads those contracts on process
+restart; see the [collection guide](collection-guide.md) and
+[mock server guide](../server/README.md).
