@@ -13,6 +13,7 @@ const routeState = vi.hoisted(() => ({
     "root",
     "users",
   ]),
+  dashboardError: false,
   setCurrentRoute: vi.fn(),
 }));
 
@@ -26,7 +27,10 @@ vi.mock("@/layouts/auth", () => ({ AuthLayout: () => <Outlet /> }));
 vi.mock("@/layouts/default", () => ({ DefaultLayout: () => <Outlet /> }));
 vi.mock("@/features/account", () => ({ AccountPage: () => "Account page" }));
 vi.mock("@/features/dashboard", () => ({
-  DashboardPage: () => "Dashboard page",
+  DashboardPage: () => {
+    if (routeState.dashboardError) throw new Error("dashboard failed");
+    return "Dashboard page";
+  },
 }));
 vi.mock("@/features/auth/forgot-pass", () => ({
   ForgotPassPage: () => "Forgot password page",
@@ -39,6 +43,7 @@ vi.mock("@/features/roles", () => ({ RolesPage: () => "Roles page" }));
 vi.mock("@/features/users", () => ({ UsersPage: () => "Users page" }));
 
 beforeEach(() => {
+  routeState.dashboardError = false;
   routeState.setCurrentRoute.mockClear();
   vi.resetModules();
 });
@@ -80,5 +85,34 @@ describe("application routes", () => {
 
     expect(await screen.findByText("Dashboard page")).toBeInTheDocument();
     routeState.allowedRoutes.add("users");
+  });
+
+  it("renders and reports the application fallback when a route fails", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const send = vi.fn();
+    routeState.dashboardError = true;
+    window.history.replaceState({}, "", "/");
+    const { Routes } = await import("./Routes");
+    const { setObservabilityTransport } = await import("@/shared/lib");
+    setObservabilityTransport(send);
+
+    render(<Routes />);
+
+    expect(await screen.findByText("500")).toBeVisible();
+    expect(
+      screen.getByText(/An unexpected error occurred|خطای غیرمنتظره‌ای رخ داد/),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: /Reload|بارگذاری مجدد/ }),
+    ).toBeVisible();
+    expect(send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        context: expect.objectContaining({
+          source: "react-router.error-boundary",
+        }),
+        message: "dashboard failed",
+        name: "error",
+      }),
+    );
   });
 });

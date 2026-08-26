@@ -1,3 +1,4 @@
+import { Button, Result } from "antd";
 import {
   Component,
   type ErrorInfo,
@@ -52,4 +53,3 @@ export class ErrorBoundary extends Component<PropsWithChildren, State> {
     return <ErrorFallback />;
   }
 }
-import { Button, Result } from "antd";
