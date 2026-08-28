@@ -1,9 +1,9 @@
 import { ReactNode, useMemo, useState } from "react";
 import { MemoryRouter } from "react-router";
 
-import { CoreContext, CoreContextProps } from "@/app/contexts";
+import { CoreContext, CoreContextValue } from "@/app/contexts";
 import { AntdProvider } from "@/app/providers";
-import { AccountProps } from "@/features/account";
+import { Account } from "@/features/account";
 import { Language, Theme } from "@/shared/config";
 
 import { sampleAccount } from "./fixtures";
@@ -13,7 +13,7 @@ type StoryShellProps = {
   initialEntries?: string[];
   initialLanguage?: Language;
   initialTheme?: Theme;
-  initialUser?: AccountProps | null;
+  initialUser?: Account | null;
 };
 
 export const StoryShell = ({
@@ -25,10 +25,10 @@ export const StoryShell = ({
 }: StoryShellProps) => {
   const [language, setLanguage] = useState(initialLanguage);
   const [theme, setTheme] = useState(initialTheme);
-  const [user, setUser] = useState<CoreContextProps["user"]>(
+  const [user, setUser] = useState<CoreContextValue["user"]>(
     initialUser ?? undefined,
   );
-  const value = useMemo<CoreContextProps>(
+  const value = useMemo<CoreContextValue>(
     () => ({
       currentRoute: "root",
       language,

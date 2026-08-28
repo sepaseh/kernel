@@ -34,3 +34,13 @@ Saved response files sit beside each request and are named after their HTTP
 status code.
 
 Do not store real passwords or access tokens in this shared collection.
+
+## Local mock integration
+
+The development mock server reads this directory directly at startup. Run it
+from the repository root with `npm run server`; changes to requests or saved
+responses take effect after restarting the process. Run `npm run server:test`
+after contract changes.
+
+See the [collection and mock integration guide](../docs/collection-guide.md) for
+source-of-truth rules, change sequencing, error simulation, and limitations.

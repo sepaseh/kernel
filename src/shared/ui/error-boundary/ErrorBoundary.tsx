@@ -1,23 +1,37 @@
+import { Button, Result } from "antd";
 import {
   Component,
   type ErrorInfo,
   Fragment,
+  type PropsWithChildren,
   type ReactElement,
-  type ReactNode,
 } from "react";
+import { useTranslation } from "react-i18next";
 
-import { i18nInstance } from "@/shared/i18n";
 import { reportError } from "@/shared/lib";
-
-type ErrorBoundaryProps = {
-  children: ReactNode;
-};
 
 type State = {
   hasError: boolean;
 };
 
-export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
+export const ErrorFallback = (): ReactElement => {
+  const { t } = useTranslation();
+
+  return (
+    <Result
+      status="500"
+      title="500"
+      subTitle={t("unexpectedError")}
+      extra={
+        <Button onClick={() => window.location.reload()} type="primary">
+          {t("reload")}
+        </Button>
+      }
+    />
+  );
+};
+
+export class ErrorBoundary extends Component<PropsWithChildren, State> {
   public state: State = { hasError: false };
 
   public static getDerivedStateFromError(): State {
@@ -36,21 +50,6 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
       return <Fragment>{this.props.children}</Fragment>;
     }
 
-    return (
-      <main
-        style={{
-          display: "grid",
-          minHeight: "100vh",
-          padding: "2rem",
-          placeContent: "center",
-          textAlign: "center",
-        }}
-      >
-        <h1>{i18nInstance.t("unexpectedError")}</h1>
-        <button onClick={() => window.location.reload()} type="button">
-          {i18nInstance.t("reload")}
-        </button>
-      </main>
-    );
+    return <ErrorFallback />;
   }
 }

@@ -46,9 +46,15 @@ test.describe("accessibility", () => {
   test("public authentication pages have no detectable violations", async ({
     page,
   }) => {
-    for (const path of ["/auth", "/auth/forgot-password", "/auth/register"]) {
+    for (const [path, title] of [
+      ["/auth", "Login"],
+      ["/auth/forgot-password", "Forgot password?"],
+      ["/auth/register", "Register"],
+    ]) {
       await page.goto(path);
-      await expect(page.locator("main, form").first()).toBeVisible();
+      await expect(
+        page.getByRole("heading", { level: 1, name: title }),
+      ).toBeVisible();
       await expectNoAxeViolations(page);
     }
   });

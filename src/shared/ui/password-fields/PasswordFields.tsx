@@ -6,6 +6,11 @@ type PasswordFieldsProps = {
   size?: "large";
 };
 
+type PasswordFieldsValues = {
+  confirmPassword: string;
+  password: string;
+};
+
 export const PasswordFields = ({
   passwordLabel = "password",
   size,
@@ -14,7 +19,7 @@ export const PasswordFields = ({
 
   return (
     <>
-      <Form.Item
+      <Form.Item<PasswordFieldsValues>
         label={t(passwordLabel)}
         name="password"
         rules={[{ required: true }]}
@@ -25,7 +30,7 @@ export const PasswordFields = ({
           styles={{ input: { direction: "ltr" } }}
         />
       </Form.Item>
-      <Form.Item
+      <Form.Item<PasswordFieldsValues>
         dependencies={["password"]}
         label={t("confirmPass")}
         name="confirmPassword"

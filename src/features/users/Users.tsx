@@ -20,7 +20,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router";
 
-import { useAntd, useCore, useRoutePermissions } from "@/app/hooks";
+import { useAntd, useCore } from "@/app/hooks";
+import { getRoutePermissions } from "@/app/lib";
 import { UserForm } from "@/features/users/forms/user/User";
 import { UserPasswordForm } from "@/features/users/forms/user-password/UserPassword";
 import { UserFormRole } from "@/features/users/forms/user-role/UserRole";
@@ -39,28 +40,26 @@ import {
   updateUserSystemAdmin,
 } from "./api";
 import { defaultPageSize } from "./constants";
-import {
-  UserListParams,
-  UserOptionProps,
-  UserProps,
-  UserSummaryProps,
-} from "./types";
+import { ListUsersQuery, User, UserOption, UserSummary } from "./types";
 
 export const UsersPage = () => {
   const { t } = useTranslation();
-  const [data, setData] = useState<UserSummaryProps[]>([]);
+  const [data, setData] = useState<UserSummary[]>([]);
   const [loading, setLoading] = useState(false);
-  const [roles, setRoles] = useState<UserOptionProps[]>([]);
-  const [selectedData, setSelectedData] = useState<UserProps>();
+  const [roles, setRoles] = useState<UserOption[]>([]);
+  const [selectedData, setSelectedData] = useState<User>();
   const [total, setTotal] = useState(0);
   const { messageAPI, modalAPI } = useAntd();
-  const { canCreate, canDelete, canUpdate } = useRoutePermissions("users");
   const { user } = useCore();
-  const { filters, setFilters } = useFilterParams<UserListParams>();
+  const { canCreate, canDelete, canUpdate } = getRoutePermissions(
+    "users",
+    user,
+  );
+  const { filters, setFilters } = useFilterParams<ListUsersQuery>();
   const { pathname, search } = useLocation();
   const token = useAntdToken();
   const tableContainerRef = useRef<HTMLDivElement>(null);
-  const [form] = Form.useForm<UserListParams>();
+  const [form] = Form.useForm<ListUsersQuery>();
   const navigate = useNavigate();
   const offset = Number(filters.offset ?? "0");
   const current = Math.floor(offset / defaultPageSize) + 1;
@@ -102,7 +101,7 @@ export const UsersPage = () => {
     }
   };
 
-  const handleStatus = (record: UserSummaryProps) => {
+  const handleStatus = (record: UserSummary) => {
     modalAPI.confirm({
       cancelText: t("no"),
       okText: t("yes"),
@@ -121,7 +120,7 @@ export const UsersPage = () => {
     });
   };
 
-  const handleSystemAdmin = (record: UserSummaryProps) => {
+  const handleSystemAdmin = (record: UserSummary) => {
     modalAPI.confirm({
       cancelText: t("no"),
       okText: t("yes"),
@@ -158,7 +157,7 @@ export const UsersPage = () => {
     });
   };
 
-  const tableColumns: TableProps<UserSummaryProps>["columns"] = [
+  const tableColumns: TableProps<UserSummary>["columns"] = [
     {
       align: "center",
       key: "index",
@@ -285,7 +284,7 @@ export const UsersPage = () => {
     },
   ];
 
-  const handleFilter: FormProps<UserListParams>["onValuesChange"] = (
+  const handleFilter: FormProps<ListUsersQuery>["onValuesChange"] = (
     _,
     values,
   ) => {
@@ -335,7 +334,7 @@ export const UsersPage = () => {
         <Typography.Title level={1} style={{ fontSize: 20 }}>
           {t("users")}
         </Typography.Title>
-        <Form<UserListParams> form={form} onValuesChange={handleFilter}>
+        <Form<ListUsersQuery> form={form} onValuesChange={handleFilter}>
           <Row gutter={24}>
             <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
               <Form.Item name="name">
@@ -384,7 +383,7 @@ export const UsersPage = () => {
             </Col>
           </Row>
         </Form>
-        <Table<UserSummaryProps>
+        <Table<UserSummary>
           columns={tableColumns}
           dataSource={data}
           loading={loading}

@@ -6,20 +6,16 @@ import { useLocation } from "react-router";
 
 import { useAntd } from "@/app/hooks";
 import { updateUserRoles } from "@/features/users/api";
-import {
-  UserOptionProps,
-  UserProps,
-  UserRoleParams,
-} from "@/features/users/types";
+import { User, UserOption, UserRoleRequest } from "@/features/users/types";
 import { modalKeys } from "@/shared/config";
 import { useGoBack } from "@/shared/hooks";
 import { getErrorMessage } from "@/shared/lib";
 import { FormDrawer } from "@/shared/ui/form-drawer";
 
 type UserFormRoleProps = {
-  data?: UserProps;
+  data?: User;
   onFinish: () => void;
-  options: { roles: UserOptionProps[] };
+  options: { roles: UserOption[] };
 };
 
 export const UserFormRole: FC<UserFormRoleProps> = ({
@@ -32,10 +28,10 @@ export const UserFormRole: FC<UserFormRoleProps> = ({
   const [submitting, setSubmitting] = useState(false);
   const { messageAPI } = useAntd();
   const { hash } = useLocation();
-  const [form] = Form.useForm<UserRoleParams>();
+  const [form] = Form.useForm<UserRoleRequest>();
   const goBack = useGoBack();
 
-  const handleSubmit = async (values: UserRoleParams) => {
+  const handleSubmit = async (values: UserRoleRequest) => {
     if (submitting || !data) return;
 
     try {
@@ -74,7 +70,7 @@ export const UserFormRole: FC<UserFormRoleProps> = ({
       submitting={submitting}
       title={t("roles")}
     >
-      <Form<UserRoleParams>
+      <Form<UserRoleRequest>
         form={form}
         layout="vertical"
         onFinish={(values) => void handleSubmit(values)}

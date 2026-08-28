@@ -44,6 +44,8 @@ npm run dev
 npm run dev        # start Vite dev server
 npm run build      # typecheck and build for production
 npm run preview    # preview production build
+npm run server     # start the collection-driven local mock API
+npm run server:test # test the local mock API
 npm run lint       # run ESLint
 npm run lint:fix   # run ESLint with auto-fix
 npm run audit      # check dependencies for high-severity vulnerabilities
@@ -62,6 +64,10 @@ npm run knip       # detect unused files, exports, and dependencies
 
 Example values are available in `.env.example`.
 
+For local development without a backend, start `npm run server`, set
+`VITE_API_BASE_URL=http://127.0.0.1:3000`, and sign in with `09123456789` /
+`password123`. See the [mock server guide](server/README.md).
+
 ## Routes
 
 | Path                    | Page                                   | Access          |
@@ -71,7 +77,7 @@ Example values are available in `.env.example`.
 | `/auth/register`        | Registration                           | public          |
 | `/`                     | Empty dashboard starter page           | authenticated   |
 | `/account`              | Profile, username, email, and password | authenticated   |
-| `/roles`                | Roles and permissions                  | `role_read`     |
+| `/roles`                | Roles and permissions                  | `roles.read`    |
 | `/users`                | Users                                  | `users.read`    |
 | `*`                     | Not found                              | public fallback |
 
@@ -103,7 +109,7 @@ Permission contracts live in `src/features/roles/types.ts`; route and action
 permission mappings live in `src/app/config/routes.ts`. Every route declares
 its public, authenticated, or permission-gated `permissions.access` rule.
 Permission-gated routes use `.read` permissions for access and can expose
-create, delete, and update actions through `useRoutePermissions`:
+create, delete, and update actions through `getRoutePermissions(route, user)`:
 
 ```ts
 // Route access
@@ -120,7 +126,7 @@ Password pages/actions only require a valid auth token.
 
 ```text
 src/
-  app/          Application composition, routes, providers, contexts, and app hooks
+  app/          Application composition, routes, providers, access policy, and app hooks
   assets/       Fonts and global styles
   features/     Account, authentication, role, user, and dashboard slices
   layouts/      Auth and authenticated application shells

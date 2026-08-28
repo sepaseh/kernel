@@ -6,19 +6,19 @@ import { useLocation } from "react-router";
 
 import { useAntd } from "@/app/hooks";
 import { updateUserPassword } from "@/features/users/api";
-import { UserPasswordParams, UserProps } from "@/features/users/types";
+import { User, UserPasswordRequest } from "@/features/users/types";
 import { modalKeys } from "@/shared/config";
 import { useGoBack } from "@/shared/hooks";
 import { getErrorMessage } from "@/shared/lib";
 import { FormDrawer } from "@/shared/ui/form-drawer";
 import { PasswordFields } from "@/shared/ui/password-fields";
 
-type UserPasswordFormParams = UserPasswordParams & {
+type UserPasswordFormParams = UserPasswordRequest & {
   confirmPassword: string;
 };
 
 type UserPasswordFormProps = {
-  data?: UserProps;
+  data?: User;
 };
 
 export const UserPasswordForm: FC<UserPasswordFormProps> = ({ data }) => {

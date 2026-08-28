@@ -5,13 +5,14 @@ fast and maintainable.
 
 ## Stack
 
-| Layer           | Tools                                | Use it for                                                  |
-| --------------- | ------------------------------------ | ----------------------------------------------------------- |
-| Unit            | Vitest                               | Pure functions, hooks, reducers, and isolated logic         |
-| Component       | React Testing Library and user-event | User-visible rendering and interactions                     |
-| UI development  | Storybook                            | Isolated components, layouts, themes, and responsive states |
-| API integration | MSW                                  | Request serialization, response handling, and error states  |
-| End-to-end      | Playwright and axe-core              | Critical journeys and automated accessibility checks        |
+| Layer           | Tools                                | Use it for                                                   |
+| --------------- | ------------------------------------ | ------------------------------------------------------------ |
+| Unit            | Vitest                               | Pure functions, hooks, reducers, and isolated logic          |
+| Component       | React Testing Library and user-event | User-visible rendering and interactions                      |
+| UI development  | Storybook                            | Isolated components, layouts, themes, and responsive states  |
+| API integration | MSW                                  | Request serialization, response handling, and error states   |
+| Mock runtime    | Node test runner                     | Collection discovery, local auth, CORS, and error simulation |
+| End-to-end      | Playwright and axe-core              | Critical journeys and automated accessibility checks         |
 
 Vitest is the best unit runner for this project because it shares Vite's
 TypeScript and module resolution model. React Testing Library encourages tests
@@ -40,6 +41,8 @@ e2e/
   *.spec.ts             # Playwright browser journeys
 scripts/
   *.test.mjs            # Build-environment and bundle-budget gate tests
+server/
+  *.test.cjs            # Collection-driven local mock runtime tests
 ```
 
 Keep tests next to production modules when they describe that module. Put
@@ -48,12 +51,18 @@ separate because they run against the built application. Tests beside Node
 scripts exercise their exported validation logic without requiring a production
 deployment or oversized generated artifacts.
 
+Mock-server tests are separate from MSW tests. MSW keeps component and API-client
+tests isolated and fast; the Node server tests verify that the executable Bruno
+collection can drive a real local HTTP process. Neither layer contacts a
+developer-configured or production API.
+
 ## Commands
 
 - `npm test` runs Vitest once.
 - `npm run test:watch` starts Vitest in watch mode.
 - `npm run test:coverage` writes text, HTML, JSON summary, and LCOV reports.
 - `npm run test:contract` generates Pact consumer contracts.
+- `npm run server:test` verifies the collection-driven local mock API.
 - `npm run test:e2e` builds the application and runs Playwright.
 - `npm run test:e2e:ui` opens Playwright's interactive UI.
 - `npm run test:e2e:report` opens the most recent HTML report.

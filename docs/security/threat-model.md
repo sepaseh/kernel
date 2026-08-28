@@ -7,6 +7,11 @@ configured API origin, and the authentication/session exchange between them.
 The backend implementation, identity provider, CI platform, and hosting
 provider are dependencies and must maintain their own threat models.
 
+The local mock API is development and test tooling outside the production trust
+boundary. It uses synthetic data, a local signing secret, permissive reflected
+CORS, and incomplete authorization semantics. It must not receive real
+credentials or be deployed as a production service.
+
 Review this document for authentication, authorization, data-flow,
 infrastructure, or trust-boundary changes and at least quarterly.
 
@@ -67,6 +72,7 @@ infrastructure, or trust-boundary changes and at least quarterly.
 - Refresh cookies are inaccessible to JavaScript and narrowly scoped.
 - Logout and terminal refresh failure clear client and server session state.
 - Error reports, logs, build artifacts, and test evidence contain no secrets.
+- Collection examples and mock-server fixtures contain synthetic data only.
 - Production can return to a known-good build once deployment automation is
   introduced.
 

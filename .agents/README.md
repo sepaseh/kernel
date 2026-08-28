@@ -22,6 +22,7 @@ do not create a commit until every required check passes.
 ```bash
 npm run typecheck
 npm run lint
+npm run server:test
 npm run build
 npm run knip
 ```

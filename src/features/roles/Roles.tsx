@@ -14,23 +14,28 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router";
 
-import { useAntd, useRoutePermissions } from "@/app/hooks";
+import { useAntd, useCore } from "@/app/hooks";
+import { getRoutePermissions } from "@/app/lib";
 import { RoleForm } from "@/features/roles/form/Role";
 import { modalKeys } from "@/shared/config";
 import { getErrorMessage } from "@/shared/lib";
 import { Icon } from "@/shared/ui/icon";
 
 import { deleteRole, fetchPermissions, fetchRole, fetchRoles } from "./api";
-import { PermissionGroupProps, RoleProps } from "./types";
+import { PermissionGroup, Role } from "./types";
 
 export const RolesPage = () => {
   const { t } = useTranslation();
-  const [data, setData] = useState<RoleProps[]>([]);
+  const [data, setData] = useState<Role[]>([]);
   const [loading, setLoading] = useState(false);
-  const [permissions, setPermissions] = useState<PermissionGroupProps[]>([]);
-  const [selectedData, setSelectedData] = useState<RoleProps>();
+  const [permissions, setPermissions] = useState<PermissionGroup[]>([]);
+  const [selectedData, setSelectedData] = useState<Role>();
   const { messageAPI, modalAPI } = useAntd();
-  const { canCreate, canDelete, canUpdate } = useRoutePermissions("roles");
+  const { user } = useCore();
+  const { canCreate, canDelete, canUpdate } = getRoutePermissions(
+    "roles",
+    user,
+  );
   const { pathname, search } = useLocation();
   const token = useAntdToken();
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -77,7 +82,7 @@ export const RolesPage = () => {
     });
   };
 
-  const tableColumns: TableProps<RoleProps>["columns"] = [
+  const tableColumns: TableProps<Role>["columns"] = [
     {
       align: "center",
       key: "index",
@@ -171,7 +176,7 @@ export const RolesPage = () => {
         <Typography.Title level={1} style={{ fontSize: 20 }}>
           {t("roles")}
         </Typography.Title>
-        <Table<RoleProps>
+        <Table<Role>
           columns={tableColumns}
           dataSource={data}
           loading={loading}

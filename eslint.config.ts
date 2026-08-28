@@ -339,6 +339,15 @@ export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
+    files: ["server/**/*.cjs"],
+    languageOptions: {
+      globals: globals.node,
+    },
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
+  {
     files: ["**/*.{ts,tsx}"],
     languageOptions: {
       ecmaVersion: 2020,

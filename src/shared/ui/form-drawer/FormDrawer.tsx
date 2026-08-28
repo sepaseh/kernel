@@ -1,13 +1,9 @@
 import { Button, Drawer, type DrawerProps, Space } from "antd";
 import { useTranslation } from "react-i18next";
 
-type FormDrawerProps = Omit<
-  DrawerProps,
-  "closeIcon" | "footer" | "mask" | "onClose" | "open" | "styles"
-> & {
+type FormDrawerProps = Omit<DrawerProps, "onClose"> & {
   onClose: NonNullable<DrawerProps["onClose"]>;
   onSubmit: () => void;
-  open: boolean;
   submitting: boolean;
 };
 
@@ -22,7 +18,6 @@ export const FormDrawer = ({
 
   return (
     <Drawer
-      {...rest}
       closeIcon={false}
       footer={
         <Space>
@@ -37,6 +32,7 @@ export const FormDrawer = ({
       mask={{ closable: false }}
       onClose={onClose}
       styles={{ footer: { textAlign: "end" } }}
+      {...rest}
     >
       {children}
     </Drawer>

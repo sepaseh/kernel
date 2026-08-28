@@ -1,10 +1,10 @@
 import dayjs from "dayjs";
 import calendar from "dayjs/plugin/calendar";
 import jalaliday from "jalaliday";
-import { FC, ReactNode, useCallback, useEffect, useState } from "react";
+import { FC, ReactNode, useEffect, useState } from "react";
 
 import { RouteKey } from "@/app/config";
-import { CoreContext, CoreContextProps } from "@/app/contexts";
+import { CoreContext, CoreContextValue } from "@/app/contexts";
 import { Language, storageKeys, Theme } from "@/shared/config";
 import { i18nInstance } from "@/shared/i18n";
 import { faDayjs } from "@/shared/i18n/locales";
@@ -25,47 +25,32 @@ type CoreProviderProps = {
   children: ReactNode;
 };
 
-type StateProps = Pick<
-  CoreContextProps,
-  "currentRoute" | "language" | "theme" | "user"
->;
-
 export const CoreProvider: FC<CoreProviderProps> = ({ children }) => {
-  const [state, setState] = useState<StateProps>({
-    currentRoute: "root",
-    language: getLanguage(),
-    theme: getTheme(),
-  });
-  const { currentRoute, language, theme, user } = state;
+  const [currentRoute, setCurrentRoute] = useState<RouteKey>("root");
+  const [language, setLanguage] = useState<Language>(getLanguage());
+  const [theme, setTheme] = useState<Theme>(getTheme());
+  const [user, setUser] = useState<CoreContextValue["user"]>();
 
-  const setUser: CoreContextProps["setUser"] = useCallback((user) => {
-    setState((prev) => ({ ...prev, user }));
-  }, []);
-
-  const setCurrentRoute = useCallback((currentRoute: RouteKey) => {
-    setState((prev) => ({ ...prev, currentRoute }));
-  }, []);
-
-  const setLanguage = (language: Language, fromStorage?: boolean) => {
+  const changeLanguage = (language: Language, fromStorage?: boolean) => {
     if (!fromStorage) setLanguageStorage(language);
 
     i18nInstance.changeLanguage(language);
 
-    setState((prev) => ({ ...prev, language }));
+    setLanguage(language);
   };
 
-  const setTheme = (theme: Theme, fromStorage?: boolean) => {
+  const changeTheme = (theme: Theme, fromStorage?: boolean) => {
     if (!fromStorage) setThemeStorage(theme);
 
-    setState((prev) => ({ ...prev, theme }));
+    setTheme(theme);
   };
 
   useLocalStorageWatcher(storageKeys.language, () => {
-    setLanguage(getLanguage(), true);
+    changeLanguage(getLanguage(), true);
   });
 
   useLocalStorageWatcher(storageKeys.theme, () => {
-    setTheme(getTheme(), true);
+    changeTheme(getTheme(), true);
   });
 
   useEffect(() => {
@@ -79,8 +64,8 @@ export const CoreProvider: FC<CoreProviderProps> = ({ children }) => {
         currentRoute,
         language,
         setCurrentRoute,
-        setLanguage,
-        setTheme,
+        setLanguage: changeLanguage,
+        setTheme: changeTheme,
         setUser,
         theme,
         user,

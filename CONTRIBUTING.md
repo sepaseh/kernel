@@ -45,6 +45,7 @@ npm run lint
 npm run format:check
 npm run test:coverage
 npm run test:contract
+npm run server:test
 npm run knip
 npm run performance
 npm run build-storybook

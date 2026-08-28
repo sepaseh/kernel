@@ -1,11 +1,12 @@
-import { useContext } from "react";
-
-import { AntdContext } from "@/app/contexts";
+import { App as AntdApp, theme as antdTheme } from "antd";
 
 export const useAntd = () => {
-  const context = useContext(AntdContext);
+  const {
+    message: messageAPI,
+    modal: modalAPI,
+    notification: notificationAPI,
+  } = AntdApp.useApp();
+  const { token } = antdTheme.useToken();
 
-  if (!context) throw new Error("useAntd must be used within an AntdProvider");
-
-  return context;
+  return { messageAPI, modalAPI, notificationAPI, token };
 };

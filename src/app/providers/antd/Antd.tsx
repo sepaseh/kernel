@@ -1,10 +1,8 @@
 import {
+  App as AntdApp,
   ConfigProvider,
   ConfigProviderProps,
   GlobalToken,
-  message as Message,
-  Modal,
-  notification as Notification,
   theme as antdTheme,
   ThemeConfig,
 } from "antd";
@@ -12,7 +10,6 @@ import enUS from "antd/locale/en_US";
 import faIR from "antd/locale/fa_IR";
 import { FC, ReactNode, useEffect } from "react";
 
-import { AntdContext } from "@/app/contexts";
 import { useCore } from "@/app/hooks";
 import { Language, Theme } from "@/shared/config";
 
@@ -104,10 +101,6 @@ const localeConfigs = {
 } satisfies Record<Language, Pick<ConfigProviderProps, "direction" | "locale">>;
 
 export const AntdProvider: FC<AntdProviderProps> = ({ children }) => {
-  const [messageAPI, messageHolder] = Message.useMessage();
-  const [modalAPI, modalHolder] = Modal.useModal();
-  const [notificationAPI, notificationHolder] = Notification.useNotification();
-
   const { language, theme: currentTheme } = useCore();
   const { token } = themeConfigs[currentTheme];
   const { direction, locale } = localeConfigs[language];
@@ -128,12 +121,7 @@ export const AntdProvider: FC<AntdProviderProps> = ({ children }) => {
       locale={locale}
       theme={themeConfigs[currentTheme]}
     >
-      <AntdContext.Provider value={{ messageAPI, modalAPI, notificationAPI }}>
-        {children}
-        {messageHolder}
-        {modalHolder}
-        {notificationHolder}
-      </AntdContext.Provider>
+      <AntdApp component={false}>{children}</AntdApp>
     </ConfigProvider>
   );
 };

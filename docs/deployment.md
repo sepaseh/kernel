@@ -10,6 +10,11 @@ reusable templates that run only when started manually. A downstream project
 may configure and automate them after it has real, authorized deployment
 targets.
 
+The collection-driven server under `server/` is excluded from the production
+deployment architecture. Its permissive CORS, local signing secret, placeholder
+refresh cookie, and non-persistent mutations are development-only behavior. Do
+not deploy it as an API substitute or expose it to untrusted networks.
+
 ## Production Build
 
 Create a production build:

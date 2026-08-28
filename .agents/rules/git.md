@@ -15,6 +15,7 @@ Use this guidance only when the user asks to commit, inspect history, or prepare
    npm run format:check
    npm run test:coverage
    npm run test:contract
+   npm run server:test
    npm run knip
    npm run performance
    npm run build-storybook

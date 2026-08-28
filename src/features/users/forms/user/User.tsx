@@ -7,9 +7,9 @@ import { useLocation } from "react-router";
 import { useAntd } from "@/app/hooks";
 import { createUser, updateUser } from "@/features/users/api";
 import {
-  CreateUserParams,
-  UpdateUserParams,
-  UserProps,
+  CreateUserRequest,
+  UpdateUserRequest,
+  User,
 } from "@/features/users/types";
 import { modalKeys } from "@/shared/config";
 import { useGoBack } from "@/shared/hooks";
@@ -18,12 +18,12 @@ import { DigitsInput } from "@/shared/ui/digits-input";
 import { FormDrawer } from "@/shared/ui/form-drawer";
 import { PasswordFields } from "@/shared/ui/password-fields";
 
-type UserFormParams = CreateUserParams & {
+type UserFormParams = CreateUserRequest & {
   confirmPassword: string;
 };
 
 type UserFormProps = {
-  data?: UserProps;
+  data?: User;
   onFinish: () => void;
 };
 
@@ -52,7 +52,7 @@ export const UserForm: FC<UserFormProps> = ({ data, onFinish }) => {
       const profile = { firstName, lastName, mobile, personnelCode };
 
       if (isUpdate) {
-        await updateUser(data.id, profile satisfies UpdateUserParams);
+        await updateUser(data.id, profile satisfies UpdateUserRequest);
       } else {
         await createUser({ ...profile, password });
       }

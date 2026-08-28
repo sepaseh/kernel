@@ -17,7 +17,8 @@ import { useTranslation } from "react-i18next";
 import { Link, Outlet, useNavigate } from "react-router";
 
 import { NavigationItem, routeTree } from "@/app/config";
-import { useAllowedNavigation, useCore } from "@/app/hooks";
+import { useCore } from "@/app/hooks";
+import { getAllowedNavigation } from "@/app/lib";
 import { getAccount } from "@/features/account";
 import { logout } from "@/features/auth";
 import { clearAccessToken, setUnauthorizedHandler } from "@/shared/api";
@@ -32,7 +33,7 @@ export const DefaultLayout = () => {
   const { currentRoute, setTheme, setUser, theme: coreTheme, user } = useCore();
   const token = useAntdToken();
   const navigate = useNavigate();
-  const allowedNavigation = useAllowedNavigation();
+  const allowedNavigation = getAllowedNavigation(user);
   const darkMode = coreTheme === "dark";
 
   const createMenuItems = (

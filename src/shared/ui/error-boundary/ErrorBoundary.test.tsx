@@ -38,11 +38,7 @@ describe("ErrorBoundary", () => {
       </ErrorBoundary>,
     );
 
-    expect(
-      screen.getByRole("heading", {
-        name: "An unexpected error occurred.",
-      }),
-    ).toBeInTheDocument();
+    expect(screen.getByText("An unexpected error occurred.")).toBeVisible();
     expect(screen.getByRole("button", { name: "Reload" })).toBeInTheDocument();
     expect(send).toHaveBeenCalledWith(
       expect.objectContaining({

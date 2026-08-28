@@ -1,6 +1,6 @@
 import type { PermissionKey } from "@/features/roles";
 
-export type AccountProps = {
+export type Account = {
   email: null | string;
   firstName: string;
   id: string;
@@ -13,20 +13,20 @@ export type AccountProps = {
   username: null | string;
 };
 
-export type EmailVerificationParams = {
+export type EmailVerificationRequest = {
   email: string;
 };
 
-export type UpdateProfileParams = {
+export type UpdateProfileRequest = {
   firstName?: string;
   lastName?: string;
   personnelCode?: string;
 };
 
-export type UpdateUsernameParams = {
+export type UpdateUsernameRequest = {
   username: string;
 };
 
-export type VerifyEmailParams = EmailVerificationParams & {
+export type VerifyEmailRequest = EmailVerificationRequest & {
   otp: string;
 };

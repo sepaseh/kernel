@@ -1,8 +1,8 @@
-import { AccountProps } from "@/features/account";
-import { PermissionGroupProps, RoleProps } from "@/features/roles";
-import { UserOptionProps, UserProps, UserSummaryProps } from "@/features/users";
+import { Account } from "@/features/account";
+import { PermissionGroup, Role } from "@/features/roles";
+import { User, UserOption, UserSummary } from "@/features/users";
 
-export const sampleAccount: AccountProps = {
+export const sampleAccount: Account = {
   email: "admin@example.com",
   firstName: "Sample",
   id: "storybook-user",
@@ -22,12 +22,12 @@ export const sampleAccount: AccountProps = {
   username: "admin",
 };
 
-export const roles: RoleProps[] = [
+export const roles: Role[] = [
   { id: "role-admin", name: "Administrator", permissions: ["users.read"] },
   { id: "role-editor", name: "Editor", permissions: ["roles.update"] },
 ];
 
-export const permissions: PermissionGroupProps[] = [
+export const permissions: PermissionGroup[] = [
   {
     name: "users",
     permissions: [
@@ -46,12 +46,12 @@ export const permissions: PermissionGroupProps[] = [
   },
 ];
 
-export const userOptions: UserOptionProps[] = [
+export const userOptions: UserOption[] = [
   { id: "option-1", name: "Primary" },
   { id: "option-2", name: "Secondary" },
 ];
 
-export const user: UserProps = {
+export const user: User = {
   email: "sara@example.com",
   firstName: "Sara",
   id: "user-1",
@@ -63,7 +63,7 @@ export const user: UserProps = {
   username: "sara",
 };
 
-export const users: UserSummaryProps[] = [
+export const users: UserSummary[] = [
   { ...user, status: "active" },
   {
     email: null,

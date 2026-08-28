@@ -7,12 +7,20 @@ import {
   Suspense,
   useEffect,
 } from "react";
-import { createBrowserRouter, Navigate, RouteObject } from "react-router";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouteObject,
+  useRouteError,
+} from "react-router";
 import { RouterProvider } from "react-router/dom";
 
 import { baseUrl, RouteKey, RouteLayout, routeTree } from "@/app/config";
-import { useAllowedRoutes, useCore } from "@/app/hooks";
+import { useCore } from "@/app/hooks";
+import { hasRouteAccess } from "@/app/lib";
 import { NotFoundPage } from "@/app/not-found/NotFound";
+import { reportError } from "@/shared/lib";
+import { ErrorFallback } from "@/shared/ui/error-boundary";
 
 const AccountPage = lazy(async () => {
   const { AccountPage } = await import("@/features/account");
@@ -55,14 +63,13 @@ const RouteWrapper: FC<{ route: RouteKey; children: ReactNode }> = ({
   route,
   children,
 }): ReactElement => {
-  const { setCurrentRoute } = useCore();
-  const allowedRoutes = useAllowedRoutes();
+  const { setCurrentRoute, user } = useCore();
 
   useEffect(() => {
     setCurrentRoute(route);
   }, [route, setCurrentRoute]);
 
-  if (allowedRoutes.has(route)) return <Fragment>{children}</Fragment>;
+  if (hasRouteAccess(route, user)) return <Fragment>{children}</Fragment>;
 
   return <Navigate to={routeTree.root.path} replace />;
 };
@@ -100,27 +107,42 @@ const createLayoutRoutes = (layout: RouteLayout): RouteObject[] =>
     .filter((route) => routeTree[route].layout === layout)
     .map(createPageRoute);
 
+const RouteErrorBoundary = () => {
+  const error = useRouteError();
+
+  useEffect(() => {
+    reportError(error, { source: "react-router.error-boundary" });
+  }, [error]);
+
+  return <ErrorFallback />;
+};
+
 const router = createBrowserRouter(
   [
     {
-      path: routeTree.auth.path,
-      element: (
-        <Suspense fallback={null}>
-          <AuthLayout />
-        </Suspense>
-      ),
-      children: createLayoutRoutes("auth"),
+      children: [
+        {
+          path: routeTree.auth.path,
+          element: (
+            <Suspense fallback={null}>
+              <AuthLayout />
+            </Suspense>
+          ),
+          children: createLayoutRoutes("auth"),
+        },
+        {
+          path: routeTree.root.path,
+          element: (
+            <Suspense fallback={null}>
+              <DefaultLayout />
+            </Suspense>
+          ),
+          children: createLayoutRoutes("default"),
+        },
+        ...createLayoutRoutes("standalone"),
+      ],
+      errorElement: <RouteErrorBoundary />,
     },
-    {
-      path: routeTree.root.path,
-      element: (
-        <Suspense fallback={null}>
-          <DefaultLayout />
-        </Suspense>
-      ),
-      children: createLayoutRoutes("default"),
-    },
-    ...createLayoutRoutes("standalone"),
   ],
   { basename: baseUrl },
 );
