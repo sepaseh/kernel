@@ -26,9 +26,9 @@ import {
   verifyEmail,
 } from "./api";
 import {
-  UpdateProfileParams,
-  UpdateUsernameParams,
-  VerifyEmailParams,
+  UpdateProfileRequest,
+  UpdateUsernameRequest,
+  VerifyEmailRequest,
 } from "./types";
 
 type PasswordFormParams = ChangePasswordParams & {
@@ -46,10 +46,10 @@ export const AccountPage = () => {
   const { messageAPI } = useAntd();
   const { setUser, user } = useCore();
   const token = useAntdToken();
-  const [emailForm] = Form.useForm<VerifyEmailParams>();
+  const [emailForm] = Form.useForm<VerifyEmailRequest>();
   const [passwordForm] = Form.useForm<PasswordFormParams>();
-  const [profileForm] = Form.useForm<UpdateProfileParams>();
-  const [usernameForm] = Form.useForm<UpdateUsernameParams>();
+  const [profileForm] = Form.useForm<UpdateProfileRequest>();
+  const [usernameForm] = Form.useForm<UpdateUsernameRequest>();
 
   useEffect(() => {
     if (!otpRemainingSeconds) return;
@@ -68,7 +68,7 @@ export const AccountPage = () => {
     messageAPI.error(getErrorMessage(error));
   };
 
-  const submitProfile = async (values: UpdateProfileParams) => {
+  const submitProfile = async (values: UpdateProfileRequest) => {
     if (profileSubmitting) return;
 
     try {
@@ -85,7 +85,7 @@ export const AccountPage = () => {
     }
   };
 
-  const submitUsername = async (values: UpdateUsernameParams) => {
+  const submitUsername = async (values: UpdateUsernameRequest) => {
     if (usernameSubmitting) return;
 
     try {
@@ -121,7 +121,7 @@ export const AccountPage = () => {
     }
   };
 
-  const submitEmail = async (values: VerifyEmailParams) => {
+  const submitEmail = async (values: VerifyEmailRequest) => {
     if (emailSubmitting) return;
 
     try {
@@ -162,17 +162,17 @@ export const AccountPage = () => {
   };
 
   const handleProfileSubmit: NonNullable<
-    FormProps<UpdateProfileParams>["onFinish"]
+    FormProps<UpdateProfileRequest>["onFinish"]
   > = (values) => {
     void submitProfile(values);
   };
   const handleUsernameSubmit: NonNullable<
-    FormProps<UpdateUsernameParams>["onFinish"]
+    FormProps<UpdateUsernameRequest>["onFinish"]
   > = (values) => {
     void submitUsername(values);
   };
   const handleEmailSubmit: NonNullable<
-    FormProps<VerifyEmailParams>["onFinish"]
+    FormProps<VerifyEmailRequest>["onFinish"]
   > = (values) => {
     void submitEmail(values);
   };
@@ -197,7 +197,7 @@ export const AccountPage = () => {
       <Row gutter={[token.marginMD, token.marginMD]}>
         <Col xs={24} lg={12}>
           <Card title={t("basicInfo")} variant="borderless">
-            <Form<UpdateProfileParams>
+            <Form<UpdateProfileRequest>
               form={profileForm}
               initialValues={{
                 firstName: user.firstName,
@@ -247,7 +247,7 @@ export const AccountPage = () => {
         <Col xs={24} lg={12}>
           <Flex gap={token.marginMD} vertical>
             <Card title={t("username")} variant="borderless">
-              <Form<UpdateUsernameParams>
+              <Form<UpdateUsernameRequest>
                 form={usernameForm}
                 initialValues={{ username: user.username ?? undefined }}
                 layout="vertical"
@@ -272,7 +272,7 @@ export const AccountPage = () => {
               </Form>
             </Card>
             <Card title={t("email")} variant="borderless">
-              <Form<VerifyEmailParams>
+              <Form<VerifyEmailRequest>
                 form={emailForm}
                 initialValues={{ email: user.email ?? undefined }}
                 layout="vertical"

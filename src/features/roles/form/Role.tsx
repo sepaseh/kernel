@@ -6,20 +6,16 @@ import { useLocation } from "react-router";
 
 import { useAntd } from "@/app/hooks";
 import { createRole, updateRole } from "@/features/roles/api";
-import {
-  PermissionGroupProps,
-  RoleMutationParams,
-  RoleProps,
-} from "@/features/roles/types";
+import { PermissionGroup, Role, RoleRequest } from "@/features/roles/types";
 import { modalKeys } from "@/shared/config";
 import { useGoBack } from "@/shared/hooks";
 import { getErrorMessage } from "@/shared/lib";
 import { FormDrawer } from "@/shared/ui/form-drawer";
 
 type RoleFormProps = {
-  data?: RoleProps;
+  data?: Role;
   onFinish: () => void;
-  options: { permissions: PermissionGroupProps[] };
+  options: { permissions: PermissionGroup[] };
 };
 
 export const RoleForm: FC<RoleFormProps> = ({
@@ -32,11 +28,11 @@ export const RoleForm: FC<RoleFormProps> = ({
   const [submitting, setSubmitting] = useState(false);
   const { messageAPI } = useAntd();
   const { hash } = useLocation();
-  const [form] = Form.useForm<RoleMutationParams>();
+  const [form] = Form.useForm<RoleRequest>();
   const goBack = useGoBack();
   const isUpdate = hash === modalKeys.update && !!data;
 
-  const handleSubmit = async (values: RoleMutationParams) => {
+  const handleSubmit = async (values: RoleRequest) => {
     if (submitting) return;
 
     try {
@@ -87,7 +83,7 @@ export const RoleForm: FC<RoleFormProps> = ({
       submitting={submitting}
       title={t(isUpdate ? "update" : "create")}
     >
-      <Form<RoleMutationParams>
+      <Form<RoleRequest>
         form={form}
         initialValues={{ permissions: [] }}
         layout="vertical"

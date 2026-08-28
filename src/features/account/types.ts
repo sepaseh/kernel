@@ -30,8 +30,3 @@ export type UpdateUsernameRequest = {
 export type VerifyEmailRequest = EmailVerificationRequest & {
   otp: string;
 };
-
-export type AccountProps = Account;
-export type UpdateProfileParams = UpdateProfileRequest;
-export type UpdateUsernameParams = UpdateUsernameRequest;
-export type VerifyEmailParams = VerifyEmailRequest;

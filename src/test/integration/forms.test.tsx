@@ -8,7 +8,7 @@ import * as usersApi from "@/features/users/api";
 import { UserForm } from "@/features/users/forms/user/User";
 import { UserPasswordForm } from "@/features/users/forms/user-password/UserPassword";
 import { UserFormRole } from "@/features/users/forms/user-role/UserRole";
-import { UserProps } from "@/features/users/types";
+import { User } from "@/features/users/types";
 import { render, screen } from "@/test/render";
 
 const mocks = vi.hoisted(() => ({
@@ -49,7 +49,7 @@ vi.mock("react-i18next", async (importOriginal) => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
-const userData: UserProps = {
+const userData: User = {
   email: "ada@example.com",
   firstName: "Ada",
   id: "user-1",

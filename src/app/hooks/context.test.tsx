@@ -2,13 +2,13 @@ import { renderHook } from "@testing-library/react";
 import { PropsWithChildren } from "react";
 import { describe, expect, it } from "vitest";
 
-import { CoreContext, CoreContextProps } from "@/app/contexts";
+import { CoreContext, CoreContextValue } from "@/app/contexts";
 
 import { useCore } from "./useCore";
 
 describe("context hooks", () => {
   it("returns core context and rejects missing provider", () => {
-    const value = { language: "en" } as CoreContextProps;
+    const value = { language: "en" } as CoreContextValue;
     const wrapper = ({ children }: PropsWithChildren) => (
       <CoreContext.Provider value={value}>{children}</CoreContext.Provider>
     );

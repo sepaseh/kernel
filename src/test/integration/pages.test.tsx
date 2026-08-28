@@ -10,7 +10,7 @@ import { LoginPage } from "@/features/auth/login";
 import { RegisterPage } from "@/features/auth/register";
 import { RolesPage } from "@/features/roles";
 import * as rolesApi from "@/features/roles/api";
-import { RoleProps } from "@/features/roles/types";
+import { Role } from "@/features/roles/types";
 import { UsersPage } from "@/features/users";
 import * as usersApi from "@/features/users/api";
 import { render, screen } from "@/test/render";
@@ -436,7 +436,7 @@ describe("roles page", () => {
       canDelete: true,
       canUpdate: true,
     });
-    const role: RoleProps = {
+    const role: Role = {
       id: "role-1",
       name: "Operators",
       permissions: ["users.read"],

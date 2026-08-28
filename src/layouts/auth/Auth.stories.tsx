@@ -2,13 +2,13 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { MemoryRouter, Route, Routes } from "react-router";
 
-import { CoreContext, CoreContextProps } from "@/app/contexts";
+import { CoreContext, CoreContextValue } from "@/app/contexts";
 import { AntdProvider } from "@/app/providers";
 
 import { AuthLayout } from "./Auth";
 
 const AuthLayoutStory = () => {
-  const [user, setUser] = useState<CoreContextProps["user"]>();
+  const [user, setUser] = useState<CoreContextValue["user"]>();
 
   return (
     <CoreContext.Provider

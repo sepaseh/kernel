@@ -26,7 +26,3 @@ export type PermissionGroup = {
   permissions: Permission[];
   title: string;
 };
-
-export type PermissionGroupProps = PermissionGroup;
-export type RoleMutationParams = RoleRequest;
-export type RoleProps = Role;

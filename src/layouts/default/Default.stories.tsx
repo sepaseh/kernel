@@ -3,14 +3,14 @@ import { useMemo, useState } from "react";
 import { MemoryRouter, Route, Routes } from "react-router";
 import { mocked } from "storybook/test";
 
-import { CoreContext, CoreContextProps } from "@/app/contexts";
+import { CoreContext, CoreContextValue } from "@/app/contexts";
 import { AntdProvider } from "@/app/providers";
-import { AccountProps, getAccount } from "@/features/account";
+import { Account, getAccount } from "@/features/account";
 import { Language, Theme } from "@/shared/config";
 
 import { DefaultLayout } from "./Default";
 
-const account: AccountProps = {
+const account: Account = {
   email: "admin@example.com",
   firstName: "Sample",
   id: "storybook-user",
@@ -30,14 +30,14 @@ const DefaultLayoutStory = ({
 }: {
   initialLanguage?: Language;
   initialTheme?: Theme;
-  initialUser?: AccountProps | null;
+  initialUser?: Account | null;
 }) => {
   const [language, setLanguage] = useState<Language>(initialLanguage);
   const [theme, setTheme] = useState<Theme>(initialTheme);
-  const [user, setUser] = useState<CoreContextProps["user"]>(
+  const [user, setUser] = useState<CoreContextValue["user"]>(
     initialUser ?? undefined,
   );
-  const value = useMemo<CoreContextProps>(
+  const value = useMemo<CoreContextValue>(
     () => ({
       currentRoute: "root",
       language,

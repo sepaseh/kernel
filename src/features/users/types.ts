@@ -58,12 +58,3 @@ export type UserOption = {
   id: string;
   name: string;
 };
-
-export type CreateUserParams = CreateUserRequest;
-export type UpdateUserParams = UpdateUserRequest;
-export type UserListParams = ListUsersQuery;
-export type UserOptionProps = UserOption;
-export type UserPasswordParams = UserPasswordRequest;
-export type UserProps = User;
-export type UserRoleParams = UserRoleRequest;
-export type UserSummaryProps = UserSummary;

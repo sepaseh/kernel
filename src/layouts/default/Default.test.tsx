@@ -3,7 +3,7 @@ import { MemoryRouter, Route, Routes, useLocation } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { getAccount } from "@/features/account";
-import { AccountProps } from "@/features/account/types";
+import { Account } from "@/features/account/types";
 import { logout } from "@/features/auth";
 import { clearAccessToken, setUnauthorizedHandler } from "@/shared/api";
 import { render, screen } from "@/test/render";
@@ -11,7 +11,7 @@ import { render, screen } from "@/test/render";
 import { DefaultLayout } from "./Default";
 
 const mocks = vi.hoisted(() => {
-  const account: AccountProps = {
+  const account: Account = {
     email: "ada@example.com",
     firstName: "Ada",
     id: "user-1",

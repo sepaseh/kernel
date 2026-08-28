@@ -18,5 +18,3 @@ export type CoreContextValue = {
 export const CoreContext = createContext<CoreContextValue | undefined>(
   undefined,
 );
-
-export type CoreContextProps = CoreContextValue;

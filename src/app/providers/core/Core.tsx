@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import calendar from "dayjs/plugin/calendar";
 import jalaliday from "jalaliday";
-import { FC, ReactNode, useCallback, useEffect, useState } from "react";
+import { FC, ReactNode, useEffect, useState } from "react";
 
 import { RouteKey } from "@/app/config";
 import { CoreContext, CoreContextValue } from "@/app/contexts";
@@ -26,39 +26,31 @@ type CoreProviderProps = {
 };
 
 export const CoreProvider: FC<CoreProviderProps> = ({ children }) => {
-  const [currentRoute, setCurrentRouteState] = useState<RouteKey>("root");
-  const [language, setLanguageState] = useState<Language>(getLanguage());
-  const [theme, setThemeState] = useState<Theme>(getTheme());
-  const [user, setUserState] = useState<CoreContextValue["user"]>();
+  const [currentRoute, setCurrentRoute] = useState<RouteKey>("root");
+  const [language, setLanguage] = useState<Language>(getLanguage());
+  const [theme, setTheme] = useState<Theme>(getTheme());
+  const [user, setUser] = useState<CoreContextValue["user"]>();
 
-  const setUser: CoreContextValue["setUser"] = useCallback((user) => {
-    setUserState(user);
-  }, []);
-
-  const setCurrentRoute = useCallback((currentRoute: RouteKey) => {
-    setCurrentRouteState(currentRoute);
-  }, []);
-
-  const setLanguage = (language: Language, fromStorage?: boolean) => {
+  const changeLanguage = (language: Language, fromStorage?: boolean) => {
     if (!fromStorage) setLanguageStorage(language);
 
     i18nInstance.changeLanguage(language);
 
-    setLanguageState(language);
+    setLanguage(language);
   };
 
-  const setTheme = (theme: Theme, fromStorage?: boolean) => {
+  const changeTheme = (theme: Theme, fromStorage?: boolean) => {
     if (!fromStorage) setThemeStorage(theme);
 
-    setThemeState(theme);
+    setTheme(theme);
   };
 
   useLocalStorageWatcher(storageKeys.language, () => {
-    setLanguage(getLanguage(), true);
+    changeLanguage(getLanguage(), true);
   });
 
   useLocalStorageWatcher(storageKeys.theme, () => {
-    setTheme(getTheme(), true);
+    changeTheme(getTheme(), true);
   });
 
   useEffect(() => {
@@ -72,8 +64,8 @@ export const CoreProvider: FC<CoreProviderProps> = ({ children }) => {
         currentRoute,
         language,
         setCurrentRoute,
-        setLanguage,
-        setTheme,
+        setLanguage: changeLanguage,
+        setTheme: changeTheme,
         setUser,
         theme,
         user,
