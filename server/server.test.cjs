@@ -29,21 +29,32 @@ test("loads every HTTP route from the collection", async () => {
   assert.ok(body.route_count > 20);
 });
 
-test("reflects credentialed CORS origins", async () => {
+test("allows credentialed CORS for the configured local origin", async () => {
   const response = await fetch(`${baseUrl}/auth/login`, {
-    headers: { Origin: "https://kernel.example" },
+    headers: { Origin: "http://127.0.0.1:5173" },
     method: "OPTIONS",
   });
 
   assert.equal(response.status, 204);
   assert.equal(
     response.headers.get("access-control-allow-origin"),
-    "https://kernel.example",
+    "http://127.0.0.1:5173",
   );
   assert.equal(
     response.headers.get("access-control-allow-credentials"),
     "true",
   );
+});
+
+test("rejects credentialed CORS for untrusted origins", async () => {
+  const response = await fetch(`${baseUrl}/auth/login`, {
+    headers: { Origin: "https://untrusted.example" },
+    method: "OPTIONS",
+  });
+
+  assert.equal(response.status, 204);
+  assert.equal(response.headers.get("access-control-allow-origin"), null);
+  assert.equal(response.headers.get("access-control-allow-credentials"), null);
 });
 
 test("logs in and returns the authenticated account", async () => {
@@ -85,6 +96,12 @@ test("rejects invalid credentials and missing authentication", async () => {
 
   assert.equal(login.status, 400);
   assert.equal(users.status, 401);
+});
+
+test("does not let error simulation bypass authentication", async () => {
+  const response = await fetch(`${baseUrl}/users?mock_status=403`);
+
+  assert.equal(response.status, 401);
 });
 
 test("serves parameterized routes and saved error examples", async () => {

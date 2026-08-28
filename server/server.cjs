@@ -4,14 +4,15 @@ const { loadRoutes, readExample } = require("./collection.cjs");
 const { findUser, fullPermissions, publicUser, users } = require("./data.cjs");
 const { signToken, verifyToken } = require("./jwt.cjs");
 
+const allowedOrigin =
+  process.env.MOCK_ALLOWED_ORIGIN || "http://127.0.0.1:5173";
 const host = process.env.HOST || "127.0.0.1";
 const port = Number(process.env.PORT) || 3000;
 
 const setCorsHeaders = (request, response) => {
-  const origin = request.headers.origin;
-  if (origin) {
+  if (request.headers.origin === allowedOrigin) {
     response.setHeader("Access-Control-Allow-Credentials", "true");
-    response.setHeader("Access-Control-Allow-Origin", origin);
+    response.setHeader("Access-Control-Allow-Origin", allowedOrigin);
     response.setHeader("Vary", "Origin");
   }
   response.setHeader(
@@ -45,10 +46,8 @@ const readRequestBody = async (request) => {
 };
 
 const tokenClaims = (request) => {
-  const [scheme, token] = (request.headers.authorization || "").split(" ");
-  return scheme?.toLowerCase() === "bearer" && token
-    ? verifyToken(token)
-    : null;
+  const token = request.headers.authorization?.match(/^Bearer (\S+)$/i)?.[1];
+  return verifyToken(token || "");
 };
 
 const paginateUsers = (body, searchParams) => {
@@ -119,15 +118,9 @@ const createServer = (routes = loadRoutes()) =>
       });
     }
 
-    const requestedStatus = Number(
-      url.searchParams.get("mock_status") || request.headers["x-mock-status"],
-    );
-    const status =
-      requestedStatus >= 400 ? requestedStatus : route.successStatus;
-    const example = readExample(route, status);
     const claims = tokenClaims(request);
 
-    if (!requestedStatus && route.requiresAuth && !claims) {
+    if (route.requiresAuth && !claims) {
       return sendJson(
         response,
         401,
@@ -136,7 +129,7 @@ const createServer = (routes = loadRoutes()) =>
         },
       );
     }
-    if (!requestedStatus && route.systemAdminOnly && !claims.is_system_admin) {
+    if (route.systemAdminOnly && !claims?.is_system_admin) {
       return sendJson(
         response,
         403,
@@ -145,6 +138,14 @@ const createServer = (routes = loadRoutes()) =>
         },
       );
     }
+    const requestedStatus = Number(
+      url.searchParams.get("mock_status") || request.headers["x-mock-status"],
+    );
+    const status =
+      requestedStatus >= 400 && requestedStatus <= 599
+        ? requestedStatus
+        : route.successStatus;
+    const example = readExample(route, status);
     if (status >= 400 && !example) {
       return sendJson(response, status, {
         message: `Simulated ${status} error for ${route.method} ${route.path}`,

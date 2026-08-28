@@ -52,10 +52,10 @@ GET /users?mock_status=403
 X-Mock-Status: 409
 ```
 
-The server returns the saved response when one exists. Otherwise it returns a
-generic message identifying the simulated method, route, and status. Simulation
-takes precedence over authentication so UI error states can be exercised
-without manufacturing a particular token state.
+The server checks route authentication and authorization before returning the
+saved response. Otherwise it returns a generic message identifying the
+simulated method, route, and status. Tests for protected UI error states must
+provide a valid local token.
 
 ## Contract limitations
 
