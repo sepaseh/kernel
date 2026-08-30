@@ -2,17 +2,30 @@
   "name": "kernel-ai-guidance",
   "description": "Provider-neutral guidance for AI assistants working on Kernel.",
   "rules": [
+    ".agents/rules/api-collection.md",
     ".agents/rules/code-quality.md",
+    ".agents/rules/code-review.md",
+    ".agents/rules/collection-quality.md",
+    ".agents/rules/commits.md",
     ".agents/rules/git.md",
     ".agents/rules/imports.md",
+    ".agents/rules/issues.md",
     ".agents/rules/ordering.md",
+    ".agents/rules/pull-requests.md",
     ".agents/rules/react.md",
     ".agents/rules/safety.md",
     ".agents/rules/styling.md",
     ".agents/rules/testing.md",
     ".agents/rules/typescript.md"
   ],
+  "skills": [
+    ".agents/skills/create-issue/SKILL.md",
+    ".agents/skills/create-pr/SKILL.md",
+    ".agents/skills/review-pr/SKILL.md",
+    ".agents/skills/validate-change/SKILL.md"
+  ],
   "optionalHooks": [
+    ".agents/hooks/block-dangerous.mjs",
     ".agents/hooks/block-dangerous.sh",
     ".agents/hooks/post-edit-format.sh",
     ".agents/hooks/quality-gate.sh"

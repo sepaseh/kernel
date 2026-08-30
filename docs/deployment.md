@@ -11,9 +11,10 @@ may configure and automate them after it has real, authorized deployment
 targets.
 
 The collection-driven server under `server/` is excluded from the production
-deployment architecture. Its permissive CORS, local signing secret, placeholder
-refresh cookie, and non-persistent mutations are development-only behavior. Do
-not deploy it as an API substitute or expose it to untrusted networks.
+deployment architecture. Its development-only CORS allowlist, local signing
+secret, placeholder refresh cookie, and non-persistent mutations do not make it
+a production API substitute. Do not deploy it or expose it to untrusted
+networks.
 
 ## Production Build
 
