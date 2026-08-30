@@ -9,6 +9,8 @@ contains the detailed, provider-neutral rules and optional hook implementations.
 
 - Read `rules/*.md` before editing matching areas of the codebase.
 - Treat `settings.json` as shared project guidance, not as a vendor-specific runtime config.
+- Use the matching workflow under `skills/` for issue, pull-request, review, and
+  validation work.
 - Keep local or personal tool permissions out of the repository.
 - Prefer repo scripts over ad-hoc commands when validating changes.
 - Use the optional scripts in `hooks/` only if your AI tool supports project hooks.
@@ -30,3 +32,5 @@ npm run knip
 ## Current project shape
 
 This is a React 19 + TypeScript + Vite starter kit using Ant Design, Axios, React Router, i18next, Day.js/Jalaliday, ESLint, and Knip.
+The Bruno collection and local mock server define the executable API examples
+used during development.

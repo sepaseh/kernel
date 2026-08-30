@@ -61,8 +61,9 @@ npm run server:test
 ```
 
 See the [mock server guide](../server/README.md) for health, route-discovery, and
-error-simulation endpoints. Its permissive CORS and local signing secret are for
-development only.
+error-simulation endpoints. Credentialed CORS accepts only the exact
+`MOCK_ALLOWED_ORIGIN`, which defaults to `http://127.0.0.1:5173`. The mock and
+its local signing secret are for development only.
 
 ## Quality Checks
 
