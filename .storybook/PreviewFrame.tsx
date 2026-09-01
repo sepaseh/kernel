@@ -1,5 +1,5 @@
 import { ConfigProvider, theme } from "antd";
-import { type ReactNode, useEffect } from "react";
+import { type FC, type ReactNode, useEffect } from "react";
 
 type PreviewFrameProps = {
   children: ReactNode;
@@ -7,11 +7,11 @@ type PreviewFrameProps = {
   themeMode: "dark" | "light";
 };
 
-export const PreviewFrame = ({
+export const PreviewFrame: FC<PreviewFrameProps> = ({
   children,
   direction,
   themeMode,
-}: PreviewFrameProps) => {
+}) => {
   useEffect(() => {
     document.documentElement.dir = direction;
   }, [direction]);

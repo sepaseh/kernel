@@ -32,8 +32,10 @@ const mocks = vi.hoisted(() => {
   const messageError = vi.fn();
   const messageSuccess = vi.fn();
   const modalConfirm = vi.fn();
+  const notificationSuccess = vi.fn();
   const setFilters = vi.fn();
   const setUser = vi.fn();
+  const writeClipboard = vi.fn();
 
   return {
     routePermissions: {
@@ -55,6 +57,7 @@ const mocks = vi.hoisted(() => {
         success: messageSuccess,
       },
       modalAPI: { confirm: modalConfirm },
+      notificationAPI: { success: notificationSuccess },
     },
     core: {
       setUser,
@@ -67,8 +70,10 @@ const mocks = vi.hoisted(() => {
     messageError,
     messageSuccess,
     modalConfirm,
+    notificationSuccess,
     setFilters,
     setUser,
+    writeClipboard,
   };
 });
 
@@ -100,6 +105,7 @@ vi.mock("@/features/users/api", () => ({
   fetchUser: vi.fn(),
   fetchUserRoleOptions: vi.fn(),
   fetchUsers: vi.fn(),
+  updateUserPassword: vi.fn(),
   updateUserStatus: vi.fn(),
   updateUserSystemAdmin: vi.fn(),
 }));
@@ -112,12 +118,6 @@ vi.mock("@/features/roles/components/role-form/RoleForm", () => ({
 vi.mock("@/features/users/components/user-form/UserForm", () => ({
   UserForm: () => null,
 }));
-vi.mock(
-  "@/features/users/components/user-password-form/UserPasswordForm",
-  () => ({
-    UserPasswordForm: () => null,
-  }),
-);
 vi.mock("@/features/users/components/user-role-form/UserRoleForm", () => ({
   UserRoleForm: () => null,
 }));
@@ -169,6 +169,10 @@ const renderPage = (page: React.ReactNode) =>
 
 beforeEach(() => {
   vi.clearAllMocks();
+  Object.defineProperty(navigator, "clipboard", {
+    configurable: true,
+    value: { writeText: mocks.writeClipboard },
+  });
   Object.assign(mocks.routePermissions.roles, {
     canCreate: false,
     canDelete: false,
@@ -180,6 +184,7 @@ beforeEach(() => {
     canUpdate: false,
   });
   mocks.core.user = mocks.account;
+  mocks.writeClipboard.mockResolvedValue(undefined);
   vi.mocked(api.deleteUser).mockResolvedValue(undefined);
   vi.mocked(api.fetchUserRoleOptions).mockResolvedValue([]);
   vi.mocked(api.changePassword).mockResolvedValue(undefined);
@@ -199,6 +204,7 @@ beforeEach(() => {
   });
   vi.mocked(api.updateProfile).mockResolvedValue(mocks.account);
   vi.mocked(api.updateUsername).mockResolvedValue(mocks.account);
+  vi.mocked(api.updateUserPassword).mockResolvedValue(undefined);
   vi.mocked(api.updateUserStatus).mockResolvedValue(undefined);
   vi.mocked(api.updateUserSystemAdmin).mockResolvedValue(undefined);
   vi.mocked(api.verifyEmail).mockResolvedValue(undefined);
@@ -540,6 +546,10 @@ describe("users page", () => {
       roleIds: [],
     });
     const { user } = renderPage(<UsersPage />);
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText: mocks.writeClipboard },
+    });
 
     await screen.findByText("Ada Lovelace");
     await user.click(screen.getByRole("button", { name: "update" }));
@@ -562,6 +572,38 @@ describe("users page", () => {
     expect(api.updateUserSystemAdmin).toHaveBeenCalledWith("user-1", {
       isSystemAdmin: true,
     });
+
+    const randomValues = vi
+      .spyOn(crypto, "getRandomValues")
+      .mockImplementation((values) => {
+        new Uint8Array(values.buffer).set([18, 0, 0, 0, 0, 0]);
+
+        return values;
+      });
+    await user.click(screen.getByRole("button", { name: "password" }));
+    confirmation = mocks.modalConfirm.mock.calls.at(-1)?.[0] as {
+      cancelText: string;
+      okText: string;
+      okType: string;
+      onOk: () => Promise<void>;
+      title: string;
+    };
+    expect(confirmation).toMatchObject({
+      cancelText: "no",
+      okText: "yes",
+      okType: "default",
+      title: "passwordConfirm",
+    });
+    await confirmation.onOk();
+    expect(api.updateUserPassword).toHaveBeenCalledWith("user-1", {
+      password: "i00000",
+    });
+    expect(mocks.writeClipboard).toHaveBeenCalledWith("i00000");
+    expect(mocks.notificationSuccess).toHaveBeenCalledWith({
+      description: "i00000",
+      message: "password",
+    });
+    randomValues.mockRestore();
 
     await user.click(screen.getByRole("button", { name: "delete" }));
     confirmation = mocks.modalConfirm.mock.calls.at(-1)?.[0] as {

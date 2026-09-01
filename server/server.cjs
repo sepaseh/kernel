@@ -119,7 +119,6 @@ const createServer = (routes = loadRoutes()) =>
     }
 
     const claims = tokenClaims(request);
-
     if (route.requiresAuth && !claims) {
       return sendJson(
         response,

@@ -29,7 +29,6 @@ const filterNavigation = (
     }
 
     const children = filterNavigation(item.children, user);
-
     return children.length ? [{ ...item, children }] : [];
   });
 
@@ -49,7 +48,6 @@ export const getRoutePermissions = <Key extends RouteKey>(
 ): RouteActionPermissions<Key> => {
   const actions: Record<string, PermissionKey> =
     routeTree[route].permissions.actions;
-
   return Object.fromEntries(
     Object.entries(actions).map(([action, permission]) => [
       action,

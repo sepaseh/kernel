@@ -5,8 +5,8 @@ export const RouteLoading = () => {
   const { t } = useTranslation();
 
   return (
-    <div aria-label={t("loading")} role="status">
+    <output aria-label={t("loading")}>
       <Spin fullscreen size="large" />
-    </div>
+    </output>
   );
 };

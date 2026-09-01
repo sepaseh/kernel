@@ -1,4 +1,4 @@
-import type { FC, ReactElement, ReactNode } from "react";
+import type { FC, ReactNode } from "react";
 import { Fragment, lazy, Suspense, useEffect } from "react";
 import type { RouteObject } from "react-router";
 import { createBrowserRouter, Navigate, useRouteError } from "react-router";
@@ -50,10 +50,12 @@ const UsersPage = lazy(async () => {
   return { default: UsersPage };
 });
 
-const RouteWrapper: FC<{ route: RouteKey; children: ReactNode }> = ({
-  route,
-  children,
-}): ReactElement => {
+type RouteWrapperProps = {
+  children: ReactNode;
+  route: RouteKey;
+};
+
+const RouteWrapper: FC<RouteWrapperProps> = ({ route, children }) => {
   const { setCurrentRoute, user } = useCore();
 
   useEffect(() => {
@@ -87,7 +89,6 @@ const routeKeys = Object.keys(routeTree) as RouteKey[];
 const createPageRoute = (route: RouteKey): RouteObject => {
   const definition = routeTree[route];
   const element = wrapRoute(route, pageRegistry[route]);
-
   return "index" in definition && definition.index
     ? { element, index: true }
     : { element, path: definition.path };

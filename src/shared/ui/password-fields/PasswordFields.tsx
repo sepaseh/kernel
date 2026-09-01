@@ -1,4 +1,5 @@
 import { Form, Input } from "antd";
+import type { FC } from "react";
 import { useTranslation } from "react-i18next";
 
 type PasswordFieldsProps = {
@@ -11,10 +12,10 @@ type PasswordFieldsValues = {
   password: string;
 };
 
-export const PasswordFields = ({
+export const PasswordFields: FC<PasswordFieldsProps> = ({
   passwordLabel = "password",
   size,
-}: PasswordFieldsProps) => {
+}) => {
   const { t } = useTranslation();
 
   return (

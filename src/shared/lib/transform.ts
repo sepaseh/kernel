@@ -6,7 +6,6 @@ const isObject = (value: unknown): value is Record<string, unknown> => {
   }
 
   const prototype = Object.getPrototypeOf(value);
-
   return prototype === Object.prototype || prototype === null;
 };
 

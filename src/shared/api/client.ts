@@ -63,15 +63,12 @@ const refreshAccessToken = (): Promise<AccessTokenProps> => {
     })
     .then(({ data }) => {
       const result = toCamelCase(data);
-
       setAccessToken(result.accessToken);
-
       return result;
     })
     .finally(() => {
       refreshPromise = null;
     });
-
   return refreshPromise;
 };
 
@@ -82,7 +79,6 @@ const retryUnauthorizedRequest = async (
 
   const requestConfig = error.config as RetryableRequestConfig | undefined;
   const isPublicAuthRequest = publicAuthUrls.has(requestConfig?.url ?? "");
-
   if (!requestConfig || requestConfig._retried || isPublicAuthRequest) {
     if (!isPublicAuthRequest) handleUnauthorized();
     return;
@@ -109,11 +105,9 @@ const createResponseError = (data: unknown): Error => {
 api.interceptors.request.use(
   (config) => {
     const authToken = getAccessToken();
-
     if (!authToken) return config;
 
     isHandlingUnauthorized = false;
-
     return {
       ...config,
       headers: config.headers.setAuthorization(`Bearer ${authToken}`),
@@ -132,7 +126,6 @@ api.interceptors.response.use(
     }
 
     const retryResponse = await retryUnauthorizedRequest(error);
-
     if (retryResponse) return retryResponse;
 
     if (error.response) {
@@ -155,7 +148,6 @@ const blob = async (
     ...config,
     responseType: "blob",
   });
-
   return data;
 };
 

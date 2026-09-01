@@ -65,9 +65,7 @@ export const AccountPage = () => {
 
     try {
       setProfileSubmitting(true);
-
       const account = await updateProfile(values);
-
       setUser(account);
       messageAPI.success(t("profileUpdated"));
     } catch (error) {
@@ -82,9 +80,7 @@ export const AccountPage = () => {
 
     try {
       setUsernameSubmitting(true);
-
       const account = await updateUsername(values);
-
       setUser(account);
       messageAPI.success(t("usernameUpdated"));
     } catch (error) {
@@ -99,11 +95,8 @@ export const AccountPage = () => {
 
     try {
       const { email } = await emailForm.validateFields(["email"]);
-
       setOtpSubmitting(true);
-
       const response = await requestEmailVerification({ email });
-
       setOtpRemainingSeconds(response.remainingSeconds);
       messageAPI.success(t("otpSent"));
     } catch (error) {
@@ -118,11 +111,8 @@ export const AccountPage = () => {
 
     try {
       setEmailSubmitting(true);
-
       await verifyEmail(values);
-
       const account = await getAccount();
-
       setUser(account);
       emailForm.setFieldValue("otp", "");
       messageAPI.success(t("emailUpdated"));
@@ -141,9 +131,7 @@ export const AccountPage = () => {
 
     try {
       setPasswordSubmitting(true);
-
       await changePassword({ currentPassword, newPassword });
-
       messageAPI.success(t("passwordChanged"));
       passwordForm.resetFields();
     } catch (error) {

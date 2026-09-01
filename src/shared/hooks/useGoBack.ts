@@ -18,6 +18,5 @@ export const useGoBack = (): ((to?: To, options?: NavigateOptions) => void) => {
     },
     [navigate, pathname, state],
   );
-
   return goBack;
 };

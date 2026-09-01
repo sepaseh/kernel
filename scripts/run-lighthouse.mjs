@@ -46,13 +46,11 @@ try {
     output: ["html", "json"],
     port: chrome.port,
   });
-
   if (!result) throw new Error("Lighthouse did not produce a result");
 
   const reports = Array.isArray(result.report)
     ? result.report
     : [result.report];
-
   await mkdir(reportDirectory, { recursive: true });
   await Promise.all([
     writeFile(path.join(reportDirectory, "report.html"), reports[0]),
@@ -61,7 +59,6 @@ try {
 
   const failures = [];
   const performanceScore = result.lhr.categories.performance.score ?? 0;
-
   if (performanceScore < 0.65) {
     failures.push(
       `performance score ${Math.round(performanceScore * 100)} (minimum 65)`,
@@ -70,7 +67,6 @@ try {
 
   for (const [auditId, maximum] of Object.entries(thresholds)) {
     const value = result.lhr.audits[auditId].numericValue;
-
     if (value === undefined || value > maximum) {
       failures.push(
         `${auditId} ${value?.toFixed(2) ?? "unavailable"} (maximum ${maximum})`,

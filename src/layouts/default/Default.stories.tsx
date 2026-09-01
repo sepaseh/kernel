@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useMemo, useState } from "react";
+import { type FC, useMemo, useState } from "react";
 import { MemoryRouter, Route, Routes } from "react-router";
 import { mocked } from "storybook/test";
 
@@ -25,14 +25,16 @@ const account: Account = {
   username: "admin",
 };
 
-const DefaultLayoutStory = ({
-  initialLanguage = "en",
-  initialTheme = "light",
-  initialUser = account,
-}: {
+type DefaultLayoutStoryProps = {
   initialLanguage?: Language;
   initialTheme?: Theme;
   initialUser?: Account | null;
+};
+
+const DefaultLayoutStory: FC<DefaultLayoutStoryProps> = ({
+  initialLanguage = "en",
+  initialTheme = "light",
+  initialUser = account,
 }) => {
   const [language, setLanguage] = useState<Language>(initialLanguage);
   const [theme, setTheme] = useState<Theme>(initialTheme);

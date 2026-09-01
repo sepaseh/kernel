@@ -7,13 +7,11 @@ export const validateProductionEnv = (env) => {
   const apiUrl = env.VITE_API_BASE_URL;
   const appBaseUrl = env.VITE_APP_BASE_URL;
   const observabilityUrl = env.VITE_OBSERVABILITY_URL;
-
   if (!apiUrl) {
     throw new Error("VITE_API_BASE_URL is required for production builds");
   }
 
   let parsedApiUrl;
-
   try {
     parsedApiUrl = new URL(apiUrl);
   } catch {
@@ -32,7 +30,6 @@ export const validateProductionEnv = (env) => {
 
   if (observabilityUrl) {
     let parsedObservabilityUrl;
-
     try {
       parsedObservabilityUrl = new URL(observabilityUrl);
     } catch {

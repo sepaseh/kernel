@@ -43,14 +43,11 @@ export const ForgotPassPage = () => {
 
     try {
       const mobile = await form.validateFields(["mobile"]);
-
       setRequestingOtp(true);
-
       const response = await requestOtp({
         mobile: mobile.mobile,
         purpose: "forgot_password",
       });
-
       setRemainingSeconds(response.remainingSeconds);
       messageAPI.success(t("otpSent"));
     } catch (error) {
@@ -69,9 +66,7 @@ export const ForgotPassPage = () => {
 
     try {
       setSubmitting(true);
-
       await forgotPassword({ mobile, otp, password });
-
       messageAPI.success(t("passwordReset"));
       navigate(routeTree.auth.path, { replace: true });
     } catch (error) {

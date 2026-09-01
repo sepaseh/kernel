@@ -28,6 +28,17 @@ Write self-documenting code. Add comments only for:
 - Algorithmic decisions that are not clear from the code
 - Temporary workarounds with context
 
+## Semantic whitespace
+
+- Treat a blank line as a paragraph boundary between conceptually distinct
+  parts of the code, not as decoration between individual statements.
+- Leave one blank line after guard clauses before the main execution path.
+- Keep consecutive steps of one workflow together, including setup, derived
+  values, branching, and their related success effects.
+- Add a blank line only when the code changes responsibility or begins an
+  independently meaningful phase. If a function needs many such phases,
+  consider extracting a focused helper instead of adding more visual sections.
+
 ## Simplicity
 
 - Solve the current task directly; avoid speculative abstractions.

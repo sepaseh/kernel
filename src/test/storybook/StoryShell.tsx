@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { FC, ReactNode } from "react";
 import { useMemo, useState } from "react";
 import { MemoryRouter } from "react-router";
 
@@ -18,13 +18,13 @@ type StoryShellProps = {
   initialUser?: Account | null;
 };
 
-export const StoryShell = ({
+export const StoryShell: FC<StoryShellProps> = ({
   children,
   initialEntries = ["/"],
   initialLanguage = "en",
   initialTheme = "light",
   initialUser = sampleAccount,
-}: StoryShellProps) => {
+}) => {
   const [language, setLanguage] = useState(initialLanguage);
   const [theme, setTheme] = useState(initialTheme);
   const [user, setUser] = useState<CoreContextValue["user"]>(

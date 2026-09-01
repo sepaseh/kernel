@@ -43,7 +43,6 @@ export const DefaultLayout = () => {
     items.map((item) => {
       if ("route" in item) {
         const { label, path } = routeTree[item.route];
-
         return {
           key: item.route,
           label: <Link to={path}>{t(label)}</Link>,
@@ -62,13 +61,11 @@ export const DefaultLayout = () => {
   const clearSession = useCallback(() => {
     clearAccessToken();
     setUser();
-
     navigate(routeTree.auth.path, { replace: true });
   }, [navigate, setUser]);
 
   const handleLogout = async () => {
     await logout().catch(() => undefined);
-
     clearSession();
   };
 
@@ -76,15 +73,12 @@ export const DefaultLayout = () => {
     void (async () => {
       try {
         const user = await getAccount();
-
         setUser(user);
       } catch {
         clearSession();
       }
     })();
-
     setUnauthorizedHandler(clearSession);
-
     return () => setUnauthorizedHandler(null);
   }, [clearSession, setUser]);
 

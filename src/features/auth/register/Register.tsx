@@ -43,11 +43,8 @@ export const RegisterPage = () => {
 
     try {
       const { mobile } = await form.validateFields(["mobile"]);
-
       setRequestingOtp(true);
-
       const response = await requestOtp({ mobile, purpose: "register" });
-
       setRemainingSeconds(response.remainingSeconds);
       messageAPI.success(t("otpSent"));
     } catch (error) {
@@ -68,9 +65,7 @@ export const RegisterPage = () => {
 
     try {
       setSubmitting(true);
-
       await register({ firstName, lastName, mobile, otp, password });
-
       navigate(routeTree.root.path, { replace: true });
     } catch (error) {
       messageAPI.error(getErrorMessage(error));

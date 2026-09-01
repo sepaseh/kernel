@@ -47,15 +47,12 @@ export const UserForm: FC<UserFormProps> = ({ data, onFinish }) => {
 
     try {
       setSubmitting(true);
-
       const profile = { firstName, lastName, mobile, personnelCode };
-
       if (isUpdate) {
         await updateUser(data.id, profile satisfies UpdateUserRequest);
       } else {
         await createUser({ ...profile, password });
       }
-
       messageAPI.success(t(isUpdate ? "userUpdated" : "userCreated"));
       goBack();
       onFinish();

@@ -3,10 +3,24 @@
 ## Components
 
 - Keep one exported React component per `.tsx` file when practical.
+- When a function component receives props, define them as a named `type` and
+  apply it to the component as `FC<Props>` instead of annotating the
+  destructured parameter directly. Do not add `FC` to components without
+  props; let TypeScript infer their return type.
 - Put reusable UI pieces in `src/shared/ui`.
 - Keep route-level screens in their owning `src/features/<feature>` directory.
 - Keep feature-specific forms beside the owning feature.
 - Do not define React components inside another component render body.
+
+```tsx
+import type { FC } from "react";
+
+type UserCardProps = {
+  name: string;
+};
+
+export const UserCard: FC<UserCardProps> = ({ name }) => <div>{name}</div>;
+```
 
 ## State and hooks
 

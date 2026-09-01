@@ -25,10 +25,8 @@ export const LoginPage = () => {
     if (submitting) return;
 
     setSubmitting(true);
-
     try {
       await login(values);
-
       navigate(routeTree.root.path, { replace: true });
     } catch (error) {
       messageAPI.error(getErrorMessage(error));

@@ -24,9 +24,7 @@ export const forgotPassword = async (
 
 export const login = async (params: LoginParams): Promise<AccessTokenProps> => {
   const result = await apiClient.post<AccessTokenProps>("/auth/login", params);
-
   setAccessToken(result.accessToken);
-
   return result;
 };
 
@@ -45,9 +43,7 @@ export const register = async (
     "/auth/register",
     params,
   );
-
   setAccessToken(result.accessToken);
-
   return result;
 };
 

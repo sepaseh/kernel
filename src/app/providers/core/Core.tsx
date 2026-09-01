@@ -36,15 +36,12 @@ export const CoreProvider: FC<CoreProviderProps> = ({ children }) => {
 
   const changeLanguage = (language: Language, fromStorage?: boolean) => {
     if (!fromStorage) setLanguageStorage(language);
-
     i18nInstance.changeLanguage(language);
-
     setLanguage(language);
   };
 
   const changeTheme = (theme: Theme, fromStorage?: boolean) => {
     if (!fromStorage) setThemeStorage(theme);
-
     setTheme(theme);
   };
 
