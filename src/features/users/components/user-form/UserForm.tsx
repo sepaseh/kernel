@@ -80,14 +80,19 @@ export const UserForm: FC<UserFormProps> = ({ data, onFinish }) => {
         mobile: data.mobile,
         personnelCode: data.personnelCode,
       });
-    } else {
-      form.resetFields();
+      return;
     }
+
+    form.resetFields();
   }, [data, form, isUpdate, open]);
 
   const handleOpenChange = (isOpen: boolean) => {
-    if (isOpen) form.focusField("firstName");
-    else setSubmitting(false);
+    if (!isOpen) {
+      setSubmitting(false);
+      return;
+    }
+
+    form.focusField("firstName");
   };
 
   return (
@@ -95,7 +100,7 @@ export const UserForm: FC<UserFormProps> = ({ data, onFinish }) => {
       afterOpenChange={handleOpenChange}
       autoFocus={false}
       onClose={() => goBack()}
-      onSubmit={() => form.submit()}
+      onSubmit={form.submit}
       open={open}
       submitting={submitting}
       title={t(isUpdate ? "update" : "create")}
