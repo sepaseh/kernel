@@ -72,12 +72,14 @@ export const RoleForm: FC<RoleFormProps> = ({
     }
   }, [data, form, isUpdate, open]);
 
+  const handleOpenChange = (isOpen: boolean) => {
+    if (isOpen) form.focusField("name");
+    else setSubmitting(false);
+  };
+
   return (
     <FormDrawer
-      afterOpenChange={(isOpen) => {
-        if (isOpen) form.focusField("name");
-        else setSubmitting(false);
-      }}
+      afterOpenChange={handleOpenChange}
       autoFocus={false}
       onClose={() => goBack()}
       onSubmit={() => form.submit()}

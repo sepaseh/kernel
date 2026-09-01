@@ -85,12 +85,14 @@ export const UserForm: FC<UserFormProps> = ({ data, onFinish }) => {
     }
   }, [data, form, isUpdate, open]);
 
+  const handleOpenChange = (isOpen: boolean) => {
+    if (isOpen) form.focusField("firstName");
+    else setSubmitting(false);
+  };
+
   return (
     <FormDrawer
-      afterOpenChange={(isOpen) => {
-        if (isOpen) form.focusField("firstName");
-        else setSubmitting(false);
-      }}
+      afterOpenChange={handleOpenChange}
       autoFocus={false}
       onClose={() => goBack()}
       onSubmit={() => form.submit()}
