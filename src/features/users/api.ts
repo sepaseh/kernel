@@ -1,7 +1,7 @@
 import { apiClient } from "@/shared/api";
 import { toSnakeCase } from "@/shared/lib";
 
-import {
+import type {
   CreateUserRequest,
   ListUsersQuery,
   UpdateUserRequest,

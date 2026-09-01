@@ -1,16 +1,17 @@
-import axios, {
+import type {
   AxiosError,
   AxiosRequestConfig,
   AxiosResponse,
   InternalAxiosRequestConfig,
 } from "axios";
+import axios from "axios";
 
 import { i18nInstance } from "@/shared/i18n";
 import { toCamelCase, toSnakeCase } from "@/shared/lib";
 
 import { apiUrl } from "./config";
 import { clearAccessToken, getAccessToken, setAccessToken } from "./token";
-import { AccessTokenProps } from "./types";
+import type { AccessTokenProps } from "./types";
 const api = axios.create({ baseURL: apiUrl, withCredentials: true });
 const refreshUrl = "/auth/refresh-token";
 const publicAuthUrls = new Set([

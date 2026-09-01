@@ -1,8 +1,9 @@
 import { renderHook } from "@testing-library/react";
-import { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 import { describe, expect, it } from "vitest";
 
-import { CoreContext, CoreContextValue } from "@/app/contexts";
+import type { CoreContextValue } from "@/app/contexts";
+import { CoreContext } from "@/app/contexts";
 
 import { useCore } from "./useCore";
 

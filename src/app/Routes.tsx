@@ -1,26 +1,17 @@
-import {
-  FC,
-  Fragment,
-  lazy,
-  ReactElement,
-  ReactNode,
-  Suspense,
-  useEffect,
-} from "react";
-import {
-  createBrowserRouter,
-  Navigate,
-  RouteObject,
-  useRouteError,
-} from "react-router";
+import type { FC, ReactElement, ReactNode } from "react";
+import { Fragment, lazy, Suspense, useEffect } from "react";
+import type { RouteObject } from "react-router";
+import { createBrowserRouter, Navigate, useRouteError } from "react-router";
 import { RouterProvider } from "react-router/dom";
 
-import { baseUrl, RouteKey, RouteLayout, routeTree } from "@/app/config";
+import type { RouteKey, RouteLayout } from "@/app/config";
+import { baseUrl, routeTree } from "@/app/config";
 import { useCore } from "@/app/hooks";
 import { hasRouteAccess } from "@/app/lib";
 import { NotFoundPage } from "@/app/not-found/NotFound";
 import { reportError } from "@/shared/lib";
 import { ErrorFallback } from "@/shared/ui/error-boundary";
+import { RouteLoading } from "@/shared/ui/route-loading";
 
 const AccountPage = lazy(async () => {
   const { AccountPage } = await import("@/features/account");
@@ -76,7 +67,7 @@ const RouteWrapper: FC<{ route: RouteKey; children: ReactNode }> = ({
 
 const wrapRoute = (route: RouteKey, element: ReactNode) => (
   <RouteWrapper route={route}>
-    <Suspense fallback={null}>{element}</Suspense>
+    <Suspense fallback={<RouteLoading />}>{element}</Suspense>
   </RouteWrapper>
 );
 
@@ -124,7 +115,7 @@ const router = createBrowserRouter(
         {
           path: routeTree.auth.path,
           element: (
-            <Suspense fallback={null}>
+            <Suspense fallback={<RouteLoading />}>
               <AuthLayout />
             </Suspense>
           ),
@@ -133,7 +124,7 @@ const router = createBrowserRouter(
         {
           path: routeTree.root.path,
           element: (
-            <Suspense fallback={null}>
+            <Suspense fallback={<RouteLoading />}>
               <DefaultLayout />
             </Suspense>
           ),

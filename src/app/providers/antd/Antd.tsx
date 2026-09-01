@@ -1,17 +1,12 @@
-import {
-  App as AntdApp,
-  ConfigProvider,
-  ConfigProviderProps,
-  GlobalToken,
-  theme as antdTheme,
-  ThemeConfig,
-} from "antd";
+import type { ConfigProviderProps, GlobalToken, ThemeConfig } from "antd";
+import { App as AntdApp, ConfigProvider, theme as antdTheme } from "antd";
 import enUS from "antd/locale/en_US";
 import faIR from "antd/locale/fa_IR";
-import { FC, ReactNode, useEffect } from "react";
+import type { FC, ReactNode } from "react";
+import { useEffect } from "react";
 
 import { useCore } from "@/app/hooks";
-import { Language, Theme } from "@/shared/config";
+import type { Language, Theme } from "@/shared/config";
 
 type AntdProviderProps = {
   children?: ReactNode;

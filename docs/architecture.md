@@ -75,6 +75,18 @@ utilities in `src/shared/lib`, and HTTP/token infrastructure in `src/shared/api`
 Application composition belongs in `src/app`; layouts and static assets retain
 their dedicated top-level directories.
 
+Feature-owned UI lives under `src/features/<feature>/components`. Use a scoped
+kebab-case directory for each component and match the implementation filename
+to its exported component (for example,
+`components/user-role-form/UserRoleForm.tsx`). Route-level page components
+coordinate data loading, permissions, navigation, and mutations; substantial
+presentational sections such as filters and tables remain feature-owned
+components. Form drawers derive visibility from their feature-local navigation
+key instead of copying that value into synchronized React state.
+
+Lazy route and layout boundaries render `src/shared/ui/route-loading` while
+their bundles load, so navigation never presents an unexplained blank screen.
+
 ## Dependency Direction
 
 - `shared` is independent and cannot import from `app`, `features`, or `layouts`.
@@ -85,7 +97,8 @@ their dedicated top-level directories.
 ESLint enforces the shared-layer and cross-feature rules. Feature root
 `index.ts` files define public APIs; single-file internal barrels are avoided.
 Dedicated lazy route entrypoints remain public subpaths so route chunks stay
-independent.
+independent. ESLint also requires type-only imports and exports so runtime
+dependencies remain explicit.
 
 ## State and Persistence
 

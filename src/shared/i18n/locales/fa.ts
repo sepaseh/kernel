@@ -38,6 +38,7 @@ export const fa = {
   inactive: "غیرفعال",
   lastName: "نام خانوادگی",
   lightMode: "حالت روشن",
+  loading: "در حال بارگذاری",
   login: "ورود به سیستم",
   logout: "خروج",
   menu: "منو",

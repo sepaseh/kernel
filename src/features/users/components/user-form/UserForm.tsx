@@ -1,17 +1,16 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 import { Form, Input } from "antd";
-import { FC, useEffect, useState } from "react";
+import { type FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 
 import { useAntd } from "@/app/hooks";
 import { createUser, updateUser } from "@/features/users/api";
-import {
+import { userDrawerKeys } from "@/features/users/constants";
+import type {
   CreateUserRequest,
   UpdateUserRequest,
   User,
 } from "@/features/users/types";
-import { modalKeys } from "@/shared/config";
 import { useGoBack } from "@/shared/hooks";
 import { getErrorMessage } from "@/shared/lib";
 import { DigitsInput } from "@/shared/ui/digits-input";
@@ -29,13 +28,13 @@ type UserFormProps = {
 
 export const UserForm: FC<UserFormProps> = ({ data, onFinish }) => {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const { messageAPI } = useAntd();
   const { hash } = useLocation();
   const [form] = Form.useForm<UserFormParams>();
   const goBack = useGoBack();
-  const isUpdate = hash === modalKeys.update && !!data;
+  const isUpdate = hash === userDrawerKeys.update && !!data;
+  const open = hash === userDrawerKeys.create || isUpdate;
 
   const handleSubmit = async ({
     firstName,
@@ -68,30 +67,34 @@ export const UserForm: FC<UserFormProps> = ({ data, onFinish }) => {
   };
 
   useEffect(() => {
-    switch (hash) {
-      case modalKeys.create: {
-        setOpen(true);
-        break;
-      }
-      case modalKeys.update: {
-        if (data) {
-          setOpen(true);
-          form.setFieldsValue(data);
-        } else {
-          goBack();
-        }
-        break;
-      }
-      default: {
-        if (open) form.resetFields();
-        setOpen(false);
-        setSubmitting(false);
-      }
+    if (hash === userDrawerKeys.update && !data) goBack();
+  }, [data, goBack, hash]);
+
+  useEffect(() => {
+    if (!open) {
+      form.resetFields();
+      return;
     }
-  }, [data, form, goBack, hash, open]);
+
+    if (isUpdate && data) {
+      form.setFieldsValue({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        mobile: data.mobile,
+        personnelCode: data.personnelCode,
+      });
+    } else {
+      form.resetFields();
+    }
+  }, [data, form, isUpdate, open]);
 
   return (
     <FormDrawer
+      afterOpenChange={(isOpen) => {
+        if (isOpen) form.focusField("firstName");
+        else setSubmitting(false);
+      }}
+      autoFocus={false}
       onClose={() => goBack()}
       onSubmit={() => form.submit()}
       open={open}

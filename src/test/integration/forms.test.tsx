@@ -1,14 +1,15 @@
 import { waitFor } from "@testing-library/react";
+import type * as ReactI18next from "react-i18next";
 import { MemoryRouter } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import * as rolesApi from "@/features/roles/api";
-import { RoleForm } from "@/features/roles/form/Role";
+import { RoleForm } from "@/features/roles/components/role-form/RoleForm";
 import * as usersApi from "@/features/users/api";
-import { UserForm } from "@/features/users/forms/user/User";
-import { UserPasswordForm } from "@/features/users/forms/user-password/UserPassword";
-import { UserFormRole } from "@/features/users/forms/user-role/UserRole";
-import { User } from "@/features/users/types";
+import { UserForm } from "@/features/users/components/user-form/UserForm";
+import { UserPasswordForm } from "@/features/users/components/user-password-form/UserPasswordForm";
+import { UserRoleForm } from "@/features/users/components/user-role-form/UserRoleForm";
+import type { User } from "@/features/users/types";
 import { render, screen } from "@/test/render";
 
 const mocks = vi.hoisted(() => ({
@@ -45,7 +46,7 @@ vi.mock("@/shared/hooks", () => ({
 }));
 
 vi.mock("react-i18next", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("react-i18next")>()),
+  ...(await importOriginal<typeof ReactI18next>()),
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
@@ -66,6 +67,12 @@ const syntheticCredential = "synthetic-test-credential";
 
 const renderAtHash = (ui: React.ReactNode, hash: string) =>
   render(<MemoryRouter initialEntries={[`/${hash}`]}>{ui}</MemoryRouter>);
+
+const findFocusedField = async (name: string) => {
+  const field = await screen.findByLabelText(name);
+  await waitFor(() => expect(field).toHaveFocus());
+  return field;
+};
 
 beforeEach(() => {
   vi.mocked(api.createRole).mockResolvedValue({
@@ -89,7 +96,7 @@ describe("user identity form", () => {
     const onFinish = vi.fn();
     const { user } = renderAtHash(<UserForm onFinish={onFinish} />, "#create");
 
-    await user.type(await screen.findByLabelText("firstName"), "Ada");
+    await user.type(await findFocusedField("firstName"), "Ada");
     await user.type(screen.getByLabelText("lastName"), "Lovelace");
     await user.type(screen.getByLabelText("mobile"), "09120000000");
     await user.type(screen.getByLabelText("personnelCode"), "1001");
@@ -114,7 +121,7 @@ describe("user identity form", () => {
   it("rejects mismatched user passwords", async () => {
     const { user } = renderAtHash(<UserForm onFinish={vi.fn()} />, "#create");
 
-    await user.type(await screen.findByLabelText("firstName"), "Ada");
+    await user.type(await findFocusedField("firstName"), "Ada");
     await user.type(screen.getByLabelText("lastName"), "Lovelace");
     await user.type(screen.getByLabelText("mobile"), "09120000000");
     await user.type(screen.getByLabelText("personnelCode"), "1001");
@@ -133,7 +140,7 @@ describe("user identity form", () => {
       "#update",
     );
 
-    const firstName = await screen.findByLabelText("firstName");
+    const firstName = await findFocusedField("firstName");
     await user.clear(firstName);
     await user.type(firstName, "Augusta");
     await user.click(screen.getByRole("button", { name: "submit" }));
@@ -158,7 +165,7 @@ describe("user identity form", () => {
     const onFinish = vi.fn();
     const { user } = renderAtHash(<UserForm onFinish={onFinish} />, "#create");
 
-    await user.type(await screen.findByLabelText("firstName"), "Ada");
+    await user.type(await findFocusedField("firstName"), "Ada");
     await user.type(screen.getByLabelText("lastName"), "Lovelace");
     await user.type(screen.getByLabelText("mobile"), "09120000000");
     await user.type(screen.getByLabelText("personnelCode"), "1001");
@@ -196,7 +203,7 @@ describe("role form", () => {
       "#create",
     );
 
-    await user.type(await screen.findByLabelText("name"), "Operators");
+    await user.type(await findFocusedField("name"), "Operators");
     await user.click(screen.getByLabelText("Read users"));
     await user.click(screen.getByRole("button", { name: "submit" }));
 
@@ -232,7 +239,7 @@ describe("role form", () => {
       "#update",
     );
 
-    const name = await screen.findByLabelText("name");
+    const name = await findFocusedField("name");
     expect(name).toHaveValue("Operators");
     expect(screen.getByLabelText("Read users")).toBeChecked();
     await user.clear(name);
@@ -258,10 +265,7 @@ describe("user access forms", () => {
       "#password",
     );
 
-    await user.type(
-      await screen.findByLabelText("newPass"),
-      replacementCredential,
-    );
+    await user.type(await findFocusedField("newPass"), replacementCredential);
     await user.type(
       screen.getByLabelText("confirmPass"),
       replacementCredential,
@@ -279,7 +283,7 @@ describe("user access forms", () => {
   it("submits the user's current roles", async () => {
     const onFinish = vi.fn();
     const { user } = renderAtHash(
-      <UserFormRole
+      <UserRoleForm
         data={userData}
         onFinish={onFinish}
         options={{ roles: [{ id: "role-1", name: "Operators" }] }}
@@ -308,10 +312,7 @@ describe("user access forms", () => {
       "#password",
     );
 
-    await user.type(
-      await screen.findByLabelText("newPass"),
-      replacementCredential,
-    );
+    await user.type(await findFocusedField("newPass"), replacementCredential);
     await user.type(
       screen.getByLabelText("confirmPass"),
       replacementCredential,
@@ -346,7 +347,7 @@ describe("form data guards", () => {
     {
       hash: "#roles",
       name: "roles",
-      ui: <UserFormRole onFinish={vi.fn()} options={{ roles: [] }} />,
+      ui: <UserRoleForm onFinish={vi.fn()} options={{ roles: [] }} />,
     },
   ])(
     "closes the $name form when its record is missing",
@@ -380,7 +381,7 @@ describe("form cancellation", () => {
       hash: "#roles",
       name: "roles",
       ui: (
-        <UserFormRole
+        <UserRoleForm
           data={userData}
           onFinish={vi.fn()}
           options={{ roles: [] }}

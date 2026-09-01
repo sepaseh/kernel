@@ -1,5 +1,5 @@
 import { Input } from "antd";
-import { ComponentProps, FC } from "react";
+import type { ComponentProps, FC } from "react";
 
 const Otp = Input.OTP;
 

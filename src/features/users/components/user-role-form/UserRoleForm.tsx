@@ -1,35 +1,34 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 import { Form, Select } from "antd";
-import { FC, useEffect, useState } from "react";
+import { type FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 
 import { useAntd } from "@/app/hooks";
 import { updateUserRoles } from "@/features/users/api";
-import { User, UserOption, UserRoleRequest } from "@/features/users/types";
-import { modalKeys } from "@/shared/config";
+import { userDrawerKeys } from "@/features/users/constants";
+import type { User, UserOption, UserRoleRequest } from "@/features/users/types";
 import { useGoBack } from "@/shared/hooks";
 import { getErrorMessage } from "@/shared/lib";
 import { FormDrawer } from "@/shared/ui/form-drawer";
 
-type UserFormRoleProps = {
+type UserRoleFormProps = {
   data?: User;
   onFinish: () => void;
   options: { roles: UserOption[] };
 };
 
-export const UserFormRole: FC<UserFormRoleProps> = ({
+export const UserRoleForm: FC<UserRoleFormProps> = ({
   data,
   onFinish,
   options: { roles },
 }) => {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const { messageAPI } = useAntd();
   const { hash } = useLocation();
   const [form] = Form.useForm<UserRoleRequest>();
   const goBack = useGoBack();
+  const open = hash === userDrawerKeys.roles && !!data;
 
   const handleSubmit = async (values: UserRoleRequest) => {
     if (submitting || !data) return;
@@ -48,22 +47,25 @@ export const UserFormRole: FC<UserFormRoleProps> = ({
   };
 
   useEffect(() => {
-    if (hash === modalKeys.roles) {
-      if (data) {
-        setOpen(true);
-        form.setFieldsValue({ roleIds: data.roleIds });
-      } else {
-        goBack();
-      }
-    } else {
-      if (open) form.resetFields();
-      setOpen(false);
-      setSubmitting(false);
+    if (hash === userDrawerKeys.roles && !data) goBack();
+  }, [data, goBack, hash]);
+
+  useEffect(() => {
+    if (!open) {
+      form.resetFields();
+      return;
     }
-  }, [data, form, goBack, hash, open]);
+
+    if (data) form.setFieldsValue({ roleIds: data.roleIds });
+  }, [data, form, open]);
 
   return (
     <FormDrawer
+      afterOpenChange={(isOpen) => {
+        if (isOpen) form.focusField("roleIds");
+        else setSubmitting(false);
+      }}
+      autoFocus={false}
       onClose={() => goBack()}
       onSubmit={() => form.submit()}
       open={open}

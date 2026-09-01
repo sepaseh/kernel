@@ -1,3 +1,4 @@
+import type { MenuProps } from "antd";
 import {
   Avatar,
   Button,
@@ -7,7 +8,6 @@ import {
   Flex,
   Grid,
   Menu,
-  MenuProps,
   Spin,
   Typography,
 } from "antd";
@@ -16,7 +16,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, Outlet, useNavigate } from "react-router";
 
-import { NavigationItem, routeTree } from "@/app/config";
+import type { NavigationItem } from "@/app/config";
+import { routeTree } from "@/app/config";
 import { useCore } from "@/app/hooks";
 import { getAllowedNavigation } from "@/app/lib";
 import { getAccount } from "@/features/account";

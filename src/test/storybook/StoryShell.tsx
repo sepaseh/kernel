@@ -1,10 +1,12 @@
-import { ReactNode, useMemo, useState } from "react";
+import type { ReactNode } from "react";
+import { useMemo, useState } from "react";
 import { MemoryRouter } from "react-router";
 
-import { CoreContext, CoreContextValue } from "@/app/contexts";
+import type { CoreContextValue } from "@/app/contexts";
+import { CoreContext } from "@/app/contexts";
 import { AntdProvider } from "@/app/providers";
-import { Account } from "@/features/account";
-import { Language, Theme } from "@/shared/config";
+import type { Account } from "@/features/account";
+import type { Language, Theme } from "@/shared/config";
 
 import { sampleAccount } from "./fixtures";
 

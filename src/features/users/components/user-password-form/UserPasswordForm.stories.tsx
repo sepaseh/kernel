@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { user } from "@/test/storybook/fixtures";
 import { StoryShell } from "@/test/storybook/StoryShell";
 
-import { UserPasswordForm } from "./UserPassword";
+import { UserPasswordForm } from "./UserPasswordForm";
 
 const meta = {
   args: { data: user },

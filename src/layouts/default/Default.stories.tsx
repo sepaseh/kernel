@@ -3,10 +3,12 @@ import { useMemo, useState } from "react";
 import { MemoryRouter, Route, Routes } from "react-router";
 import { mocked } from "storybook/test";
 
-import { CoreContext, CoreContextValue } from "@/app/contexts";
+import type { CoreContextValue } from "@/app/contexts";
+import { CoreContext } from "@/app/contexts";
 import { AntdProvider } from "@/app/providers";
-import { Account, getAccount } from "@/features/account";
-import { Language, Theme } from "@/shared/config";
+import type { Account } from "@/features/account";
+import { getAccount } from "@/features/account";
+import type { Language, Theme } from "@/shared/config";
 
 import { DefaultLayout } from "./Default";
 

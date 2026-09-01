@@ -27,6 +27,7 @@ export const en = {
   inactive: "Inactive",
   lastName: "Last name",
   lightMode: "Light mode",
+  loading: "Loading",
   login: "Login",
   logout: "Logout",
   menu: "Menu",

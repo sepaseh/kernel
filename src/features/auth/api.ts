@@ -1,11 +1,7 @@
-import {
-  AccessTokenProps,
-  apiClient,
-  clearAccessToken,
-  setAccessToken,
-} from "@/shared/api";
+import type { AccessTokenProps } from "@/shared/api";
+import { apiClient, clearAccessToken, setAccessToken } from "@/shared/api";
 
-import {
+import type {
   ChangePasswordParams,
   ForgotPasswordParams,
   LoginParams,

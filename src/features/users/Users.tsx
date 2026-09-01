@@ -1,34 +1,19 @@
-/* eslint-disable react-hooks/set-state-in-effect */
-import {
-  Button,
-  Col,
-  ConfigProvider,
-  FloatButton,
-  Form,
-  FormProps,
-  Input,
-  Row,
-  Select,
-  Table,
-  TableProps,
-  Tooltip,
-  Typography,
-} from "antd";
+import { ConfigProvider, FloatButton, Typography } from "antd";
 import { useAntdToken } from "antd-style";
 import { debounce } from "lodash";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router";
 
 import { useAntd, useCore } from "@/app/hooks";
 import { getRoutePermissions } from "@/app/lib";
-import { UserForm } from "@/features/users/forms/user/User";
-import { UserPasswordForm } from "@/features/users/forms/user-password/UserPassword";
-import { UserFormRole } from "@/features/users/forms/user-role/UserRole";
-import { modalKeys } from "@/shared/config";
+import { UserForm } from "@/features/users/components/user-form/UserForm";
+import { UserPasswordForm } from "@/features/users/components/user-password-form/UserPasswordForm";
+import { UserRoleForm } from "@/features/users/components/user-role-form/UserRoleForm";
+import { UsersFilters } from "@/features/users/components/users-filters/UsersFilters";
+import { UsersTable } from "@/features/users/components/users-table/UsersTable";
 import { useFilterParams } from "@/shared/hooks";
 import { getErrorMessage } from "@/shared/lib";
-import { DigitsInput } from "@/shared/ui/digits-input";
 import { Icon } from "@/shared/ui/icon";
 
 import {
@@ -39,8 +24,8 @@ import {
   updateUserStatus,
   updateUserSystemAdmin,
 } from "./api";
-import { defaultPageSize } from "./constants";
-import { ListUsersQuery, User, UserOption, UserSummary } from "./types";
+import { defaultPageSize, userDrawerKeys } from "./constants";
+import type { ListUsersQuery, User, UserOption, UserSummary } from "./types";
 
 export const UsersPage = () => {
   const { t } = useTranslation();
@@ -58,8 +43,6 @@ export const UsersPage = () => {
   const { filters, setFilters } = useFilterParams<ListUsersQuery>();
   const { pathname, search } = useLocation();
   const token = useAntdToken();
-  const tableContainerRef = useRef<HTMLDivElement>(null);
-  const [form] = Form.useForm<ListUsersQuery>();
   const navigate = useNavigate();
   const offset = Number(filters.offset ?? "0");
   const current = Math.floor(offset / defaultPageSize) + 1;
@@ -73,7 +56,6 @@ export const UsersPage = () => {
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      form.setFieldsValue(filters);
       const response = await fetchUsers({
         ...filters,
         offset: String(offset),
@@ -86,7 +68,7 @@ export const UsersPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [filters, form, messageAPI, offset]);
+  }, [filters, messageAPI, offset]);
 
   const openUserDrawer = async (id: string, hash: string) => {
     try {
@@ -157,145 +139,13 @@ export const UsersPage = () => {
     });
   };
 
-  const tableColumns: TableProps<UserSummary>["columns"] = [
-    {
-      align: "center",
-      key: "index",
-      render: (_, _record, index) => offset + index + 1,
-      title: t("row"),
-      width: 60,
-    },
-    {
-      key: "name",
-      render: (_, record) => `${record.firstName} ${record.lastName}`,
-      title: t("name"),
-    },
-    {
-      align: "center",
-      dataIndex: "mobile",
-      title: t("mobile"),
-    },
-    {
-      align: "center",
-      dataIndex: "email",
-      render: (value: string | null) => value ?? "-",
-      title: t("email"),
-    },
-    {
-      align: "center",
-      dataIndex: "username",
-      render: (value: string | null) => value ?? "-",
-      title: t("username"),
-    },
-    {
-      align: "center",
-      dataIndex: "personnelCode",
-      title: t("personnelCode"),
-    },
-    {
-      align: "center",
-      dataIndex: "isSystemAdmin",
-      render: (value: boolean) => t(value ? "yes" : "no"),
-      title: t("systemAdmin"),
-    },
-    {
-      align: "center",
-      dataIndex: "status",
-      render: (_, record) =>
-        canUpdate ? (
-          <Button
-            color={record.status === "active" ? "green" : "red"}
-            onClick={() => handleStatus(record)}
-            variant="link"
-          >
-            {t(record.status)}
-          </Button>
-        ) : (
-          t(record.status)
-        ),
-      title: t("status"),
-    },
-    {
-      align: "center",
-      key: "actions",
-      render: (_, record) => (
-        <>
-          {canUpdate && (
-            <>
-              <Tooltip title={t("update")}>
-                <Button
-                  aria-label={t("update")}
-                  icon={<Icon name="edit" />}
-                  onClick={() =>
-                    void openUserDrawer(record.id, modalKeys.update)
-                  }
-                  type="text"
-                />
-              </Tooltip>
-              <Tooltip title={t("roles")}>
-                <Button
-                  aria-label={t("roles")}
-                  icon={<Icon name="key" />}
-                  onClick={() =>
-                    void openUserDrawer(record.id, modalKeys.roles)
-                  }
-                  type="text"
-                />
-              </Tooltip>
-            </>
-          )}
-          {isSystemAdmin && (
-            <>
-              <Tooltip title={t("password")}>
-                <Button
-                  aria-label={t("password")}
-                  icon={<Icon name="lock" />}
-                  onClick={() =>
-                    void openUserDrawer(record.id, modalKeys.password)
-                  }
-                  type="text"
-                />
-              </Tooltip>
-              <Tooltip title={t("systemAdmin")}>
-                <Button
-                  aria-label={t("systemAdmin")}
-                  icon={<Icon name="bolt" />}
-                  onClick={() => handleSystemAdmin(record)}
-                  type="text"
-                />
-              </Tooltip>
-            </>
-          )}
-          {canDelete && (
-            <Tooltip title={t("delete")}>
-              <Button
-                aria-label={t("delete")}
-                danger
-                icon={<Icon name="delete" />}
-                onClick={() => handleDelete(record.id)}
-                type="text"
-              />
-            </Tooltip>
-          )}
-        </>
-      ),
-      title: t("action"),
-      width: 220,
-    },
-  ];
-
-  const handleFilter: FormProps<ListUsersQuery>["onValuesChange"] = (
-    _,
-    values,
-  ) => {
-    debouncedHandleFilter({ ...values, offset: undefined });
-  };
+  useEffect(
+    () => () => debouncedHandleFilter.cancel(),
+    [debouncedHandleFilter],
+  );
 
   useEffect(() => {
-    return () => debouncedHandleFilter.cancel();
-  }, [debouncedHandleFilter]);
-
-  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void fetchData();
   }, [fetchData]);
 
@@ -311,15 +161,6 @@ export const UsersPage = () => {
     })();
   }, [canUpdate, messageAPI]);
 
-  useEffect(() => {
-    const scrollRegion =
-      tableContainerRef.current?.querySelector<HTMLElement>(
-        ".ant-table-content",
-      );
-
-    if (scrollRegion) scrollRegion.tabIndex = 0;
-  }, [data]);
-
   return (
     <>
       <div
@@ -329,79 +170,38 @@ export const UsersPage = () => {
           paddingBlock: token.paddingMD,
           paddingInline: token.paddingSM,
         }}
-        ref={tableContainerRef}
       >
         <Typography.Title level={1} style={{ fontSize: 20 }}>
           {t("users")}
         </Typography.Title>
-        <Form<ListUsersQuery> form={form} onValuesChange={handleFilter}>
-          <Row gutter={24}>
-            <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
-              <Form.Item name="name">
-                <Input allowClear placeholder={t("name")} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
-              <Form.Item name="email">
-                <Input
-                  allowClear
-                  placeholder={t("email")}
-                  style={{ direction: "ltr" }}
-                />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
-              <Form.Item name="mobile">
-                <DigitsInput
-                  allowClear
-                  placeholder={t("mobile")}
-                  style={{ direction: "ltr" }}
-                />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
-              <Form.Item name="username">
-                <Input
-                  allowClear
-                  placeholder={t("username")}
-                  style={{ direction: "ltr" }}
-                />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
-              <Form.Item name="status">
-                <Select
-                  aria-label={t("status")}
-                  allowClear
-                  options={[
-                    { label: t("active"), value: "active" },
-                    { label: t("inactive"), value: "inactive" },
-                  ]}
-                  placeholder={t("status")}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-        </Form>
-        <Table<UserSummary>
-          columns={tableColumns}
-          dataSource={data}
+        <UsersFilters
+          filters={filters}
+          onChange={(values) =>
+            debouncedHandleFilter({ ...values, offset: undefined })
+          }
+        />
+        <UsersTable
+          canDelete={canDelete}
+          canUpdate={canUpdate}
+          current={current}
+          data={data}
+          isSystemAdmin={isSystemAdmin}
           loading={loading}
-          onChange={({ current: page }) =>
+          offset={offset}
+          onDelete={handleDelete}
+          onEdit={(id) => void openUserDrawer(id, userDrawerKeys.update)}
+          onManageRoles={(id) => void openUserDrawer(id, userDrawerKeys.roles)}
+          onPageChange={(page) =>
             setFilters({
               ...filters,
-              offset: String(((page ?? 1) - 1) * defaultPageSize),
+              offset: String((page - 1) * defaultPageSize),
             })
           }
-          pagination={{
-            current,
-            pageSize: defaultPageSize,
-            showSizeChanger: false,
-            total,
-          }}
-          rowKey="id"
-          scroll={{ x: token.screenXL }}
-          size="small"
+          onPassword={(id) => void openUserDrawer(id, userDrawerKeys.password)}
+          onStatus={handleStatus}
+          onSystemAdmin={handleSystemAdmin}
+          pageSize={defaultPageSize}
+          total={total}
         />
       </div>
       {canCreate && (
@@ -411,7 +211,7 @@ export const UsersPage = () => {
             icon={<Icon name="add" />}
             onClick={() =>
               navigate(
-                { hash: modalKeys.create, pathname, search },
+                { hash: userDrawerKeys.create, pathname, search },
                 { state: true },
               )
             }
@@ -421,7 +221,7 @@ export const UsersPage = () => {
         </ConfigProvider>
       )}
       <UserForm data={selectedData} onFinish={fetchData} />
-      <UserFormRole
+      <UserRoleForm
         data={selectedData}
         onFinish={fetchData}
         options={{ roles }}

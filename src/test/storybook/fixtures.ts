@@ -1,6 +1,6 @@
-import { Account } from "@/features/account";
-import { PermissionGroup, Role } from "@/features/roles";
-import { User, UserOption, UserSummary } from "@/features/users";
+import type { Account } from "@/features/account";
+import type { PermissionGroup, Role } from "@/features/roles";
+import type { User, UserOption, UserSummary } from "@/features/users";
 
 export const sampleAccount: Account = {
   email: "admin@example.com",

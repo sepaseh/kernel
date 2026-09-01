@@ -1,11 +1,10 @@
-/* eslint-disable react-hooks/set-state-in-effect */
+import type { TableProps } from "antd";
 import {
   Button,
   ConfigProvider,
   Flex,
   FloatButton,
   Table,
-  TableProps,
   Tooltip,
   Typography,
 } from "antd";
@@ -16,13 +15,13 @@ import { useLocation, useNavigate } from "react-router";
 
 import { useAntd, useCore } from "@/app/hooks";
 import { getRoutePermissions } from "@/app/lib";
-import { RoleForm } from "@/features/roles/form/Role";
-import { modalKeys } from "@/shared/config";
+import { RoleForm } from "@/features/roles/components/role-form/RoleForm";
 import { getErrorMessage } from "@/shared/lib";
 import { Icon } from "@/shared/ui/icon";
 
 import { deleteRole, fetchPermissions, fetchRole, fetchRoles } from "./api";
-import { PermissionGroup, Role } from "./types";
+import { roleDrawerKeys } from "./constants";
+import type { PermissionGroup, Role } from "./types";
 
 export const RolesPage = () => {
   const { t } = useTranslation();
@@ -56,7 +55,10 @@ export const RolesPage = () => {
     try {
       setLoading(true);
       setSelectedData(await fetchRole(id));
-      navigate({ hash: modalKeys.update, pathname, search }, { state: true });
+      navigate(
+        { hash: roleDrawerKeys.update, pathname, search },
+        { state: true },
+      );
     } catch (error) {
       messageAPI.error(getErrorMessage(error));
     } finally {
@@ -134,6 +136,7 @@ export const RolesPage = () => {
   ];
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void fetchData();
   }, [fetchData]);
 
@@ -193,7 +196,7 @@ export const RolesPage = () => {
             icon={<Icon name="add" />}
             onClick={() =>
               navigate(
-                { hash: modalKeys.create, pathname, search },
+                { hash: roleDrawerKeys.create, pathname, search },
                 { state: true },
               )
             }

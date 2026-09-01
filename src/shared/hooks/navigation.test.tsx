@@ -1,4 +1,5 @@
 import { act, renderHook } from "@testing-library/react";
+import type * as ReactRouter from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useFilterParams } from "./useFilterParams";
@@ -12,7 +13,7 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("react-router", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("react-router")>()),
+  ...(await importOriginal<typeof ReactRouter>()),
   useLocation: () => mocks.location,
   useNavigate: () => mocks.navigate,
   useSearchParams: () => [mocks.searchParams, mocks.setSearchParams],

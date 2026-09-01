@@ -10,7 +10,7 @@ import {
   fetchRoles,
   updateRole,
 } from "./api";
-import { RoleRequest } from "./types";
+import type { RoleRequest } from "./types";
 
 vi.mock("@/shared/api", () => ({
   apiClient: {

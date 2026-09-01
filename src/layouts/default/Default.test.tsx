@@ -1,9 +1,10 @@
 import { waitFor } from "@testing-library/react";
+import type * as ReactI18next from "react-i18next";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { getAccount } from "@/features/account";
-import { Account } from "@/features/account/types";
+import type { Account } from "@/features/account/types";
 import { logout } from "@/features/auth";
 import { clearAccessToken, setUnauthorizedHandler } from "@/shared/api";
 import { render, screen } from "@/test/render";
@@ -73,7 +74,7 @@ vi.mock("antd-style", () => ({
 }));
 
 vi.mock("react-i18next", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("react-i18next")>()),
+  ...(await importOriginal<typeof ReactI18next>()),
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 

@@ -1,4 +1,5 @@
 import { waitFor, within } from "@testing-library/react";
+import type * as ReactI18next from "react-i18next";
 import { MemoryRouter, useLocation } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -10,7 +11,7 @@ import { LoginPage } from "@/features/auth/login";
 import { RegisterPage } from "@/features/auth/register";
 import { RolesPage } from "@/features/roles";
 import * as rolesApi from "@/features/roles/api";
-import { Role } from "@/features/roles/types";
+import type { Role } from "@/features/roles/types";
 import { UsersPage } from "@/features/users";
 import * as usersApi from "@/features/users/api";
 import { render, screen } from "@/test/render";
@@ -105,13 +106,20 @@ vi.mock("@/features/users/api", () => ({
 
 const api = { ...accountApi, ...authApi, ...rolesApi, ...usersApi };
 
-vi.mock("@/features/roles/form/Role", () => ({ RoleForm: () => null }));
-vi.mock("@/features/users/forms/user/User", () => ({ UserForm: () => null }));
-vi.mock("@/features/users/forms/user-password/UserPassword", () => ({
-  UserPasswordForm: () => null,
+vi.mock("@/features/roles/components/role-form/RoleForm", () => ({
+  RoleForm: () => null,
 }));
-vi.mock("@/features/users/forms/user-role/UserRole", () => ({
-  UserFormRole: () => null,
+vi.mock("@/features/users/components/user-form/UserForm", () => ({
+  UserForm: () => null,
+}));
+vi.mock(
+  "@/features/users/components/user-password-form/UserPasswordForm",
+  () => ({
+    UserPasswordForm: () => null,
+  }),
+);
+vi.mock("@/features/users/components/user-role-form/UserRoleForm", () => ({
+  UserRoleForm: () => null,
 }));
 
 vi.mock("@/app/hooks", () => ({
@@ -142,7 +150,7 @@ vi.mock("antd-style", () => ({
 }));
 
 vi.mock("react-i18next", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("react-i18next")>()),
+  ...(await importOriginal<typeof ReactI18next>()),
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 

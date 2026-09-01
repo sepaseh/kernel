@@ -1,4 +1,5 @@
-import { Button, Flex, Form, FormProps, Input, Typography } from "antd";
+import type { FormProps } from "antd";
+import { Button, Flex, Form, Input, Typography } from "antd";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
@@ -6,7 +7,7 @@ import { Link, useNavigate } from "react-router";
 import { routeTree } from "@/app/config";
 import { useAntd } from "@/app/hooks";
 import { login } from "@/features/auth/api";
-import { LoginParams } from "@/features/auth/types";
+import type { LoginParams } from "@/features/auth/types";
 import { getErrorMessage } from "@/shared/lib";
 import { Icon } from "@/shared/ui/icon";
 

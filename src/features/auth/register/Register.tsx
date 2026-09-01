@@ -1,4 +1,5 @@
-import { Button, Flex, Form, FormProps, Input, Typography } from "antd";
+import type { FormProps } from "antd";
+import { Button, Flex, Form, Input, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
@@ -6,7 +7,7 @@ import { Link, useNavigate } from "react-router";
 import { routeTree } from "@/app/config";
 import { useAntd } from "@/app/hooks";
 import { register, requestOtp } from "@/features/auth/api";
-import { RegisterParams } from "@/features/auth/types";
+import type { RegisterParams } from "@/features/auth/types";
 import { getErrorMessage } from "@/shared/lib";
 import { DigitsInput } from "@/shared/ui/digits-input";
 import { Icon } from "@/shared/ui/icon";

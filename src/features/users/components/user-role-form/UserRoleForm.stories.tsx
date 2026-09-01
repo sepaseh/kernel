@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { user, userOptions } from "@/test/storybook/fixtures";
 import { StoryShell } from "@/test/storybook/StoryShell";
 
-import { UserFormRole } from "./UserRole";
+import { UserRoleForm } from "./UserRoleForm";
 
 const meta = {
   args: {
@@ -11,14 +11,14 @@ const meta = {
     onFinish: () => undefined,
     options: { roles: userOptions },
   },
-  component: UserFormRole,
+  component: UserRoleForm,
   render: (args) => (
     <StoryShell initialEntries={["/#roles"]}>
-      <UserFormRole {...args} />
+      <UserRoleForm {...args} />
     </StoryShell>
   ),
   title: "Features/Users/UserRoleForm",
-} satisfies Meta<typeof UserFormRole>;
+} satisfies Meta<typeof UserRoleForm>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

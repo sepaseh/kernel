@@ -1,13 +1,12 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 import { Form } from "antd";
-import { FC, useEffect, useState } from "react";
+import { type FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 
 import { useAntd } from "@/app/hooks";
 import { updateUserPassword } from "@/features/users/api";
-import { User, UserPasswordRequest } from "@/features/users/types";
-import { modalKeys } from "@/shared/config";
+import { userDrawerKeys } from "@/features/users/constants";
+import type { User, UserPasswordRequest } from "@/features/users/types";
 import { useGoBack } from "@/shared/hooks";
 import { getErrorMessage } from "@/shared/lib";
 import { FormDrawer } from "@/shared/ui/form-drawer";
@@ -23,12 +22,12 @@ type UserPasswordFormProps = {
 
 export const UserPasswordForm: FC<UserPasswordFormProps> = ({ data }) => {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const { messageAPI } = useAntd();
   const { hash } = useLocation();
   const [form] = Form.useForm<UserPasswordFormParams>();
   const goBack = useGoBack();
+  const open = hash === userDrawerKeys.password && !!data;
 
   const handleSubmit = async ({ password }: UserPasswordFormParams) => {
     if (submitting || !data) return;
@@ -46,18 +45,23 @@ export const UserPasswordForm: FC<UserPasswordFormProps> = ({ data }) => {
   };
 
   useEffect(() => {
-    if (hash === modalKeys.password) {
-      if (data) setOpen(true);
-      else goBack();
-    } else {
-      if (open) form.resetFields();
-      setOpen(false);
-      setSubmitting(false);
+    if (hash === userDrawerKeys.password && !data) goBack();
+  }, [data, goBack, hash]);
+
+  useEffect(() => {
+    if (!open) {
+      form.resetFields();
+      return;
     }
-  }, [data, form, goBack, hash, open]);
+  }, [form, open]);
 
   return (
     <FormDrawer
+      afterOpenChange={(isOpen) => {
+        if (isOpen) form.focusField("password");
+        else setSubmitting(false);
+      }}
+      autoFocus={false}
       onClose={() => goBack()}
       onSubmit={() => form.submit()}
       open={open}

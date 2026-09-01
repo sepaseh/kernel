@@ -1,13 +1,16 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 import { Checkbox, Divider, Flex, Form, Input } from "antd";
-import { FC, useEffect, useState } from "react";
+import { type FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 
 import { useAntd } from "@/app/hooks";
 import { createRole, updateRole } from "@/features/roles/api";
-import { PermissionGroup, Role, RoleRequest } from "@/features/roles/types";
-import { modalKeys } from "@/shared/config";
+import { roleDrawerKeys } from "@/features/roles/constants";
+import type {
+  PermissionGroup,
+  Role,
+  RoleRequest,
+} from "@/features/roles/types";
 import { useGoBack } from "@/shared/hooks";
 import { getErrorMessage } from "@/shared/lib";
 import { FormDrawer } from "@/shared/ui/form-drawer";
@@ -24,13 +27,13 @@ export const RoleForm: FC<RoleFormProps> = ({
   options: { permissions },
 }) => {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const { messageAPI } = useAntd();
   const { hash } = useLocation();
   const [form] = Form.useForm<RoleRequest>();
   const goBack = useGoBack();
-  const isUpdate = hash === modalKeys.update && !!data;
+  const isUpdate = hash === roleDrawerKeys.update && !!data;
+  const open = hash === roleDrawerKeys.create || isUpdate;
 
   const handleSubmit = async (values: RoleRequest) => {
     if (submitting) return;
@@ -50,33 +53,32 @@ export const RoleForm: FC<RoleFormProps> = ({
   };
 
   useEffect(() => {
-    switch (hash) {
-      case modalKeys.create:
-        setOpen(true);
-        break;
-      case modalKeys.update:
-        if (data) {
-          setOpen(true);
-          form.setFieldsValue({
-            name: data.name,
-            permissions: data.permissions,
-          });
-        } else {
-          goBack();
-        }
-        break;
-      default:
-        if (open) form.resetFields();
-        setOpen(false);
-        setSubmitting(false);
+    if (hash === roleDrawerKeys.update && !data) goBack();
+  }, [data, goBack, hash]);
+
+  useEffect(() => {
+    if (!open) {
+      form.resetFields();
+      return;
     }
-  }, [data, form, goBack, hash, open]);
+
+    if (isUpdate && data) {
+      form.setFieldsValue({
+        name: data.name,
+        permissions: data.permissions,
+      });
+    } else {
+      form.resetFields();
+    }
+  }, [data, form, isUpdate, open]);
 
   return (
     <FormDrawer
       afterOpenChange={(isOpen) => {
         if (isOpen) form.focusField("name");
+        else setSubmitting(false);
       }}
+      autoFocus={false}
       onClose={() => goBack()}
       onSubmit={() => form.submit()}
       open={open}

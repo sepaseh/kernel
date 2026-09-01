@@ -1,6 +1,6 @@
 import { apiClient } from "@/shared/api";
 
-import { PermissionGroup, Role, RoleRequest } from "./types";
+import type { PermissionGroup, Role, RoleRequest } from "./types";
 
 export const createRole = async (params: RoleRequest): Promise<Role> => {
   return apiClient.post<Role>("/roles", params);

@@ -1,7 +1,7 @@
-import { OtpRequestProps } from "@/features/auth";
+import type { OtpRequestProps } from "@/features/auth";
 import { apiClient } from "@/shared/api";
 
-import {
+import type {
   Account,
   EmailVerificationRequest,
   UpdateProfileRequest,
