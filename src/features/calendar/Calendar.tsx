@@ -87,7 +87,12 @@ export const CalendarPage = () => {
     const originNode = info.originNode as CalendarCell;
 
     return cloneElement(originNode, {
-      className: `${styles.cell}${dates.includes(formattedDate) ? ` ${styles.holiday}` : ""}`,
+      className: [
+        styles.cell,
+        dates.includes(formattedDate) ? styles.holiday : undefined,
+      ]
+        .filter(Boolean)
+        .join(" "),
       children:
         submittingDate === formattedDate ? <Spin size="small" /> : date.date(),
     });
@@ -172,7 +177,7 @@ export const CalendarPage = () => {
                 </Flex>
               );
             }}
-            onSelect={(date, selectInfo) => void handleSelect(date, selectInfo)}
+            onSelect={handleSelect}
           />
         </Card>
       </Col>
