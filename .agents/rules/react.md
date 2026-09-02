@@ -27,6 +27,10 @@ export const UserCard: FC<UserCardProps> = ({ name }) => <div>{name}</div>;
 - Reusable components receive data through props.
 - Page/domain components may read app state through hooks.
 - Move state down when only a small part of the tree needs it.
+- Place `useMemo` declarations after state, context, and other base values but
+  before event handlers and helper functions. If a memo depends on a locally
+  declared function, place it immediately after that dependency. Do not place
+  memo declarations between otherwise related handlers.
 - Inside a component, declare event handlers and helper functions before its
   `useEffect` calls. Keep effects together after those functions and before
   early returns or JSX, while ensuring hooks remain unconditional.
@@ -42,7 +46,10 @@ export const UserCard: FC<UserCardProps> = ({ name }) => <div>{name}</div>;
 
 ## Rendering patterns
 
-- Use ternaries with `null` for conditional rendering; avoid `items.length && ...` because it can render `0`.
+- Use `condition && <Content />` when `condition` is typed as `boolean`. Use a
+  ternary with `null` for numbers, strings, and other truthy/falsy values so
+  values such as `0` or an empty string cannot leak into rendered output. Do
+  not use patterns such as `items.length && ...` because they can render `0`.
 - Use `key` to intentionally reset component state when switching between similar forms or records.
 - Avoid spreading large domain objects into components; pass only the props the component needs.
 - Use `Map` or object lookups for repeated render-path lookups instead of repeated `Array.find` calls.

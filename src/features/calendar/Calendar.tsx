@@ -1,21 +1,21 @@
 import type { CalendarProps } from "antd";
-import { Calendar, Card, Col, Row, Spin } from "antd";
+import { Button, Calendar, Card, Col, Flex, Row, Select, Spin } from "antd";
 import dayjs, { type Dayjs } from "dayjs";
 import jalaliday from "jalaliday";
 import type { PropsWithChildren, ReactElement } from "react";
-import { cloneElement, useCallback, useEffect, useState } from "react";
+import { cloneElement, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useAntd, useCore } from "@/app/hooks";
 import { getRoutePermissions } from "@/app/lib";
 import { getErrorMessage } from "@/shared/lib";
+import { Icon } from "@/shared/ui/icon";
 
 import {
   createCalendarDate,
   deleteCalendarDate,
   fetchCalendarDates,
 } from "./api";
-import { CalendarHeader } from "./components/calendar-header/CalendarHeader";
 import { useCalendarStyles } from "./styles";
 
 dayjs.extend(jalaliday);
@@ -30,10 +30,28 @@ export const CalendarPage = () => {
   const [dates, setDates] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [submittingDate, setSubmittingDate] = useState<string>();
-  const { messageAPI } = useAntd();
-  const { user } = useCore();
+  const { messageAPI, token } = useAntd();
+  const { language, user } = useCore();
   const { canUpdate } = getRoutePermissions("calendar", user);
   const { styles } = useCalendarStyles();
+
+  const { months, years } = useMemo(() => {
+    const calendar = language === "fa" ? "jalali" : "gregory";
+    const currentYear = (dayjs().calendar(calendar) as unknown as Dayjs).year();
+
+    return {
+      months: Array.from({ length: 12 }, (_, index) => ({
+        label: (dayjs().calendar(calendar) as unknown as Dayjs)
+          .month(index)
+          .format("MMMM"),
+        value: index,
+      })),
+      years: Array.from({ length: 12 }, (_, index) => ({
+        label: currentYear + index,
+        value: currentYear + index,
+      })),
+    };
+  }, [language]);
 
   const fetchData = useCallback(async () => {
     try {
@@ -89,6 +107,51 @@ export const CalendarPage = () => {
     });
   };
 
+  const renderHeader: CalendarProps<Dayjs>["headerRender"] = ({
+    onChange,
+    value,
+  }) => {
+    const hasPreviousMonth = value.isAfter(dayjs().startOf("year"), "month");
+
+    return (
+      <Flex
+        align="center"
+        justify="space-between"
+        style={{ paddingBlockEnd: token.paddingSM }}
+      >
+        <Flex gap={8}>
+          <Select
+            aria-label={t("calendarYear")}
+            onChange={(year) => onChange(value.clone().year(year))}
+            options={years}
+            style={{ width: 120 }}
+            value={value.year()}
+          />
+          <Select
+            aria-label={t("calendarMonth")}
+            onChange={(month) => onChange(value.clone().month(month))}
+            options={months}
+            style={{ width: 120 }}
+            value={value.month()}
+          />
+        </Flex>
+        <Flex gap={8}>
+          <Button
+            aria-label={t("previousMonth")}
+            disabled={!hasPreviousMonth}
+            icon={<Icon name="chevronRight" />}
+            onClick={() => onChange(value.clone().subtract(1, "month"))}
+          />
+          <Button
+            aria-label={t("nextMonth")}
+            icon={<Icon name="chevronLeft" />}
+            onClick={() => onChange(value.clone().add(1, "month"))}
+          />
+        </Flex>
+      </Flex>
+    );
+  };
+
   useEffect(() => {
     void (() => {
       fetchData();
@@ -104,12 +167,12 @@ export const CalendarPage = () => {
             disabledDate={(date) => date.isBefore(dayjs().startOf("day"))}
             fullCellRender={fullCellRender}
             fullscreen={false}
-            headerRender={(props) => <CalendarHeader {...props} />}
+            headerRender={renderHeader}
             onSelect={handleSelect}
           />
         </Card>
       </Col>
-      {loading ? <Spin fullscreen /> : null}
+      {loading && <Spin fullscreen />}
     </Row>
   );
 };
