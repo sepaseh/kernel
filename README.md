@@ -1,6 +1,9 @@
 # Kernel
 
-React starter kit upgraded as a dashboard-ready foundation under the `kernel` project name. It includes authentication, protected routing, an Ant Design layout, multilingual setup, API examples, and starter user/role management screens.
+React starter kit upgraded as a dashboard-ready foundation under the `kernel`
+project name. It includes authentication, protected routing, an Ant Design
+layout, multilingual and Jalali calendar support, configurable branding and
+themes, and starter user and role management screens.
 
 ## Stack
 
@@ -117,14 +120,17 @@ Permission-gated routes use `.read` permissions for access and can expose
 create, delete, and update actions through `getRoutePermissions(route, user)`:
 
 ```ts
-// Route access
-"calendar.read" | "roles.read" | "users.read";
-("settings.update");
+type RouteAccessPermission =
+  "calendar.read" | "roles.read" | "settings.update" | "users.read";
 
-// Route actions
-"roles.create" | "roles.delete" | "roles.update";
-("calendar.update");
-"users.create" | "users.delete" | "users.update";
+type RouteActionPermission =
+  | "calendar.update"
+  | "roles.create"
+  | "roles.delete"
+  | "roles.update"
+  | "users.create"
+  | "users.delete"
+  | "users.update";
 ```
 
 Password pages/actions only require a valid auth token.
@@ -135,7 +141,7 @@ Password pages/actions only require a valid auth token.
 src/
   app/          Application composition, routes, providers, access policy, and app hooks
   assets/       Fonts and global styles
-  features/     Account, authentication, dashboard, role, settings, and user slices
+  features/     Account, authentication, calendar, dashboard, role, settings, and user slices
   layouts/      Auth and authenticated application shells
   shared/       Reusable API infrastructure, config, hooks, i18n, storage, UI, and utilities
   test/         Shared test infrastructure and cross-feature integration tests

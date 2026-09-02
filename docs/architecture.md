@@ -114,10 +114,13 @@ Feature-owned UI lives under `src/features/<feature>/components`. Use a scoped
 kebab-case directory for each component and match the implementation filename
 to its exported component (for example,
 `components/user-role-form/UserRoleForm.tsx`). Route-level page components
-coordinate data loading, permissions, navigation, and mutations; substantial
-presentational sections such as filters and tables remain feature-owned
-components. Form drawers derive visibility from their feature-local navigation
-key instead of copying that value into synchronized React state.
+coordinate data loading, permissions, navigation, and mutations. Keep tightly
+coupled filters, tables, and other page-only presentation inline when extracting
+them would only spread one workflow across files. Move them to feature-owned
+components when they gain an independent responsibility, reusable behavior,
+substantial complexity, or focused tests and stories. Form drawers derive
+visibility from their feature-local navigation key instead of copying that value
+into synchronized React state.
 
 Lazy route and layout boundaries render `src/shared/ui/route-loading` while
 their bundles load, so navigation never presents an unexplained blank screen.

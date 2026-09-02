@@ -15,8 +15,10 @@ To keep pull-request feedback focused, configure SonarQube in its project UI:
 - Add rule or file exclusions only for a reviewed, documented false positive.
 
 Analysis scope and LCOV import stay versioned in `sonar-project.properties`.
-Quality Profile and issue exclusions belong in the SonarQube UI so maintainers
-can review them centrally.
+Quality Profile configuration and broadly applicable rule changes belong in the
+SonarQube UI so maintainers can review them centrally. Narrow, reviewed
+exclusions that are specific to this codebase may remain versioned in
+`sonar-project.properties`, with their rationale documented here.
 
 Resolve findings according to the repository's
 [code-quality guidance](../.agents/rules/code-quality.md). Do not add wrappers,
