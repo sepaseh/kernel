@@ -12,7 +12,7 @@ import {
 import { createStyles } from "antd-style";
 import dayjs, { type Dayjs } from "dayjs";
 import jalaliday from "jalaliday";
-import type { PropsWithChildren, ReactElement } from "react";
+import type { FC, PropsWithChildren, ReactElement } from "react";
 import { cloneElement, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -30,6 +30,71 @@ import {
 dayjs.extend(jalaliday);
 
 type CalendarCell = ReactElement<PropsWithChildren<{ className?: string }>>;
+type CalendarHeaderOption = { label: number | string; value: number };
+type CalendarHeaderProps = {
+  monthLabel: string;
+  months: CalendarHeaderOption[];
+  nextMonthLabel: string;
+  onChange: (value: Dayjs) => void;
+  paddingBlockEnd: number;
+  previousMonthLabel: string;
+  value: Dayjs;
+  yearLabel: string;
+  years: CalendarHeaderOption[];
+};
+
+const CalendarHeader: FC<CalendarHeaderProps> = ({
+  monthLabel,
+  months,
+  nextMonthLabel,
+  onChange,
+  paddingBlockEnd,
+  previousMonthLabel,
+  value,
+  yearLabel,
+  years,
+}) => {
+  const hasPreviousMonth = value.isAfter(dayjs().startOf("year"), "month");
+
+  return (
+    <Flex align="center" justify="space-between" style={{ paddingBlockEnd }}>
+      <Flex gap={8}>
+        <Select
+          aria-label={yearLabel}
+          onChange={(year) => onChange(value.clone().year(year))}
+          options={years}
+          style={{ width: 120 }}
+          value={value.year()}
+        />
+        <Select
+          aria-label={monthLabel}
+          onChange={(month) => onChange(value.clone().month(month))}
+          options={months}
+          style={{ width: 120 }}
+          value={value.month()}
+        />
+      </Flex>
+      <Flex gap={8}>
+        <Button
+          aria-label={previousMonthLabel}
+          disabled={!hasPreviousMonth}
+          icon={<Icon name="chevronRight" />}
+          onClick={() => onChange(value.clone().subtract(1, "month"))}
+        />
+        <Button
+          aria-label={nextMonthLabel}
+          icon={<Icon name="chevronLeft" />}
+          onClick={() => onChange(value.clone().add(1, "month"))}
+        />
+      </Flex>
+    </Flex>
+  );
+};
+
+const renderCalendarHeader = (
+  props: Omit<CalendarHeaderProps, "onChange" | "value">,
+  { onChange, value }: Pick<CalendarHeaderProps, "onChange" | "value">,
+) => <CalendarHeader {...props} onChange={onChange} value={value} />;
 
 const formatCalendarDate = (date: Dayjs) =>
   (date.calendar("gregory") as unknown as Dayjs).format("YYYY-MM-DD");
@@ -131,52 +196,15 @@ export const CalendarPage = () => {
             disabledDate={(date) => date.isBefore(dayjs().startOf("day"))}
             fullCellRender={fullCellRender}
             fullscreen={false}
-            headerRender={({ onChange, value }) => {
-              const hasPreviousMonth = value.isAfter(
-                dayjs().startOf("year"),
-                "month",
-              );
-
-              return (
-                <Flex
-                  align="center"
-                  justify="space-between"
-                  style={{ paddingBlockEnd: token.paddingSM }}
-                >
-                  <Flex gap={8}>
-                    <Select
-                      aria-label={t("calendarYear")}
-                      onChange={(year) => onChange(value.clone().year(year))}
-                      options={years}
-                      style={{ width: 120 }}
-                      value={value.year()}
-                    />
-                    <Select
-                      aria-label={t("calendarMonth")}
-                      onChange={(month) => onChange(value.clone().month(month))}
-                      options={months}
-                      style={{ width: 120 }}
-                      value={value.month()}
-                    />
-                  </Flex>
-                  <Flex gap={8}>
-                    <Button
-                      aria-label={t("previousMonth")}
-                      disabled={!hasPreviousMonth}
-                      icon={<Icon name="chevronRight" />}
-                      onClick={() =>
-                        onChange(value.clone().subtract(1, "month"))
-                      }
-                    />
-                    <Button
-                      aria-label={t("nextMonth")}
-                      icon={<Icon name="chevronLeft" />}
-                      onClick={() => onChange(value.clone().add(1, "month"))}
-                    />
-                  </Flex>
-                </Flex>
-              );
-            }}
+            headerRender={renderCalendarHeader.bind(undefined, {
+              monthLabel: t("calendarMonth"),
+              months,
+              nextMonthLabel: t("nextMonth"),
+              paddingBlockEnd: token.paddingSM,
+              previousMonthLabel: t("previousMonth"),
+              yearLabel: t("calendarYear"),
+              years,
+            })}
             onSelect={handleSelect}
           />
         </Card>
