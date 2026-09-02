@@ -117,7 +117,7 @@ export const ForgotPassPage = () => {
             <Button
               disabled={Boolean(remainingSeconds)}
               loading={requestingOtp}
-              onClick={() => void handleOtpRequest()}
+              onClick={handleOtpRequest}
               size="large"
             >
               {remainingSeconds || t("requestOtp")}

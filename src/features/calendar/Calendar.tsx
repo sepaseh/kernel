@@ -1,100 +1,26 @@
 import type { CalendarProps } from "antd";
-import {
-  Button,
-  Calendar as AntdCalendar,
-  Card,
-  Col,
-  Flex,
-  Row,
-  Select,
-  Spin,
-} from "antd";
-import { createStyles } from "antd-style";
+import { Calendar, Card, Col, Row, Spin } from "antd";
 import dayjs, { type Dayjs } from "dayjs";
 import jalaliday from "jalaliday";
-import type { FC, PropsWithChildren, ReactElement } from "react";
-import { cloneElement, useCallback, useEffect, useMemo, useState } from "react";
+import type { PropsWithChildren, ReactElement } from "react";
+import { cloneElement, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useAntd, useCore } from "@/app/hooks";
 import { getRoutePermissions } from "@/app/lib";
 import { getErrorMessage } from "@/shared/lib";
-import { Icon } from "@/shared/ui/icon";
 
 import {
   createCalendarDate,
   deleteCalendarDate,
   fetchCalendarDates,
 } from "./api";
+import { CalendarHeader } from "./components/calendar-header/CalendarHeader";
+import { useCalendarStyles } from "./styles";
 
 dayjs.extend(jalaliday);
 
 type CalendarCell = ReactElement<PropsWithChildren<{ className?: string }>>;
-type CalendarHeaderOption = { label: number | string; value: number };
-type CalendarHeaderProps = {
-  monthLabel: string;
-  months: CalendarHeaderOption[];
-  nextMonthLabel: string;
-  onChange: (value: Dayjs) => void;
-  paddingBlockEnd: number;
-  previousMonthLabel: string;
-  value: Dayjs;
-  yearLabel: string;
-  years: CalendarHeaderOption[];
-};
-
-const CalendarHeader: FC<CalendarHeaderProps> = ({
-  monthLabel,
-  months,
-  nextMonthLabel,
-  onChange,
-  paddingBlockEnd,
-  previousMonthLabel,
-  value,
-  yearLabel,
-  years,
-}) => {
-  const hasPreviousMonth = value.isAfter(dayjs().startOf("year"), "month");
-
-  return (
-    <Flex align="center" justify="space-between" style={{ paddingBlockEnd }}>
-      <Flex gap={8}>
-        <Select
-          aria-label={yearLabel}
-          onChange={(year) => onChange(value.clone().year(year))}
-          options={years}
-          style={{ width: 120 }}
-          value={value.year()}
-        />
-        <Select
-          aria-label={monthLabel}
-          onChange={(month) => onChange(value.clone().month(month))}
-          options={months}
-          style={{ width: 120 }}
-          value={value.month()}
-        />
-      </Flex>
-      <Flex gap={8}>
-        <Button
-          aria-label={previousMonthLabel}
-          disabled={!hasPreviousMonth}
-          icon={<Icon name="chevronRight" />}
-          onClick={() => onChange(value.clone().subtract(1, "month"))}
-        />
-        <Button
-          aria-label={nextMonthLabel}
-          icon={<Icon name="chevronLeft" />}
-          onClick={() => onChange(value.clone().add(1, "month"))}
-        />
-      </Flex>
-    </Flex>
-  );
-};
-
-const renderCalendarHeader = (
-  props: Omit<CalendarHeaderProps, "onChange" | "value">,
-  { onChange, value }: Pick<CalendarHeaderProps, "onChange" | "value">,
-) => <CalendarHeader {...props} onChange={onChange} value={value} />;
 
 const formatCalendarDate = (date: Dayjs) =>
   (date.calendar("gregory") as unknown as Dayjs).format("YYYY-MM-DD");
@@ -104,10 +30,10 @@ export const CalendarPage = () => {
   const [dates, setDates] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [submittingDate, setSubmittingDate] = useState<string>();
-  const { messageAPI, token } = useAntd();
-  const { language, user } = useCore();
+  const { messageAPI } = useAntd();
+  const { user } = useCore();
   const { canUpdate } = getRoutePermissions("calendar", user);
-  const { styles } = useStyles();
+  const { styles } = useCalendarStyles();
 
   const fetchData = useCallback(async () => {
     try {
@@ -163,24 +89,6 @@ export const CalendarPage = () => {
     });
   };
 
-  const { months, years } = useMemo(() => {
-    const calendar = language === "fa" ? "jalali" : "gregory";
-    const currentYear = (dayjs().calendar(calendar) as unknown as Dayjs).year();
-
-    return {
-      months: Array.from({ length: 12 }, (_, index) => ({
-        label: (dayjs().calendar(calendar) as unknown as Dayjs)
-          .month(index)
-          .format("MMMM"),
-        value: index,
-      })),
-      years: Array.from({ length: 12 }, (_, index) => ({
-        label: currentYear + index,
-        value: currentYear + index,
-      })),
-    };
-  }, [language]);
-
   useEffect(() => {
     void (() => {
       fetchData();
@@ -191,20 +99,12 @@ export const CalendarPage = () => {
     <Row>
       <Col lg={16} md={20} xs={24} xxl={12}>
         <Card size="small" variant="borderless">
-          <AntdCalendar
+          <Calendar
             className={canUpdate ? styles.calendar : undefined}
             disabledDate={(date) => date.isBefore(dayjs().startOf("day"))}
             fullCellRender={fullCellRender}
             fullscreen={false}
-            headerRender={renderCalendarHeader.bind(undefined, {
-              monthLabel: t("calendarMonth"),
-              months,
-              nextMonthLabel: t("nextMonth"),
-              paddingBlockEnd: token.paddingSM,
-              previousMonthLabel: t("previousMonth"),
-              yearLabel: t("calendarYear"),
-              years,
-            })}
+            headerRender={(props) => <CalendarHeader {...props} />}
             onSelect={handleSelect}
           />
         </Card>
@@ -213,32 +113,3 @@ export const CalendarPage = () => {
     </Row>
   );
 };
-
-const useStyles = createStyles(({ css, cx }) => {
-  const cell = css`
-    align-items: center;
-    border-radius: var(--ant-border-radius-sm);
-    display: flex;
-    height: var(--ant-calendar-cell-height);
-    justify-content: center;
-    line-height: var(--ant-calendar-cell-height);
-    min-width: var(--ant-calendar-cell-height);
-    position: relative;
-    transition: background-color var(--ant-motion-duration-mid);
-    z-index: 2;
-  `;
-
-  return {
-    calendar: css`
-      .ant-picker-cell-in-view:not(.ant-picker-cell-disabled):hover {
-        .${cx(cell)} {
-          background: var(--ant-calendar-cell-hover-bg);
-        }
-      }
-    `,
-    cell,
-    holiday: css`
-      color: var(--ant-color-error);
-    `,
-  };
-});

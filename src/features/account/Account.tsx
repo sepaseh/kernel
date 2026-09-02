@@ -235,7 +235,7 @@ export const AccountPage = () => {
                   <Button
                     disabled={Boolean(otpRemainingSeconds)}
                     loading={otpSubmitting}
-                    onClick={() => void handleEmailVerificationRequest()}
+                    onClick={handleEmailVerificationRequest}
                   >
                     {otpRemainingSeconds || t("requestOtp")}
                   </Button>

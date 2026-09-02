@@ -1,7 +1,7 @@
 import type { TableProps } from "antd";
 import { Button, Flex, FloatButton, Table, Tooltip } from "antd";
 import { useAntdToken } from "antd-style";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router";
 
@@ -29,7 +29,6 @@ export const RolesPage = () => {
   );
   const { pathname, search } = useLocation();
   const token = useAntdToken();
-  const tableContainerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   const fetchData = useCallback(async () => {
@@ -105,7 +104,7 @@ export const RolesPage = () => {
               <Button
                 aria-label={t("update")}
                 icon={<Icon name="edit" />}
-                onClick={() => void handleUpdate(record.id)}
+                onClick={() => handleUpdate(record.id)}
                 type="text"
               />
             </Tooltip>
@@ -145,19 +144,6 @@ export const RolesPage = () => {
     })();
   }, [canCreate, canUpdate, messageAPI]);
 
-  useEffect(() => {
-    const scrollRegion =
-      tableContainerRef.current?.querySelector<HTMLElement>(
-        ".ant-table-content",
-      );
-
-    if (scrollRegion) {
-      scrollRegion.tabIndex = 0;
-      scrollRegion.setAttribute("role", "region");
-      scrollRegion.setAttribute("aria-label", t("roles"));
-    }
-  }, [data, t]);
-
   return (
     <>
       <div
@@ -165,7 +151,6 @@ export const RolesPage = () => {
           flexGrow: 1,
           minWidth: 0,
         }}
-        ref={tableContainerRef}
       >
         <Table<Role>
           columns={tableColumns}

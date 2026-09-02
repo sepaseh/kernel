@@ -289,7 +289,7 @@ export const UsersPage = () => {
                         aria-label={t("update")}
                         icon={<Icon name="edit" />}
                         onClick={() =>
-                          void openUserDrawer(record.id, userDrawerKeys.update)
+                          openUserDrawer(record.id, userDrawerKeys.update)
                         }
                         type="text"
                       />
@@ -299,7 +299,7 @@ export const UsersPage = () => {
                         aria-label={t("roles")}
                         icon={<Icon name="key" />}
                         onClick={() =>
-                          void openUserDrawer(record.id, userDrawerKeys.roles)
+                          openUserDrawer(record.id, userDrawerKeys.roles)
                         }
                         type="text"
                       />

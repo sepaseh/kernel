@@ -198,7 +198,7 @@ export const DefaultLayout = () => {
                   icon: <Icon name="logout" />,
                   key: "4",
                   label: t("logout"),
-                  onClick: () => void handleLogout(),
+                  onClick: handleLogout,
                 },
               ],
             }}
