@@ -9,15 +9,17 @@ import type {
   VerifyEmailRequest,
 } from "./types";
 
+const basePath = "/account";
+
 export const getAccount = async (): Promise<Account> => {
-  return apiClient.get<Account>("/account/me");
+  return apiClient.get<Account>(`${basePath}/me`);
 };
 
 export const requestEmailVerification = async (
   params: EmailVerificationRequest,
 ): Promise<OtpRequestProps> => {
   return apiClient.post<OtpRequestProps>(
-    "/account/request-email-verification",
+    `${basePath}/request-email-verification`,
     params,
   );
 };
@@ -25,17 +27,17 @@ export const requestEmailVerification = async (
 export const updateProfile = async (
   params: UpdateProfileRequest,
 ): Promise<Account> => {
-  return apiClient.patch<Account>("/account/update-profile", params);
+  return apiClient.patch<Account>(`${basePath}/update-profile`, params);
 };
 
 export const updateUsername = async (
   params: UpdateUsernameRequest,
 ): Promise<Account> => {
-  return apiClient.post<Account>("/account/update-username", params);
+  return apiClient.post<Account>(`${basePath}/update-username`, params);
 };
 
 export const verifyEmail = async (
   params: VerifyEmailRequest,
 ): Promise<void> => {
-  return apiClient.post<void>("/account/verify-email", params);
+  return apiClient.post<void>(`${basePath}/verify-email`, params);
 };

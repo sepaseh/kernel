@@ -1,0 +1,34 @@
+meta {
+  name: List Calendar Dates
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/calendar
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  ## Purpose
+
+  Lists the dates marked on the system calendar.
+
+  ## Authentication
+
+  Requires a valid access token with `calendar.read` permission.
+
+  ## Response
+
+  - `200 OK` — Returns Gregorian dates in `YYYY-MM-DD` format.
+  - `401 Unauthorized` — Authentication is missing or invalid.
+  - `403 Forbidden` — The authenticated user cannot view the calendar.
+}

@@ -1,0 +1,42 @@
+meta {
+  name: Upload File
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/files
+  body: form
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+headers {
+  Accept: application/json
+}
+
+body:multipart-form {
+  file: @file
+  visibility: public
+}
+
+docs {
+  ## Purpose
+
+  Uploads a logo file.
+
+  ## Authentication
+
+  Requires an authenticated user allowed to create a public file.
+
+  ## Response
+
+  - `201 Created` — File stored successfully.
+  - `400 Bad Request` — File or visibility is invalid.
+  - `401 Unauthorized` — Authentication is missing or invalid.
+  - `403 Forbidden` — Public upload is not allowed.
+  - `413 Content Too Large` — File exceeds the upload limit.
+}

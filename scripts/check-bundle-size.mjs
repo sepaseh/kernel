@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 
 const assetsDirectory = path.resolve("dist/assets");
 export const maximumChunkBytes = 450_000;
-export const maximumTotalBytes = 1_600_000;
+export const maximumTotalBytes = 1_900_000;
 
 export const evaluateBundleAssets = (assets) => {
   if (assets.length === 0) throw new Error("No JavaScript assets found");

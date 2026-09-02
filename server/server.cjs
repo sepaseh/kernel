@@ -5,8 +5,8 @@ const { findUser, fullPermissions, publicUser, users } = require("./data.cjs");
 const { signToken, verifyToken } = require("./jwt.cjs");
 
 const allowedOrigin =
-  process.env.MOCK_ALLOWED_ORIGIN || "http://127.0.0.1:5173";
-const host = process.env.HOST || "127.0.0.1";
+  process.env.MOCK_ALLOWED_ORIGIN || "http://localhost:5173";
+const host = process.env.HOST || "localhost";
 const port = Number(process.env.PORT) || 3000;
 
 const setCorsHeaders = (request, response) => {
@@ -64,8 +64,9 @@ const paginateUsers = (body, searchParams) => {
   const status = searchParams.get("status")?.trim();
   const filtered = body.items.filter(
     (user) =>
-      includes(`${user.first_name} ${user.last_name}`, "name") &&
       includes(user.email, "email") &&
+      includes(user.first_name, "first_name") &&
+      includes(user.last_name, "last_name") &&
       includes(user.mobile, "mobile") &&
       includes(user.username, "username") &&
       (!status || user.status === status),

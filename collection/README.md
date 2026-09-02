@@ -15,8 +15,12 @@ along with the saved responses available for those operations.
 - Authentication: register, login, OTP request, refresh token, forgot password,
   change password, and logout.
 - Account: current account, profile and username updates, and email verification.
+- Calendar: list, create, and delete configured dates.
 - Roles: list, create, details, update, and delete.
-- Permissions: list.
+- Permissions: role-scoped list.
+- System settings: public details and authenticated update.
+- Languages: authenticated list of supported languages.
+- Files: multipart upload used by application logos.
 - Users: list, create, details, update, delete, status, system-admin, password,
   and roles.
 

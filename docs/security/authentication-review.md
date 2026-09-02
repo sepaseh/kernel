@@ -70,7 +70,7 @@ The frontend review confirmed:
 - Login and registration set the token; logout clears it in a `finally` block.
 - Unauthorized protected requests share one refresh operation, retry once, and
   clear authentication after terminal failure.
-- Refresh and logout use credentialed HTTPS API requests.
+- Refresh and logout use credentialed API requests.
 - Unit tests cover concurrency, successful retry, refresh failure, retry-loop
   prevention, and cleanup.
 

@@ -1,60 +1,32 @@
-type UserStatus = "active" | "inactive";
+import type { Role } from "@/features/roles";
+import type { ListQuery } from "@/shared/api";
 
-export type ListUsersQuery = {
+export type User = {
   email?: string;
-  mobile?: string;
-  name?: string;
-  offset?: string;
-  size?: string;
-  status?: UserStatus;
+  firstName: string;
+  id: string;
+  isSystemAdmin: boolean;
+  lastName: string;
+  mobile: string;
+  roles: Array<Pick<Role, "id" | "name">>;
+  status: "active" | "inactive";
   username?: string;
 };
 
-export type UserSummary = {
-  email: null | string;
-  firstName: string;
-  id: string;
-  isSystemAdmin: boolean;
-  lastName: string;
-  mobile: string;
-  personnelCode: string;
-  status: UserStatus;
-  username: null | string;
-};
+export type UserListQuery = ListQuery &
+  Partial<
+    Pick<
+      User,
+      "email" | "firstName" | "lastName" | "mobile" | "status" | "username"
+    >
+  >;
 
-export type User = Omit<UserSummary, "status"> & {
-  roleIds: string[];
-};
+export type UserPasswordRequest = { password: string };
 
-export type CreateUserRequest = {
-  firstName: string;
-  lastName: string;
-  mobile: string;
-  password: string;
-  personnelCode: string;
-};
+export type UserRequest = Pick<User, "firstName" | "lastName" | "mobile">;
 
-export type UpdateUserRequest = Partial<
-  Pick<CreateUserRequest, "firstName" | "lastName" | "mobile" | "personnelCode">
->;
+export type UserRoleRequest = { roleIds: Array<Role["id"]> };
 
-export type UserRoleRequest = {
-  roleIds: string[];
-};
+export type UserStatusRequest = Pick<User, "status">;
 
-export type UserSystemAdminRequest = {
-  isSystemAdmin: boolean;
-};
-
-export type UserPasswordRequest = {
-  password: string;
-};
-
-export type UserStatusRequest = {
-  status: UserStatus;
-};
-
-export type UserOption = {
-  id: string;
-  name: string;
-};
+export type UserSystemAdminRequest = Pick<User, "isSystemAdmin">;

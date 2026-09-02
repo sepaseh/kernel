@@ -10,8 +10,8 @@ let token;
 
 before(async () => {
   server = createServer(loadRoutes());
-  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
-  baseUrl = `http://127.0.0.1:${server.address().port}`;
+  await new Promise((resolve) => server.listen(0, "localhost", resolve));
+  baseUrl = `http://localhost:${server.address().port}`;
 });
 
 after(async () => {
@@ -31,14 +31,14 @@ test("loads every HTTP route from the collection", async () => {
 
 test("allows credentialed CORS for the configured local origin", async () => {
   const response = await fetch(`${baseUrl}/auth/login`, {
-    headers: { Origin: "http://127.0.0.1:5173" },
+    headers: { Origin: "http://localhost:5173" },
     method: "OPTIONS",
   });
 
   assert.equal(response.status, 204);
   assert.equal(
     response.headers.get("access-control-allow-origin"),
-    "http://127.0.0.1:5173",
+    "http://localhost:5173",
   );
   assert.equal(
     response.headers.get("access-control-allow-credentials"),
@@ -48,7 +48,7 @@ test("allows credentialed CORS for the configured local origin", async () => {
 
 test("rejects credentialed CORS for untrusted origins", async () => {
   const response = await fetch(`${baseUrl}/auth/login`, {
-    headers: { Origin: "https://untrusted.example" },
+    headers: { Origin: "http://untrusted.example" },
     method: "OPTIONS",
   });
 
@@ -119,9 +119,10 @@ test("serves parameterized routes and saved error examples", async () => {
 });
 
 test("filters and paginates user examples", async () => {
-  const response = await fetch(`${baseUrl}/users?name=سارا&offset=0&size=1`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const response = await fetch(
+    `${baseUrl}/users?first_name=سارا&last_name=رضایی&offset=0&size=1`,
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
   const body = await response.json();
 
   assert.equal(response.status, 200);

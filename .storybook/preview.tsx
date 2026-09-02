@@ -9,7 +9,9 @@ import { PreviewFrame } from "./PreviewFrame";
 
 sb.mock(import("../src/features/account/api.ts"), { spy: true });
 sb.mock(import("../src/features/auth/api.ts"), { spy: true });
+sb.mock(import("../src/features/calendar/api.ts"), { spy: true });
 sb.mock(import("../src/features/roles/api.ts"), { spy: true });
+sb.mock(import("../src/features/settings/api.ts"), { spy: true });
 sb.mock(import("../src/features/users/api.ts"), { spy: true });
 
 const preview: Preview = {

@@ -1,0 +1,35 @@
+meta {
+  name: List Languages
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/languages
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  ## Purpose
+
+  Returns the supported application-language catalog. Locale files exist for
+  every returned language and can be translated incrementally.
+
+  ## Authentication
+
+  Requires an authenticated user; no resource permission is required.
+
+  ## Response
+
+  - `200 OK` — Languages returned successfully.
+  - `401 Unauthorized` — Authentication is missing or invalid.
+}

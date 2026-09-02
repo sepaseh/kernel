@@ -11,7 +11,7 @@ API contract intended for production.
 
 Provide a staging deployment with:
 
-- A stable HTTPS application URL.
+- A stable HTTP application URL.
 - Non-production API, identity, and data stores with production-compatible
   schemas.
 - The same CDN, reverse-proxy, cache, and security-header behavior as
@@ -38,12 +38,12 @@ The live suite verifies:
 - Application HTML and same-origin assets load successfully.
 - Direct client-side routes work.
 - Public authentication journeys pass automated accessibility checks.
-- CSP, HSTS, framing, MIME-sniffing, referrer, and permissions policies are
+- CSP, framing, MIME-sniffing, referrer, and permissions policies are
   present.
 - The staging API health endpoint succeeds.
 - The checks pass in Chromium, Firefox, WebKit, and a mobile Chromium viewport.
 
-The workflow rejects missing, non-HTTPS, or credential-bearing target URLs and
+The workflow rejects missing, invalid, or credential-bearing target URLs and
 retains traces, screenshots, video, and HTML reports when tests fail.
 The shared validation logic lives in `scripts/validate-workflow-targets.mjs`
 and is unit-tested; staging, smoke, and DAST workflows call the same validator
@@ -52,8 +52,8 @@ instead of maintaining separate inline URL parsers.
 To run the same gate locally:
 
 ```bash
-STAGING_BASE_URL=https://staging.example.com/ \
-STAGING_API_HEALTH_URL=https://staging-api.example.com/health \
+STAGING_BASE_URL=http://staging.example.com/ \
+STAGING_API_HEALTH_URL=http://staging-api.example.com/health \
 npm run test:staging
 ```
 

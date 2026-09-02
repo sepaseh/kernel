@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { user, userOptions } from "@/test/storybook/fixtures";
+import { roles, user } from "@/test/storybook/fixtures";
 import { StoryShell } from "@/test/storybook/StoryShell";
 
 import { UserRoleForm } from "./UserRoleForm";
@@ -9,7 +9,7 @@ const meta = {
   args: {
     data: user,
     onFinish: () => undefined,
-    options: { roles: userOptions },
+    options: { roles },
   },
   component: UserRoleForm,
   render: (args) => (

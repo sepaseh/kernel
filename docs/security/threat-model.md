@@ -26,7 +26,7 @@ infrastructure, or trust-boundary changes and at least quarterly.
 ## Trust boundaries and data flow
 
 1. The browser downloads immutable static assets through the CDN or web server.
-2. The browser sends HTTPS API requests to `VITE_API_BASE_URL`.
+2. The browser sends API requests to `VITE_API_BASE_URL`.
 3. The access token exists only in JavaScript memory and is sent as a bearer
    header. It is not intentionally persisted in browser storage.
 4. Refresh and logout requests include credentials, so the API controls the
@@ -45,7 +45,7 @@ infrastructure, or trust-boundary changes and at least quarterly.
 | Stolen or replayed refresh cookie          | Session takeover                          | Credentialed refresh endpoint and server logout                      | Verify `HttpOnly`, `Secure`, `SameSite`, rotation, expiry, and revocation      |
 | Cross-site request forgery                 | Unauthorized refresh, logout, or mutation | Same-origin deployment assumptions and API controls                  | Verify origin checks or CSRF tokens on every credentialed state change         |
 | Broken access control                      | Unauthorized user or role administration  | Client route/action filtering                                        | Enforce every permission on the API; client checks are not security boundaries |
-| Sensitive data exposure                    | Privacy or credential compromise          | HTTPS validation, redacted observability, memory-only access token   | Inspect logs, errors, caches, source maps, and browser storage                 |
+| Sensitive data exposure                    | Privacy or credential compromise          | Redacted observability and memory-only access token                  | Inspect logs, errors, caches, source maps, and browser storage                 |
 | Malicious or vulnerable build input        | Compromised production artifact           | Pinned Actions, audit, CodeQL, SBOM/license checks, protected branch | Review workflow permissions and artifact provenance                            |
 | Unsafe deployment or rollback              | Extended outage or vulnerable release     | Reproducible production build and immutable commit history           | Define deployment and rollback controls when hosting is selected               |
 | Denial of service or automated abuse       | Unavailable authentication/API            | Client request cancellation where applicable                         | Verify API rate limits, quotas, timeouts, and alerting                         |
@@ -67,7 +67,6 @@ infrastructure, or trust-boundary changes and at least quarterly.
 ## Security invariants
 
 - Authorization decisions are enforced by the API, never only by React.
-- Production and security-test traffic use HTTPS.
 - Access tokens are not written to local or session storage.
 - Refresh cookies are inaccessible to JavaScript and narrowly scoped.
 - Logout and terminal refresh failure clear client and server session state.

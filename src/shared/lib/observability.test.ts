@@ -45,13 +45,13 @@ describe("observability", () => {
   it("redacts empty, repeated, and encoded query values", () => {
     expect(
       sanitizeObservabilityValue(
-        "https://example.com/path?empty=&next=value&redirect=https%3A%2F%2Fprivate.example",
+        "http://example.com/path?empty=&next=value&redirect=http%3A%2F%2Fprivate.example",
       ),
-    ).toBe("https://example.com/path?[redacted]&[redacted]&[redacted]");
+    ).toBe("http://example.com/path?[redacted]&[redacted]&[redacted]");
   });
 
   it("handles long query-like text without excessive backtracking", () => {
-    const value = `https://example.com/?${"key".repeat(70_000)}`;
+    const value = `http://example.com/?${"key".repeat(70_000)}`;
 
     expect(sanitizeObservabilityValue(value)).toBe(value.slice(0, 2_000));
   });
@@ -62,14 +62,14 @@ describe("observability", () => {
         email: "ada@example.com",
         nested: {
           password: "correct horse battery staple",
-          url: "https://example.com/path?token=secret&view=private",
+          url: "http://example.com/path?token=secret&view=private",
         },
       }),
     ).toEqual({
       email: "[redacted]",
       nested: {
         password: "[redacted]",
-        url: "https://example.com/path?[redacted]&[redacted]",
+        url: "http://example.com/path?[redacted]&[redacted]",
       },
     });
   });
@@ -81,7 +81,7 @@ describe("observability", () => {
     reportError(
       new Error(
         "Failed for ada@example.com with token=secret at " +
-          "https://example.com/path?access=secret",
+          "http://example.com/path?access=secret",
       ),
       { authorization: "Bearer secret", source: "test" },
     );
@@ -204,7 +204,7 @@ describe("observability", () => {
     vi.resetModules();
     vi.stubEnv(
       "VITE_OBSERVABILITY_URL",
-      "https://observability.example.com/events",
+      "http://observability.example.com/events",
     );
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
@@ -216,7 +216,7 @@ describe("observability", () => {
 
     await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledOnce());
     expect(fetchMock).toHaveBeenCalledWith(
-      "https://observability.example.com/events",
+      "http://observability.example.com/events",
       expect.objectContaining({
         body: expect.not.stringContaining("ada@example.com"),
         method: "POST",

@@ -1,6 +1,6 @@
 import type { Account } from "@/features/account";
 import type { PermissionGroup, Role } from "@/features/roles";
-import type { User, UserOption, UserSummary } from "@/features/users";
+import type { User } from "@/features/users";
 
 export const sampleAccount: Account = {
   email: "admin@example.com",
@@ -17,7 +17,6 @@ export const sampleAccount: Account = {
     "roles.delete",
     "roles.update",
   ],
-  personnelCode: "1001",
   status: "active",
   username: "admin",
 };
@@ -46,11 +45,6 @@ export const permissions: PermissionGroup[] = [
   },
 ];
 
-export const userOptions: UserOption[] = [
-  { id: "option-1", name: "Primary" },
-  { id: "option-2", name: "Secondary" },
-];
-
 export const user: User = {
   email: "sara@example.com",
   firstName: "Sara",
@@ -58,22 +52,20 @@ export const user: User = {
   isSystemAdmin: false,
   lastName: "Ahmadi",
   mobile: "09121111111",
-  personnelCode: "1002",
-  roleIds: ["option-1"],
+  roles: [{ id: "role-admin", name: "Administrator" }],
+  status: "active",
   username: "sara",
 };
 
-export const users: UserSummary[] = [
-  { ...user, status: "active" },
+export const users: User[] = [
+  user,
   {
-    email: null,
     firstName: "Ali",
     id: "user-2",
     isSystemAdmin: true,
     lastName: "Karimi",
     mobile: "09122222222",
-    personnelCode: "1003",
+    roles: [],
     status: "inactive",
-    username: null,
   },
 ];

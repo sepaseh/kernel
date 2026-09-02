@@ -11,7 +11,6 @@ const accountResponse = {
   last_name: "Lovelace",
   mobile: "09120000000",
   permissions: [],
-  personnel_code: "100",
   status: "active",
   username: "ada",
 };
@@ -50,7 +49,7 @@ test.describe("public authentication", () => {
   test("shows the API error when credentials are rejected", async ({
     page,
   }) => {
-    await page.route("https://api.example.com/auth/login", async (route) => {
+    await page.route("http://api.example.com/auth/login", async (route) => {
       expect(route.request().postDataJSON()).toEqual({
         identifier: "ada",
         password: syntheticCredential,
@@ -73,13 +72,13 @@ test.describe("public authentication", () => {
   });
 
   test("logs in and loads the authenticated account", async ({ page }) => {
-    await page.route("https://api.example.com/auth/login", async (route) => {
+    await page.route("http://api.example.com/auth/login", async (route) => {
       await route.fulfill({
         contentType: "application/json",
         json: { access_token: "access-token" },
       });
     });
-    await page.route("https://api.example.com/account/me", async (route) => {
+    await page.route("http://api.example.com/account/me", async (route) => {
       expect(route.request().headers().authorization).toBe(
         "Bearer access-token",
       );
@@ -96,14 +95,14 @@ test.describe("public authentication", () => {
     await page.getByRole("button", { name: "Enter" }).click();
 
     await expect(page).toHaveURL(/\/$/);
-    await expect(page.getByRole("link", { name: "kernel" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Logo" })).toBeVisible();
   });
 
   test("recovers a forgotten password and returns to login", async ({
     page,
   }) => {
     await page.route(
-      "https://api.example.com/auth/otp-request",
+      "http://api.example.com/auth/otp-request",
       async (route) => {
         expect(route.request().postDataJSON()).toEqual({
           mobile: "09120000000",
@@ -116,7 +115,7 @@ test.describe("public authentication", () => {
       },
     );
     await page.route(
-      "https://api.example.com/auth/forgot-password",
+      "http://api.example.com/auth/forgot-password",
       async (route) => {
         expect(route.request().postDataJSON()).toEqual({
           mobile: "09120000000",
@@ -143,7 +142,7 @@ test.describe("public authentication", () => {
     page,
   }) => {
     await page.route(
-      "https://api.example.com/auth/otp-request",
+      "http://api.example.com/auth/otp-request",
       async (route) => {
         expect(route.request().postDataJSON()).toEqual({
           mobile: "09120000000",
@@ -155,7 +154,7 @@ test.describe("public authentication", () => {
         });
       },
     );
-    await page.route("https://api.example.com/auth/register", async (route) => {
+    await page.route("http://api.example.com/auth/register", async (route) => {
       expect(route.request().postDataJSON()).toEqual({
         first_name: "Ada",
         last_name: "Lovelace",
@@ -168,7 +167,7 @@ test.describe("public authentication", () => {
         json: { access_token: "registered-token" },
       });
     });
-    await page.route("https://api.example.com/account/me", async (route) => {
+    await page.route("http://api.example.com/account/me", async (route) => {
       expect(route.request().headers().authorization).toBe(
         "Bearer registered-token",
       );
@@ -191,23 +190,23 @@ test.describe("public authentication", () => {
     await page.getByRole("button", { name: "Register" }).click();
 
     await expect(page).toHaveURL(/\/$/);
-    await expect(page.getByRole("link", { name: "kernel" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Logo" })).toBeVisible();
   });
 
   test("logs out and returns to login", async ({ page }) => {
-    await page.route("https://api.example.com/auth/login", async (route) => {
+    await page.route("http://api.example.com/auth/login", async (route) => {
       await route.fulfill({
         contentType: "application/json",
         json: { access_token: "access-token" },
       });
     });
-    await page.route("https://api.example.com/account/me", async (route) => {
+    await page.route("http://api.example.com/account/me", async (route) => {
       await route.fulfill({
         contentType: "application/json",
         json: accountResponse,
       });
     });
-    await page.route("https://api.example.com/auth/logout", async (route) => {
+    await page.route("http://api.example.com/auth/logout", async (route) => {
       expect(route.request().headers().authorization).toBe(
         "Bearer access-token",
       );
@@ -217,7 +216,7 @@ test.describe("public authentication", () => {
     await page.getByLabel("Username, email, or mobile").fill("ada");
     await page.getByLabel("Password").fill(syntheticCredential);
     await page.getByRole("button", { name: "Enter" }).click();
-    await expect(page.getByRole("link", { name: "kernel" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Logo" })).toBeVisible();
 
     await page.getByRole("button", { name: "Account" }).click();
     await page.getByRole("menuitem", { name: "Logout" }).click();
@@ -229,7 +228,7 @@ test.describe("public authentication", () => {
   test("redirects unauthenticated users away from protected routes", async ({
     page,
   }) => {
-    await page.route("https://api.example.com/account/me", async (route) => {
+    await page.route("http://api.example.com/account/me", async (route) => {
       await route.fulfill({
         contentType: "application/json",
         json: { message: "Unauthorized" },
@@ -237,7 +236,7 @@ test.describe("public authentication", () => {
       });
     });
     await page.route(
-      "https://api.example.com/auth/refresh-token",
+      "http://api.example.com/auth/refresh-token",
       async (route) => {
         await route.fulfill({
           contentType: "application/json",

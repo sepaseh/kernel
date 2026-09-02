@@ -6,9 +6,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AccountPage } from "@/features/account";
 import * as accountApi from "@/features/account/api";
 import * as authApi from "@/features/auth/api";
-import { ForgotPassPage } from "@/features/auth/forgot-pass";
-import { LoginPage } from "@/features/auth/login";
-import { RegisterPage } from "@/features/auth/register";
+import { ForgotPassPage } from "@/features/forgot-pass";
+import { LoginPage } from "@/features/login";
+import { RegisterPage } from "@/features/register";
 import { RolesPage } from "@/features/roles";
 import * as rolesApi from "@/features/roles/api";
 import type { Role } from "@/features/roles/types";
@@ -25,7 +25,6 @@ const mocks = vi.hoisted(() => {
     lastName: "Lovelace",
     mobile: "09120000000",
     permissions: [],
-    personnelCode: "1001",
     status: "active",
     username: "ada",
   };
@@ -60,8 +59,10 @@ const mocks = vi.hoisted(() => {
       notificationAPI: { success: notificationSuccess },
     },
     core: {
+      logos: { dark: "/dark-logo.svg", light: "/light-logo.svg" },
       setUser,
-      user: account as typeof account | null,
+      theme: "light" as const,
+      user: account as typeof account | undefined,
     },
     filterState: {
       filters: {},
@@ -103,7 +104,6 @@ vi.mock("@/features/roles/api", () => ({
 vi.mock("@/features/users/api", () => ({
   deleteUser: vi.fn(),
   fetchUser: vi.fn(),
-  fetchUserRoleOptions: vi.fn(),
   fetchUsers: vi.fn(),
   updateUserPassword: vi.fn(),
   updateUserStatus: vi.fn(),
@@ -186,7 +186,7 @@ beforeEach(() => {
   mocks.core.user = mocks.account;
   mocks.writeClipboard.mockResolvedValue(undefined);
   vi.mocked(api.deleteUser).mockResolvedValue(undefined);
-  vi.mocked(api.fetchUserRoleOptions).mockResolvedValue([]);
+  vi.mocked(api.fetchRoles).mockResolvedValue([]);
   vi.mocked(api.changePassword).mockResolvedValue(undefined);
   vi.mocked(api.forgotPassword).mockResolvedValue(undefined);
   vi.mocked(api.getAccount).mockResolvedValue(mocks.account);
@@ -216,6 +216,10 @@ describe("authentication pages", () => {
   it("submits login credentials and navigates home", async () => {
     const { user } = renderPage(<LoginPage />);
 
+    expect(screen.getByRole("img", { name: "logo" })).toHaveAttribute(
+      "src",
+      "/light-logo.svg",
+    );
     await user.type(screen.getByLabelText("identifier"), "ada");
     await user.type(screen.getByLabelText("password"), "secret");
     await user.click(screen.getByRole("button", { name: "enter" }));
@@ -309,7 +313,7 @@ describe("authentication pages", () => {
 
 describe("account page", () => {
   it("renders nothing until an account is available", () => {
-    mocks.core.user = null;
+    mocks.core.user = undefined;
 
     renderPage(<AccountPage />);
 
@@ -333,7 +337,6 @@ describe("account page", () => {
     expect(api.updateProfile).toHaveBeenCalledWith({
       firstName: "Augusta",
       lastName: "Lovelace",
-      personnelCode: "1001",
     });
     expect(mocks.setUser).toHaveBeenCalledWith(updatedAccount);
     expect(mocks.messageSuccess).toHaveBeenCalledWith("profileUpdated");
@@ -502,7 +505,7 @@ describe("users page", () => {
           isSystemAdmin: false,
           lastName: "Lovelace",
           mobile: "09120000000",
-          personnelCode: "1001",
+          roles: [],
           status: "active",
           username: "ada",
         },
@@ -533,7 +536,7 @@ describe("users page", () => {
       isSystemAdmin: false,
       lastName: "Lovelace",
       mobile: "09120000000",
-      personnelCode: "1001",
+      roles: [],
       status: "active" as const,
       username: "ada",
     };
@@ -541,10 +544,7 @@ describe("users page", () => {
       items: [userRecord],
       total: 1,
     });
-    vi.mocked(api.fetchUser).mockResolvedValue({
-      ...userRecord,
-      roleIds: [],
-    });
+    vi.mocked(api.fetchUser).mockResolvedValue(userRecord);
     const { user } = renderPage(<UsersPage />);
     Object.defineProperty(navigator, "clipboard", {
       configurable: true,
@@ -564,7 +564,12 @@ describe("users page", () => {
       status: "inactive",
     });
 
-    await user.click(screen.getByRole("button", { name: "systemAdmin" }));
+    await user.click(
+      within(screen.getByRole("row", { name: /Ada Lovelace/ })).getByRole(
+        "button",
+        { name: "no" },
+      ),
+    );
     confirmation = mocks.modalConfirm.mock.calls.at(-1)?.[0] as {
       onOk: () => Promise<void>;
     };

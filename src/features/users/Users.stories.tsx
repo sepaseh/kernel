@@ -1,26 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, mocked, userEvent, within } from "storybook/test";
 
-import {
-  sampleAccount,
-  user,
-  userOptions,
-  users,
-} from "@/test/storybook/fixtures";
+import { fetchRoles } from "@/features/roles";
+import { roles, sampleAccount, user, users } from "@/test/storybook/fixtures";
 import { StoryShell } from "@/test/storybook/StoryShell";
 
-import {
-  fetchUser,
-  fetchUserRoleOptions,
-  fetchUsers,
-  updateUserPassword,
-} from "./api";
+import { fetchUser, fetchUsers, updateUserPassword } from "./api";
 import { UsersPage } from "./Users";
 
 const meta = {
   async beforeEach() {
     mocked(fetchUser).mockResolvedValue(user);
-    mocked(fetchUserRoleOptions).mockResolvedValue(userOptions);
+    mocked(fetchRoles).mockResolvedValue(roles);
     mocked(fetchUsers).mockResolvedValue({ items: users, total: users.length });
     mocked(updateUserPassword).mockResolvedValue(undefined);
   },

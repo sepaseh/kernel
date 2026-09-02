@@ -1,4 +1,4 @@
-import { waitFor } from "@testing-library/react";
+import { waitFor, within } from "@testing-library/react";
 import type * as ReactI18next from "react-i18next";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -20,7 +20,6 @@ const mocks = vi.hoisted(() => {
     lastName: "Lovelace",
     mobile: "09120000000",
     permissions: ["users.read"],
-    personnelCode: "1001",
     status: "active",
     username: "ada",
   };
@@ -28,7 +27,10 @@ const mocks = vi.hoisted(() => {
   return {
     account,
     core: {
+      compact: false,
       currentRoute: "root",
+      logos: { dark: "/dark-logo.svg", light: "/light-logo.svg" },
+      setCompact: vi.fn(),
       setTheme: vi.fn(),
       setUser: vi.fn(),
       theme: "light",
@@ -68,8 +70,12 @@ vi.mock("@/app/lib", () => ({
 vi.mock("antd-style", () => ({
   useAntdToken: () => ({
     colorBgContainer: "#ffffff",
+    colorBgLayout: "#f5f5f5",
     colorTextBase: "#222222",
+    marginMD: 16,
+    paddingMD: 16,
     paddingSM: 8,
+    screenXXXL: 1920,
   }),
 }));
 
@@ -97,6 +103,7 @@ const renderLayout = () =>
   );
 
 beforeEach(() => {
+  mocks.core.compact = false;
   mocks.core.theme = "light";
   mocks.core.user = mocks.account;
   vi.mocked(getAccount).mockResolvedValue(mocks.account);
@@ -104,13 +111,45 @@ beforeEach(() => {
 });
 
 describe("DefaultLayout", () => {
+  it("constrains the header and page content to the shared container", () => {
+    const { container } = renderLayout();
+    const headerContent = container.querySelector("header")?.firstElementChild;
+    const main = container.querySelector("main");
+
+    expect(headerContent).toHaveStyle({
+      marginInline: "auto",
+      maxWidth: "1920px",
+    });
+    expect(main).toHaveStyle({
+      backgroundColor: "#f5f5f5",
+      marginInline: "auto",
+      maxWidth: "1920px",
+    });
+  });
+
+  it("shows the active page hierarchy in a breadcrumb", () => {
+    mocks.core.currentRoute = "users";
+
+    renderLayout();
+
+    const breadcrumb = screen.getByRole("navigation", { name: "breadcrumb" });
+    expect(breadcrumb).toHaveTextContent("dashboard/userManagement/users");
+    expect(
+      within(breadcrumb).getByRole("link", { name: "dashboard" }),
+    ).toHaveAttribute("href", "/");
+  });
+
   it("loads the account, registers session handling, and logs out", async () => {
     const { unmount, user } = renderLayout();
 
     expect(
       screen.getByRole("heading", { name: "Dashboard content" }),
     ).toBeVisible();
-    expect(screen.getByRole("link", { name: "kernel" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "logo" })).toBeVisible();
+    expect(screen.getByRole("img", { name: "logo" })).toHaveAttribute(
+      "src",
+      "/light-logo.svg",
+    );
     await waitFor(() => expect(getAccount).toHaveBeenCalledOnce());
     expect(mocks.core.setUser).toHaveBeenCalledWith(mocks.account);
     expect(setUnauthorizedHandler).toHaveBeenCalledWith(expect.any(Function));
@@ -125,6 +164,16 @@ describe("DefaultLayout", () => {
 
     unmount();
     expect(setUnauthorizedHandler).toHaveBeenLastCalledWith(null);
+  });
+
+  it("shows the account name beside the user icon as a tooltip", async () => {
+    const { user } = renderLayout();
+
+    await user.hover(screen.getByRole("button", { name: "account" }));
+
+    expect(await screen.findByRole("tooltip")).toHaveTextContent(
+      "Ada Lovelace",
+    );
   });
 
   it("clears the session when loading the account fails", async () => {
@@ -147,7 +196,7 @@ describe("DefaultLayout", () => {
 
     expect(container.querySelector(".ant-spin")).toBeInTheDocument();
     expect(
-      screen.queryByRole("link", { name: "kernel" }),
+      screen.queryByRole("link", { name: "logo" }),
     ).not.toBeInTheDocument();
   });
 
@@ -158,6 +207,31 @@ describe("DefaultLayout", () => {
     await user.click(await screen.findByText("darkMode"));
 
     expect(mocks.core.setTheme).toHaveBeenCalledWith("dark");
+  });
+
+  it("toggles compact mode from the item before logout", async () => {
+    const { user } = renderLayout();
+
+    await user.click(screen.getByRole("button", { name: "account" }));
+    const compactItem = await screen.findByText("compactMode");
+    const logoutItem = await screen.findByText("logout");
+    expect(
+      compactItem.compareDocumentPosition(logoutItem) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    await user.click(compactItem);
+
+    expect(mocks.core.setCompact).toHaveBeenCalledWith(true);
+  });
+
+  it("offers normal mode when compact mode is active", async () => {
+    mocks.core.compact = true;
+    const { user } = renderLayout();
+
+    await user.click(screen.getByRole("button", { name: "account" }));
+    await user.click(await screen.findByText("normalMode"));
+
+    expect(mocks.core.setCompact).toHaveBeenCalledWith(false);
   });
 
   it("clears the local session even when remote logout fails", async () => {

@@ -2,7 +2,6 @@ import type { TableProps } from "antd";
 import {
   Button,
   Col,
-  ConfigProvider,
   FloatButton,
   Form,
   Input,
@@ -10,16 +9,16 @@ import {
   Select,
   Table,
   Tooltip,
-  Typography,
 } from "antd";
 import { useAntdToken } from "antd-style";
 import { debounce } from "lodash";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router";
 
 import { useAntd, useCore } from "@/app/hooks";
 import { getRoutePermissions } from "@/app/lib";
+import { fetchRoles, type Role } from "@/features/roles";
 import { UserForm } from "@/features/users/components/user-form/UserForm";
 import { UserRoleForm } from "@/features/users/components/user-role-form/UserRoleForm";
 import { useFilterParams } from "@/shared/hooks";
@@ -30,38 +29,41 @@ import { Icon } from "@/shared/ui/icon";
 import {
   deleteUser,
   fetchUser,
-  fetchUserRoleOptions,
   fetchUsers,
   updateUserPassword,
   updateUserStatus,
   updateUserSystemAdmin,
 } from "./api";
 import { defaultPageSize, userDrawerKeys } from "./constants";
-import type { ListUsersQuery, User, UserOption, UserSummary } from "./types";
+import type {
+  User,
+  UserListQuery,
+  UserStatusRequest,
+  UserSystemAdminRequest,
+} from "./types";
 
 export const UsersPage = () => {
   const { t } = useTranslation();
-  const [data, setData] = useState<UserSummary[]>([]);
+  const [data, setData] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
-  const [roles, setRoles] = useState<UserOption[]>([]);
+  const [roles, setRoles] = useState<Role[]>([]);
   const [selectedData, setSelectedData] = useState<User>();
   const [total, setTotal] = useState(0);
-  const [filterForm] = Form.useForm<ListUsersQuery>();
+  const [form] = Form.useForm<UserListQuery>();
   const { messageAPI, modalAPI, notificationAPI } = useAntd();
   const { user } = useCore();
   const { canCreate, canDelete, canUpdate } = getRoutePermissions(
     "users",
     user,
   );
-  const { filters, setFilters } = useFilterParams<ListUsersQuery>();
+  const { filters, setFilters } = useFilterParams<UserListQuery>();
   const { pathname, search } = useLocation();
   const token = useAntdToken();
   const navigate = useNavigate();
-  const tableContainerRef = useRef<HTMLDivElement>(null);
   const offset = Number(filters.offset ?? "0");
   const current = Math.floor(offset / defaultPageSize) + 1;
   const isSystemAdmin = user?.isSystemAdmin ?? false;
-  const hasActions = canDelete || canUpdate || isSystemAdmin;
+  const hasActions = canDelete || canUpdate;
 
   const debouncedHandleFilter = useMemo(
     () => debounce(setFilters, 500),
@@ -71,6 +73,8 @@ export const UsersPage = () => {
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
+      form.resetFields();
+      form.setFieldsValue(filters);
       const response = await fetchUsers({
         ...filters,
         offset: String(offset),
@@ -83,9 +87,12 @@ export const UsersPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [filters, messageAPI, offset]);
+  }, [filters, form, messageAPI, offset]);
 
-  const openUserDrawer = async (id: string, hash: string) => {
+  const openUserDrawer = async (
+    id: User["id"],
+    hash: typeof userDrawerKeys.roles | typeof userDrawerKeys.update,
+  ) => {
     try {
       setLoading(true);
       const details = await fetchUser(id);
@@ -98,15 +105,13 @@ export const UsersPage = () => {
     }
   };
 
-  const handleStatus = (record: UserSummary) => {
+  const handleStatus = (id: User["id"], params: UserStatusRequest) => {
     modalAPI.confirm({
       cancelText: t("no"),
       okText: t("yes"),
       onOk: async () => {
         try {
-          await updateUserStatus(record.id, {
-            status: record.status === "active" ? "inactive" : "active",
-          });
+          await updateUserStatus(id, params);
           messageAPI.success(t("statusUpdated"));
           await fetchData();
         } catch (error) {
@@ -117,7 +122,7 @@ export const UsersPage = () => {
     });
   };
 
-  const handlePassword = (id: string) => {
+  const handlePassword = (id: User["id"]) => {
     if (!canUpdate) return;
 
     modalAPI.confirm({
@@ -141,15 +146,16 @@ export const UsersPage = () => {
     });
   };
 
-  const handleSystemAdmin = (record: UserSummary) => {
+  const handleSystemAdmin = (
+    id: User["id"],
+    params: UserSystemAdminRequest,
+  ) => {
     modalAPI.confirm({
       cancelText: t("no"),
       okText: t("yes"),
       onOk: async () => {
         try {
-          await updateUserSystemAdmin(record.id, {
-            isSystemAdmin: !record.isSystemAdmin,
-          });
+          await updateUserSystemAdmin(id, params);
           messageAPI.success(t("systemAdminUpdated"));
           await fetchData();
         } catch (error) {
@@ -160,7 +166,7 @@ export const UsersPage = () => {
     });
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: User["id"]) => {
     modalAPI.confirm({
       cancelText: t("no"),
       okButtonProps: { danger: true },
@@ -178,7 +184,7 @@ export const UsersPage = () => {
     });
   };
 
-  const tableColumns: TableProps<UserSummary>["columns"] = [
+  const tableColumns: TableProps<User>["columns"] = [
     {
       align: "center",
       key: "index",
@@ -195,49 +201,86 @@ export const UsersPage = () => {
     {
       align: "center",
       dataIndex: "email",
-      render: (value: string | null) => value ?? "-",
+      render: (_, { email }) => email || "-",
       title: t("email"),
     },
     {
       align: "center",
       dataIndex: "username",
-      render: (value: string | null) => value ?? "-",
+      render: (_, { username }) => username || "-",
       title: t("username"),
     },
-    {
-      align: "center",
-      dataIndex: "personnelCode",
-      title: t("personnelCode"),
-    },
-    {
-      align: "center",
-      dataIndex: "isSystemAdmin",
-      render: (value: boolean) => t(value ? "yes" : "no"),
-      title: t("systemAdmin"),
-    },
+    ...(isSystemAdmin
+      ? ([
+          {
+            align: "center",
+            dataIndex: "isSystemAdmin",
+            render: (_, { id, isSystemAdmin }) => {
+              const label = t(isSystemAdmin ? "yes" : "no");
+
+              return (
+                <Tooltip title={label}>
+                  <Button
+                    aria-label={label}
+                    color={isSystemAdmin ? "green" : "red"}
+                    icon={<Icon name={isSystemAdmin ? "check" : "close"} />}
+                    onClick={() =>
+                      handleSystemAdmin(id, { isSystemAdmin: !isSystemAdmin })
+                    }
+                    variant="link"
+                  />
+                </Tooltip>
+              );
+            },
+            title: t("systemAdmin"),
+            width: 120,
+          },
+        ] satisfies TableProps<User>["columns"])
+      : []),
     {
       align: "center",
       dataIndex: "status",
-      render: (_, record) =>
-        canUpdate ? (
-          <Button
-            color={record.status === "active" ? "green" : "red"}
-            onClick={() => handleStatus(record)}
-            variant="link"
-          >
-            {t(record.status)}
-          </Button>
-        ) : (
-          t(record.status)
-        ),
+      render: (_, { id, status }) => {
+        const active = status === "active";
+        const label = t(status);
+
+        return (
+          <Tooltip title={label}>
+            {canUpdate ? (
+              <Button
+                aria-label={label}
+                color={active ? "green" : "red"}
+                icon={<Icon name={active ? "check" : "close"} />}
+                onClick={() =>
+                  handleStatus(id, {
+                    status: active ? "inactive" : "active",
+                  })
+                }
+                variant="link"
+              />
+            ) : (
+              <span
+                aria-label={label}
+                role="img"
+                style={{
+                  color: active ? token.colorSuccess : token.colorError,
+                }}
+              >
+                <Icon name={active ? "check" : "close"} />
+              </span>
+            )}
+          </Tooltip>
+        );
+      },
       title: t("status"),
+      width: 120,
     },
     ...(hasActions
       ? [
           {
             align: "center" as const,
             key: "actions",
-            render: (_: unknown, record: UserSummary) => (
+            render: (_: unknown, record: User) => (
               <>
                 {canUpdate && (
                   <>
@@ -271,21 +314,10 @@ export const UsersPage = () => {
                     </Tooltip>
                   </>
                 )}
-                {isSystemAdmin && (
-                  <Tooltip title={t("systemAdmin")}>
-                    <Button
-                      aria-label={t("systemAdmin")}
-                      icon={<Icon name="bolt" />}
-                      onClick={() => handleSystemAdmin(record)}
-                      type="text"
-                    />
-                  </Tooltip>
-                )}
                 {canDelete && (
                   <Tooltip title={t("delete")}>
                     <Button
                       aria-label={t("delete")}
-                      danger
                       icon={<Icon name="delete" />}
                       onClick={() => handleDelete(record.id)}
                       type="text"
@@ -295,7 +327,7 @@ export const UsersPage = () => {
               </>
             ),
             title: t("action"),
-            width: 220,
+            width: 160,
           },
         ]
       : []),
@@ -305,11 +337,6 @@ export const UsersPage = () => {
     () => () => debouncedHandleFilter.cancel(),
     [debouncedHandleFilter],
   );
-
-  useEffect(() => {
-    filterForm.resetFields();
-    filterForm.setFieldsValue(filters);
-  }, [filterForm, filters]);
 
   useEffect(() => {
     void (() => {
@@ -322,24 +349,12 @@ export const UsersPage = () => {
 
     void (async () => {
       try {
-        setRoles(await fetchUserRoleOptions());
+        setRoles(await fetchRoles());
       } catch (error) {
         messageAPI.error(getErrorMessage(error));
       }
     })();
   }, [canUpdate, messageAPI]);
-
-  useEffect(() => {
-    const scrollRegion =
-      tableContainerRef.current?.querySelector<HTMLElement>(
-        ".ant-table-content",
-      );
-    if (!scrollRegion) return;
-
-    scrollRegion.tabIndex = 0;
-    scrollRegion.setAttribute("role", "region");
-    scrollRegion.setAttribute("aria-label", t("users"));
-  }, [data, t]);
 
   return (
     <>
@@ -347,54 +362,42 @@ export const UsersPage = () => {
         style={{
           flexGrow: 1,
           minWidth: 0,
-          paddingBlock: token.paddingMD,
-          paddingInline: token.paddingSM,
         }}
       >
-        <Typography.Title level={1} style={{ fontSize: 20 }}>
-          {t("users")}
-        </Typography.Title>
-        <Form<ListUsersQuery>
-          form={filterForm}
+        <Form<UserListQuery>
+          form={form}
           onValuesChange={(_, values) =>
             debouncedHandleFilter({ ...values, offset: undefined })
           }
         >
           <Row gutter={24}>
-            <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
-              <Form.Item name="name">
-                <Input allowClear placeholder={t("name")} />
+            <Col xs={24} sm={12} md={8} lg={6} xxl={4} xxxl={3}>
+              <Form.Item<UserListQuery> name="firstName">
+                <Input allowClear placeholder={t("firstName")} />
               </Form.Item>
             </Col>
-            <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
-              <Form.Item name="email">
-                <Input
-                  allowClear
-                  placeholder={t("email")}
-                  style={{ direction: "ltr" }}
-                />
+            <Col xs={24} sm={12} md={8} lg={6} xxl={4} xxxl={3}>
+              <Form.Item<UserListQuery> name="lastName">
+                <Input allowClear placeholder={t("lastName")} />
               </Form.Item>
             </Col>
-            <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
-              <Form.Item name="mobile">
-                <DigitsInput
-                  allowClear
-                  placeholder={t("mobile")}
-                  style={{ direction: "ltr" }}
-                />
+            <Col xs={24} sm={12} md={8} lg={6} xxl={4} xxxl={3}>
+              <Form.Item<UserListQuery> name="email">
+                <Input allowClear placeholder={t("email")} />
               </Form.Item>
             </Col>
-            <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
-              <Form.Item name="username">
-                <Input
-                  allowClear
-                  placeholder={t("username")}
-                  style={{ direction: "ltr" }}
-                />
+            <Col xs={24} sm={12} md={8} lg={6} xxl={4} xxxl={3}>
+              <Form.Item<UserListQuery> name="mobile">
+                <DigitsInput allowClear placeholder={t("mobile")} />
               </Form.Item>
             </Col>
-            <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
-              <Form.Item name="status">
+            <Col xs={24} sm={12} md={8} lg={6} xxl={4} xxxl={3}>
+              <Form.Item<UserListQuery> name="username">
+                <Input allowClear placeholder={t("username")} />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} md={8} lg={6} xxl={4} xxxl={3}>
+              <Form.Item<UserListQuery> name="status">
                 <Select
                   aria-label={t("status")}
                   allowClear
@@ -408,44 +411,40 @@ export const UsersPage = () => {
             </Col>
           </Row>
         </Form>
-        <div ref={tableContainerRef}>
-          <Table<UserSummary>
-            columns={tableColumns}
-            dataSource={data}
-            loading={loading}
-            onChange={({ current: page }) =>
-              setFilters({
-                ...filters,
-                offset: String(((page ?? 1) - 1) * defaultPageSize),
-              })
-            }
-            pagination={{
-              current,
-              pageSize: defaultPageSize,
-              showSizeChanger: false,
-              total,
-            }}
-            rowKey="id"
-            scroll={{ x: token.screenXL }}
-            size="small"
-          />
-        </div>
+        <Table<User>
+          columns={tableColumns}
+          dataSource={data}
+          loading={loading}
+          onChange={({ current: page }) =>
+            setFilters({
+              ...filters,
+              offset: String(((page ?? 1) - 1) * defaultPageSize),
+            })
+          }
+          pagination={{
+            current,
+            pageSize: defaultPageSize,
+            showSizeChanger: false,
+            total,
+          }}
+          rowKey="id"
+          scroll={{ x: token.screenXL }}
+          size="small"
+        />
       </div>
       {canCreate && (
-        <ConfigProvider theme={{ token: { colorPrimary: token.colorSuccess } }}>
-          <FloatButton
-            aria-label={t("create")}
-            icon={<Icon name="add" />}
-            onClick={() =>
-              navigate(
-                { hash: userDrawerKeys.create, pathname, search },
-                { state: true },
-              )
-            }
-            tooltip={t("create")}
-            type="primary"
-          />
-        </ConfigProvider>
+        <FloatButton
+          aria-label={t("create")}
+          icon={<Icon name="add" />}
+          onClick={() =>
+            navigate(
+              { hash: userDrawerKeys.create, pathname, search },
+              { state: true },
+            )
+          }
+          tooltip={t("create")}
+          type="primary"
+        />
       )}
       <UserForm data={selectedData} onFinish={fetchData} />
       <UserRoleForm

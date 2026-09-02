@@ -12,7 +12,8 @@ describe("case transforms", () => {
         first_name: "Ada",
         onComplete: callback,
         role_ids: ["role-1"],
-        profile: { created_at: 1 },
+        profile: { created_at: 1, deleted_at: null },
+        username: null,
       }),
     ).toEqual({
       displayName: "Ada",
@@ -27,6 +28,7 @@ describe("case transforms", () => {
     expect(
       toSnakeCase({
         firstName: "Ada",
+        middleName: null,
         roles: [{ roleId: "role-1" }],
         profile: { createdAt: 1 },
       }),

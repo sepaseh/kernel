@@ -57,41 +57,45 @@ npm run knip       # detect unused files, exports, and dependencies
 
 | Variable                 | Description                                              | Fallback                |
 | ------------------------ | -------------------------------------------------------- | ----------------------- |
-| `MOCK_ALLOWED_ORIGIN`    | Exact frontend origin allowed by the local mock API CORS | `http://127.0.0.1:5173` |
+| `MOCK_ALLOWED_ORIGIN`    | Exact frontend origin allowed by the local mock API CORS | `http://localhost:5173` |
 | `VITE_API_BASE_URL`      | Backend HTTP API base URL (development fallback only)    | `http://<current-host>` |
 | `VITE_APP_BASE_URL`      | Router basename / deployed base path                     | empty string            |
-| `VITE_OBSERVABILITY_URL` | Optional HTTPS event collector                           | disabled                |
+| `VITE_OBSERVABILITY_URL` | Optional HTTP event collector                            | disabled                |
 | `VITE_RELEASE_ID`        | Immutable release identifier attached to events          | `local`                 |
 
 Example values are available in `.env.example`.
 
 For local development without a backend, start `npm run server`, set
-`VITE_API_BASE_URL=http://127.0.0.1:3000`, and sign in with `09123456789` /
+`VITE_API_BASE_URL=http://localhost:3000`, and sign in with `09123456789` /
 `password123`. See the [mock server guide](server/README.md).
 
 ## Routes
 
-| Path                    | Page                                   | Access          |
-| ----------------------- | -------------------------------------- | --------------- |
-| `/auth`                 | Login                                  | public          |
-| `/auth/forgot-password` | Forgot password                        | public          |
-| `/auth/register`        | Registration                           | public          |
-| `/`                     | Empty dashboard starter page           | authenticated   |
-| `/account`              | Profile, username, email, and password | authenticated   |
-| `/roles`                | Roles and permissions                  | `roles.read`    |
-| `/users`                | Users                                  | `users.read`    |
-| `*`                     | Not found                              | public fallback |
+| Path                    | Page                                   | Access            |
+| ----------------------- | -------------------------------------- | ----------------- |
+| `/auth`                 | Login                                  | public            |
+| `/auth/forgot-password` | Forgot password                        | public            |
+| `/auth/register`        | Registration                           | public            |
+| `/`                     | Empty dashboard starter page           | authenticated     |
+| `/account`              | Profile, username, email, and password | authenticated     |
+| `/calendar`             | Calendar                               | `calendar.read`   |
+| `/roles`                | Roles and permissions                  | `roles.read`      |
+| `/settings`             | System settings                        | `settings.update` |
+| `/users`                | Users                                  | `users.read`      |
+| `*`                     | Not found                              | public fallback   |
 
 ## API Examples
 
 The API layer includes reusable authentication and account endpoints alongside generic administration examples.
 
-| Area    | Endpoint examples                                                                                                                             |
-| ------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| Auth    | `/auth/register`, `/auth/login`, `/auth/otp-request`, `/auth/forgot-password`, `/auth/refresh-token`, `/auth/change-password`, `/auth/logout` |
-| Account | `/account/me`, `/account/update-profile`, `/account/update-username`, `/account/request-email-verification`, `/account/verify-email`          |
-| Users   | `/users`, `/users/:id`, `/users/:id/roles`, `/users/:id/password`, `/users/:id/status`, `/users/:id/system-admin`                             |
-| Roles   | `/roles`, `/roles/:id`, `/permissions`                                                                                                        |
+| Area     | Endpoint examples                                                                                                                             |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Auth     | `/auth/register`, `/auth/login`, `/auth/otp-request`, `/auth/forgot-password`, `/auth/refresh-token`, `/auth/change-password`, `/auth/logout` |
+| Account  | `/account/me`, `/account/update-profile`, `/account/update-username`, `/account/request-email-verification`, `/account/verify-email`          |
+| Calendar | `/calendar`, `/calendar/:date`                                                                                                                |
+| Users    | `/users`, `/users/:id`, `/users/:id/roles`, `/users/:id/password`, `/users/:id/status`, `/users/:id/system-admin`                             |
+| Roles    | `/roles`, `/roles/:id`, `/roles/permissions`                                                                                                  |
+| Settings | `/settings`, `/languages`, `/files`                                                                                                           |
 
 Protected API requests automatically make one refresh attempt after a `401`.
 Concurrent failures share the same `/auth/refresh-token` request, whose
@@ -114,10 +118,12 @@ create, delete, and update actions through `getRoutePermissions(route, user)`:
 
 ```ts
 // Route access
-"roles.read" | "users.read";
+"calendar.read" | "roles.read" | "users.read";
+("settings.update");
 
 // Route actions
 "roles.create" | "roles.delete" | "roles.update";
+("calendar.update");
 "users.create" | "users.delete" | "users.update";
 ```
 
@@ -129,7 +135,7 @@ Password pages/actions only require a valid auth token.
 src/
   app/          Application composition, routes, providers, access policy, and app hooks
   assets/       Fonts and global styles
-  features/     Account, authentication, role, user, and dashboard slices
+  features/     Account, authentication, dashboard, role, settings, and user slices
   layouts/      Auth and authenticated application shells
   shared/       Reusable API infrastructure, config, hooks, i18n, storage, UI, and utilities
   test/         Shared test infrastructure and cross-feature integration tests

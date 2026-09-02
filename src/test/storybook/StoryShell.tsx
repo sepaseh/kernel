@@ -15,7 +15,8 @@ type StoryShellProps = {
   initialEntries?: string[];
   initialLanguage?: Language;
   initialTheme?: Theme;
-  initialUser?: Account | null;
+  initialUser?: Account;
+  withUser?: boolean;
 };
 
 export const StoryShell: FC<StoryShellProps> = ({
@@ -24,24 +25,35 @@ export const StoryShell: FC<StoryShellProps> = ({
   initialLanguage = "en",
   initialTheme = "light",
   initialUser = sampleAccount,
+  withUser = true,
 }) => {
+  const [compact, setCompact] = useState(false);
   const [language, setLanguage] = useState(initialLanguage);
+  const [logos, setLogos] = useState<CoreContextValue["logos"]>();
   const [theme, setTheme] = useState(initialTheme);
+  const [themePalettes, setThemePalettes] =
+    useState<CoreContextValue["themePalettes"]>();
   const [user, setUser] = useState<CoreContextValue["user"]>(
-    initialUser ?? undefined,
+    withUser ? initialUser : undefined,
   );
   const value = useMemo<CoreContextValue>(
     () => ({
+      compact,
       currentRoute: "root",
       language,
+      logos,
+      setCompact,
       setCurrentRoute: () => undefined,
       setLanguage,
+      setLogos,
       setTheme,
+      setThemePalettes,
       setUser,
       theme,
+      themePalettes,
       user,
     }),
-    [language, theme, user],
+    [compact, language, logos, theme, themePalettes, user],
   );
 
   return (

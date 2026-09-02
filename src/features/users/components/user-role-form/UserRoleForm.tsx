@@ -1,12 +1,14 @@
+import type { FormProps } from "antd";
 import { Form, Select } from "antd";
 import { type FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 
 import { useAntd } from "@/app/hooks";
+import type { Role } from "@/features/roles";
 import { updateUserRoles } from "@/features/users/api";
 import { userDrawerKeys } from "@/features/users/constants";
-import type { User, UserOption, UserRoleRequest } from "@/features/users/types";
+import type { User, UserRoleRequest } from "@/features/users/types";
 import { useGoBack } from "@/shared/hooks";
 import { getErrorMessage } from "@/shared/lib";
 import { FormDrawer } from "@/shared/ui/form-drawer";
@@ -14,7 +16,7 @@ import { FormDrawer } from "@/shared/ui/form-drawer";
 type UserRoleFormProps = {
   data?: User;
   onFinish: () => void;
-  options: { roles: UserOption[] };
+  options: { roles: Role[] };
 };
 
 export const UserRoleForm: FC<UserRoleFormProps> = ({
@@ -30,7 +32,9 @@ export const UserRoleForm: FC<UserRoleFormProps> = ({
   const goBack = useGoBack();
   const open = hash === userDrawerKeys.roles && !!data;
 
-  const handleSubmit = async (values: UserRoleRequest) => {
+  const handleSubmit: FormProps<UserRoleRequest>["onFinish"] = async (
+    values,
+  ) => {
     if (submitting || !data) return;
 
     try {
@@ -46,6 +50,12 @@ export const UserRoleForm: FC<UserRoleFormProps> = ({
     }
   };
 
+  const handleOpenChange = (isOpen: boolean) => {
+    if (!isOpen) return;
+
+    form.focusField("roleIds");
+  };
+
   useEffect(() => {
     if (hash === userDrawerKeys.roles && !data) goBack();
   }, [data, goBack, hash]);
@@ -56,13 +66,10 @@ export const UserRoleForm: FC<UserRoleFormProps> = ({
       return;
     }
 
-    if (data) form.setFieldsValue({ roleIds: data.roleIds });
+    if (data) {
+      form.setFieldsValue({ roleIds: data.roles.map(({ id }) => id) });
+    }
   }, [data, form, open]);
-
-  const handleOpenChange = (isOpen: boolean) => {
-    if (isOpen) form.focusField("roleIds");
-    else setSubmitting(false);
-  };
 
   return (
     <FormDrawer
@@ -77,7 +84,7 @@ export const UserRoleForm: FC<UserRoleFormProps> = ({
       <Form<UserRoleRequest>
         form={form}
         layout="vertical"
-        onFinish={(values) => void handleSubmit(values)}
+        onFinish={handleSubmit}
       >
         <Form.Item label={t("roles")} name="roleIds">
           <Select

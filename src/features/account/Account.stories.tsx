@@ -21,7 +21,7 @@ export const Default: Story = {};
 
 export const WithoutAuthenticatedUser: Story = {
   render: () => (
-    <StoryShell initialEntries={["/account"]} initialUser={null}>
+    <StoryShell initialEntries={["/account"]} withUser={false}>
       <AccountPage />
     </StoryShell>
   ),

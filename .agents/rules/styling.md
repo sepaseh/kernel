@@ -14,6 +14,9 @@ Ant Design is the source of truth for theming.
 - Use inline `style` or Ant Design `styles` only for local layout tweaks.
 - Put global styles in `src/assets/styles/index.css`.
 - Keep `index.html` free of page-specific styling.
+- Keep delete triggers in tables visually neutral; do not mark their icon
+  buttons as `danger` or red. Apply the danger treatment to the destructive
+  confirmation button inside the modal instead.
 
 ## CSS property order
 

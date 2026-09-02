@@ -30,7 +30,7 @@ test.describe("localized critical journeys", () => {
         localStorage.setItem("language", language);
         localStorage.setItem("theme", "light");
       }, locale.language);
-      await page.route("https://api.example.com/auth/login", async (route) => {
+      await page.route("http://api.example.com/auth/login", async (route) => {
         expect(route.request().postDataJSON()).toEqual({
           identifier: "ada",
           password: syntheticCredential,
@@ -40,7 +40,7 @@ test.describe("localized critical journeys", () => {
           json: { access_token: "access-token" },
         });
       });
-      await page.route("https://api.example.com/account/me", async (route) => {
+      await page.route("http://api.example.com/account/me", async (route) => {
         await route.fulfill({
           contentType: "application/json",
           json: {
@@ -51,7 +51,6 @@ test.describe("localized critical journeys", () => {
             last_name: "Lovelace",
             mobile: "09120000000",
             permissions: [],
-            personnel_code: "100",
             status: "active",
             username: "ada",
           },
@@ -75,7 +74,11 @@ test.describe("localized critical journeys", () => {
       await page.getByRole("button", { name: locale.enter }).click();
 
       await expect(page).toHaveURL(/\/$/);
-      await expect(page.getByRole("link", { name: "kernel" })).toBeVisible();
+      await expect(
+        page.getByRole("link", {
+          name: locale.language === "fa" ? "لوگو" : "Logo",
+        }),
+      ).toBeVisible();
       await expect(page.locator("html")).toHaveAttribute(
         "dir",
         locale.direction,

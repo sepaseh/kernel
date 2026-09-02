@@ -1,15 +1,15 @@
 import type { MenuProps } from "antd";
 import {
   Avatar,
+  Breadcrumb,
   Button,
-  Divider,
   Drawer,
   Dropdown,
   Flex,
   Grid,
   Menu,
   Spin,
-  Typography,
+  Tooltip,
 } from "antd";
 import { useAntdToken } from "antd-style";
 import { useCallback, useEffect, useState } from "react";
@@ -31,7 +31,16 @@ export const DefaultLayout = () => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const { lg } = useBreakpoint();
-  const { currentRoute, setTheme, setUser, theme: coreTheme, user } = useCore();
+  const {
+    compact,
+    currentRoute,
+    logos,
+    setCompact,
+    setTheme,
+    setUser,
+    theme: coreTheme,
+    user,
+  } = useCore();
   const token = useAntdToken();
   const navigate = useNavigate();
   const allowedNavigation = getAllowedNavigation(user);
@@ -57,6 +66,41 @@ export const DefaultLayout = () => {
     });
 
   const menuItems = createMenuItems(allowedNavigation);
+
+  const findBreadcrumbItems = (
+    items: readonly NavigationItem[],
+  ): { title: string }[] | undefined => {
+    for (const item of items) {
+      if ("route" in item) {
+        if (item.route === currentRoute) {
+          return [{ title: t(routeTree[item.route].label) }];
+        }
+
+        continue;
+      }
+
+      const children = findBreadcrumbItems(item.children);
+      if (children) return [{ title: t(item.label) }, ...children];
+    }
+  };
+
+  const currentRouteConfig = routeTree[currentRoute];
+  const currentBreadcrumbItems =
+    findBreadcrumbItems(allowedNavigation) ??
+    ("label" in currentRouteConfig
+      ? [{ title: t(currentRouteConfig.label) }]
+      : []);
+  const breadcrumbItems =
+    currentRoute === "root"
+      ? currentBreadcrumbItems
+      : [
+          {
+            title: (
+              <Link to={routeTree.root.path}>{t(routeTree.root.label)}</Link>
+            ),
+          },
+          ...currentBreadcrumbItems,
+        ];
 
   const clearSession = useCallback(() => {
     clearAccessToken();
@@ -84,23 +128,30 @@ export const DefaultLayout = () => {
 
   if (!user) return <Spin fullscreen />;
 
+  const userName = `${user.firstName} ${user.lastName}`.trim();
+
   return (
     <>
-      <header>
+      <header style={{ backgroundColor: token.colorBgContainer }}>
         <Flex
           align="center"
           gap={16}
           justify="space-between"
           style={{
-            backgroundColor: token.colorBgContainer,
             height: 64,
+            marginInline: "auto",
+            maxWidth: token.screenXXXL,
             paddingInline: token.paddingSM,
           }}
         >
-          <Link to={routeTree.root.path}>
-            <Typography.Text strong style={{ color: token.colorTextBase }}>
-              kernel
-            </Typography.Text>
+          <Link aria-label={t("logo")} to={routeTree.root.path}>
+            {logos?.[coreTheme] ? (
+              <img
+                alt={t("logo")}
+                src={logos[coreTheme]}
+                style={{ display: "block", height: 28, width: "auto" }}
+              />
+            ) : null}
           </Link>
           {lg ? (
             <Menu
@@ -137,49 +188,63 @@ export const DefaultLayout = () => {
                   onClick: () => setTheme(darkMode ? "light" : "dark"),
                 },
                 {
+                  icon: <Icon name={compact ? "expand" : "compact"} />,
+                  key: "3",
+                  label: t(compact ? "normalMode" : "compactMode"),
+                  onClick: () => setCompact(!compact),
+                },
+                {
                   danger: true,
                   icon: <Icon name="logout" />,
-                  key: "3",
+                  key: "4",
                   label: t("logout"),
                   onClick: () => void handleLogout(),
                 },
               ],
             }}
-            popupRender={(menu) => (
-              <>
-                <Flex
-                  style={{
-                    backgroundColor: token.colorBgContainer,
-                    gap: 4,
-                    minWidth: 200,
-                    paddingBlock: 8,
-                    paddingInline: 16,
-                  }}
-                  vertical
-                >
-                  <Typography.Text
-                    style={{ alignItems: "center", display: "flex", gap: 8 }}
-                  >
-                    <Icon name="user" size={14} />
-                    {`${user.firstName} ${user.lastName}`.trim()}
-                  </Typography.Text>
-                </Flex>
-                <Divider variant="dashed" />
-                {menu}
-              </>
-            )}
           >
-            <Button
-              aria-label={t("account")}
-              icon={<Avatar icon={<Icon name="user" />} />}
-              type="text"
-            />
+            <Tooltip placement="right" title={userName}>
+              <Button
+                aria-label={t("account")}
+                icon={<Avatar icon={<Icon name="user" />} />}
+                type="text"
+              />
+            </Tooltip>
           </Dropdown>
         </Flex>
       </header>
       <main
-        style={{ display: "flex", flexGrow: 1, minWidth: 0, width: "100%" }}
+        style={{
+          backgroundColor: token.colorBgLayout,
+          display: "flex",
+          flexDirection: "column",
+          flexGrow: 1,
+          marginInline: "auto",
+          maxWidth: token.screenXXXL,
+          minWidth: 0,
+          paddingBlock: token.paddingMD,
+          paddingInline: token.paddingSM,
+          width: "100%",
+        }}
       >
+        <h1
+          style={{
+            clip: "rect(0 0 0 0)",
+            clipPath: "inset(50%)",
+            height: 1,
+            overflow: "hidden",
+            position: "absolute",
+            whiteSpace: "nowrap",
+            width: 1,
+          }}
+        >
+          {currentBreadcrumbItems.at(-1)?.title}
+        </h1>
+        <Breadcrumb
+          aria-label={t("breadcrumb")}
+          items={breadcrumbItems}
+          style={{ marginBottom: token.marginMD }}
+        />
         <Outlet />
       </main>
       <Drawer

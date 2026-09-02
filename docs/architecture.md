@@ -6,7 +6,8 @@
 
 The main runtime pieces are:
 
-- `src/app/providers/core/Core.tsx` for language, theme, current route, and authenticated user state.
+- `src/app/providers/core/Core.tsx` for language, theme, logos, remote palettes,
+  current route, and authenticated user state.
 - `src/app/providers/antd/Antd.tsx` for Ant Design locale, direction, and theme tokens.
 - `src/app/Routes.tsx` for browser routing.
 
@@ -17,11 +18,19 @@ The main runtime pieces are:
 `CoreProvider` stores global UI state in React state:
 
 - `currentRoute`
+- `compact`
 - `language`
+- `logos`
 - `theme`
+- `themePalettes`
 - `user`
 
-It also synchronizes language and theme with local storage and configures Day.js to use the Jalali calendar when the active language is Persian.
+It synchronizes compact mode, language, and theme with local storage, loads public application
+settings at startup, and configures Day.js to use the Jalali calendar when the
+active language is Persian. Server-provided language, logos, and light/dark
+palettes become the active application values.
+Compact mode composes Ant Design's `compactAlgorithm` with the active light or
+dark algorithm and is toggled from the account menu.
 
 ### Ant Design Provider
 
@@ -29,6 +38,11 @@ It also synchronizes language and theme with local storage and configures Day.js
 mounts Ant Design's application boundary. Components obtain message, modal,
 notification, and token APIs through `useAntd`, which delegates to
 `AntdApp.useApp` rather than a project-owned context.
+Component-wide visual decisions also belong here; for example, primary
+`FloatButton` controls use the active theme's success colors without page-level
+`ConfigProvider` wrappers.
+Server-provided palette fields are merged with Kernel defaults for the active
+theme, so incomplete settings remain usable.
 
 ## Routing
 
@@ -64,8 +78,10 @@ The starter pages are:
 
 - Login
 - Account profile and credentials
+- Calendar
 - Empty dashboard
 - Roles and permissions
+- System settings
 - Users
 - Not found
 
@@ -74,6 +90,25 @@ Route-level screens, forms, domain API helpers, and their tests stay together in
 utilities in `src/shared/lib`, and HTTP/token infrastructure in `src/shared/api`.
 Application composition belongs in `src/app`; layouts and static assets retain
 their dedicated top-level directories.
+
+Public authentication screens are independent top-level features under
+`src/features/login`, `src/features/register`, and `src/features/forgot-pass`.
+Shared authentication requests and contracts remain in `src/features/auth` and
+are consumed through that feature's root public API.
+
+The user creation form generates a temporary password, submits it with the user
+profile, attempts to copy it to the clipboard, and shows it in an Ant Design
+notification. Editing identity fields does not generate or change a password;
+password changes remain a separate user action.
+
+The settings feature manages the language catalog, light/dark logos, and theme
+colors. Successful updates are reflected immediately through `CoreProvider`;
+the login page and Ant Design provider consume the same shared state.
+
+The calendar feature follows the earlier Dima administration flow: it loads a
+flat list of Gregorian dates and lets authorized users add or remove a date by
+selecting its calendar cell. It owns the `/calendar` endpoint contract and does
+not depend on business-profile features.
 
 Feature-owned UI lives under `src/features/<feature>/components`. Use a scoped
 kebab-case directory for each component and match the implementation filename

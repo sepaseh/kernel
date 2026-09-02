@@ -1,13 +1,5 @@
 import type { TableProps } from "antd";
-import {
-  Button,
-  ConfigProvider,
-  Flex,
-  FloatButton,
-  Table,
-  Tooltip,
-  Typography,
-} from "antd";
+import { Button, Flex, FloatButton, Table, Tooltip } from "antd";
 import { useAntdToken } from "antd-style";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -51,7 +43,7 @@ export const RolesPage = () => {
     }
   }, [messageAPI]);
 
-  const handleUpdate = async (id: string) => {
+  const handleUpdate = async (id: Role["id"]) => {
     try {
       setLoading(true);
       setSelectedData(await fetchRole(id));
@@ -66,7 +58,7 @@ export const RolesPage = () => {
     }
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: Role["id"]) => {
     modalAPI.confirm({
       cancelText: t("no"),
       okButtonProps: { danger: true },
@@ -99,8 +91,9 @@ export const RolesPage = () => {
     {
       align: "center",
       dataIndex: "permissions",
-      render: (values: string[]) => values.length,
+      render: (_, { permissions }) => permissions.length,
       title: t("permissions"),
+      width: 120,
     },
     {
       align: "center",
@@ -121,7 +114,6 @@ export const RolesPage = () => {
             <Tooltip title={t("delete")}>
               <Button
                 aria-label={t("delete")}
-                danger
                 icon={<Icon name="delete" size={14} />}
                 onClick={() => handleDelete(record.id)}
                 type="text"
@@ -131,7 +123,7 @@ export const RolesPage = () => {
         </Flex>
       ),
       title: t("action"),
-      width: 100,
+      width: 80,
     },
   ];
 
@@ -172,14 +164,9 @@ export const RolesPage = () => {
         style={{
           flexGrow: 1,
           minWidth: 0,
-          paddingBlock: token.paddingMD,
-          paddingInline: token.paddingSM,
         }}
         ref={tableContainerRef}
       >
-        <Typography.Title level={1} style={{ fontSize: 20 }}>
-          {t("roles")}
-        </Typography.Title>
         <Table<Role>
           columns={tableColumns}
           dataSource={data}
@@ -191,20 +178,18 @@ export const RolesPage = () => {
         />
       </div>
       {canCreate && (
-        <ConfigProvider theme={{ token: { colorPrimary: token.colorSuccess } }}>
-          <FloatButton
-            aria-label={t("create")}
-            icon={<Icon name="add" />}
-            onClick={() =>
-              navigate(
-                { hash: roleDrawerKeys.create, pathname, search },
-                { state: true },
-              )
-            }
-            tooltip={t("create")}
-            type="primary"
-          />
-        </ConfigProvider>
+        <FloatButton
+          aria-label={t("create")}
+          icon={<Icon name="add" />}
+          onClick={() =>
+            navigate(
+              { hash: roleDrawerKeys.create, pathname, search },
+              { state: true },
+            )
+          }
+          tooltip={t("create")}
+          type="primary"
+        />
       )}
       <RoleForm
         data={selectedData}

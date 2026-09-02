@@ -26,7 +26,7 @@ cp .env.example .env.local
 Update `.env.local` for your backend:
 
 ```env
-VITE_API_BASE_URL=http://127.0.0.1:3000
+VITE_API_BASE_URL=http://localhost:3000
 VITE_APP_BASE_URL=/
 ```
 
@@ -36,7 +36,7 @@ Start the app:
 npm run dev
 ```
 
-Vite is configured with `--host`, so the development server can be reached from the local network when your firewall allows it.
+Vite is configured to bind to `localhost`, matching the mock API CORS origin.
 
 ## Local Mock API
 
@@ -48,7 +48,7 @@ terminal:
 npm run server
 ```
 
-Use `VITE_API_BASE_URL=http://127.0.0.1:3000` and sign in with identifier
+Use `VITE_API_BASE_URL=http://localhost:3000` and sign in with identifier
 `09123456789` and password `password123`. The server provides local JWT and
 refresh-cookie behavior, authenticated account data, list filtering, CORS,
 parameterized routes, and saved error simulation without contacting an external
@@ -62,7 +62,7 @@ npm run server:test
 
 See the [mock server guide](../server/README.md) for health, route-discovery, and
 error-simulation endpoints. Credentialed CORS accepts only the exact
-`MOCK_ALLOWED_ORIGIN`, which defaults to `http://127.0.0.1:5173`. The mock and
+`MOCK_ALLOWED_ORIGIN`, which defaults to `http://localhost:5173`. The mock and
 its local signing secret are for development only.
 
 ## Quality Checks

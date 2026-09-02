@@ -6,7 +6,6 @@
   "last_name": "رضایی",
   "mobile": "09123456789",
   "permissions": ["users.read", "users.create", "users.update"],
-  "personnel_code": "EMP-1001",
   "status": "active",
   "username": "user"
 }

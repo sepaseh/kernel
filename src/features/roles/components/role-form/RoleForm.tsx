@@ -1,4 +1,4 @@
-import { Checkbox, Divider, Flex, Form, Input } from "antd";
+import { Checkbox, Divider, Flex, Form, type FormProps, Input } from "antd";
 import { type FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
@@ -35,7 +35,7 @@ export const RoleForm: FC<RoleFormProps> = ({
   const isUpdate = hash === roleDrawerKeys.update && !!data;
   const open = hash === roleDrawerKeys.create || isUpdate;
 
-  const handleSubmit = async (values: RoleRequest) => {
+  const handleSubmit: FormProps<RoleRequest>["onFinish"] = async (values) => {
     if (submitting) return;
 
     try {
@@ -56,30 +56,15 @@ export const RoleForm: FC<RoleFormProps> = ({
     if (hash === roleDrawerKeys.update && !data) goBack();
   }, [data, goBack, hash]);
 
-  useEffect(() => {
-    if (!open) {
-      form.resetFields();
-      return;
-    }
-
-    if (isUpdate && data) {
-      form.setFieldsValue({
-        name: data.name,
-        permissions: data.permissions,
-      });
-    } else {
-      form.resetFields();
-    }
-  }, [data, form, isUpdate, open]);
-
-  const handleOpenChange = (isOpen: boolean) => {
-    if (isOpen) form.focusField("name");
-    else setSubmitting(false);
-  };
-
   return (
     <FormDrawer
-      afterOpenChange={handleOpenChange}
+      afterOpenChange={(isOpen) => {
+        if (isOpen) {
+          form.focusField("name");
+        } else {
+          form.resetFields();
+        }
+      }}
       autoFocus={false}
       onClose={() => goBack()}
       onSubmit={() => form.submit()}
@@ -89,14 +74,23 @@ export const RoleForm: FC<RoleFormProps> = ({
     >
       <Form<RoleRequest>
         form={form}
-        initialValues={{ permissions: [] }}
+        initialValues={
+          isUpdate
+            ? { name: data.name, permissions: data.permissions }
+            : { permissions: [] }
+        }
+        key={data?.id ?? "create"}
         layout="vertical"
-        onFinish={(values) => void handleSubmit(values)}
+        onFinish={handleSubmit}
       >
-        <Form.Item label={t("name")} name="name" rules={[{ required: true }]}>
+        <Form.Item<RoleRequest>
+          label={t("name")}
+          name="name"
+          rules={[{ required: true }]}
+        >
           <Input />
         </Form.Item>
-        <Form.Item label={t("permissions")} name="permissions">
+        <Form.Item<RoleRequest> label={t("permissions")} name="permissions">
           <Checkbox.Group
             style={{ display: "flex", flexDirection: "column", gap: 16 }}
           >

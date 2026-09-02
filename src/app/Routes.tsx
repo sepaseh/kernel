@@ -21,6 +21,10 @@ const AuthLayout = lazy(async () => {
   const { AuthLayout } = await import("@/layouts/auth");
   return { default: AuthLayout };
 });
+const CalendarPage = lazy(async () => {
+  const { CalendarPage } = await import("@/features/calendar");
+  return { default: CalendarPage };
+});
 const DashboardPage = lazy(async () => {
   const { DashboardPage } = await import("@/features/dashboard");
   return { default: DashboardPage };
@@ -30,20 +34,24 @@ const DefaultLayout = lazy(async () => {
   return { default: DefaultLayout };
 });
 const ForgotPassPage = lazy(async () => {
-  const { ForgotPassPage } = await import("@/features/auth/forgot-pass");
+  const { ForgotPassPage } = await import("@/features/forgot-pass");
   return { default: ForgotPassPage };
 });
 const LoginPage = lazy(async () => {
-  const { LoginPage } = await import("@/features/auth/login");
+  const { LoginPage } = await import("@/features/login");
   return { default: LoginPage };
 });
 const RegisterPage = lazy(async () => {
-  const { RegisterPage } = await import("@/features/auth/register");
+  const { RegisterPage } = await import("@/features/register");
   return { default: RegisterPage };
 });
 const RolesPage = lazy(async () => {
   const { RolesPage } = await import("@/features/roles");
   return { default: RolesPage };
+});
+const SettingsPage = lazy(async () => {
+  const { SettingsPage } = await import("@/features/settings");
+  return { default: SettingsPage };
 });
 const UsersPage = lazy(async () => {
   const { UsersPage } = await import("@/features/users");
@@ -76,11 +84,13 @@ const wrapRoute = (route: RouteKey, element: ReactNode) => (
 const pageRegistry = {
   account: <AccountPage />,
   auth: <LoginPage />,
+  calendar: <CalendarPage />,
   forgotPassword: <ForgotPassPage />,
   notFound: <NotFoundPage />,
   register: <RegisterPage />,
   roles: <RolesPage />,
   root: <DashboardPage />,
+  settings: <SettingsPage />,
   users: <UsersPage />,
 } satisfies Record<RouteKey, ReactNode>;
 

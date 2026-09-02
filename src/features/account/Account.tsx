@@ -1,5 +1,5 @@
 import type { FormProps } from "antd";
-import { Button, Card, Col, Flex, Form, Input, Row, Typography } from "antd";
+import { Button, Card, Col, Flex, Form, Input, Row } from "antd";
 import { useAntdToken } from "antd-style";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -18,10 +18,13 @@ import {
   verifyEmail,
 } from "./api";
 import type {
+  Account,
   UpdateProfileRequest,
   UpdateUsernameRequest,
   VerifyEmailRequest,
 } from "./types";
+
+type ProfileFormParams = UpdateProfileRequest & Pick<Account, "mobile">;
 
 type PasswordFormParams = ChangePasswordParams & {
   confirmPassword: string;
@@ -37,11 +40,93 @@ export const AccountPage = () => {
   const [usernameSubmitting, setUsernameSubmitting] = useState(false);
   const { messageAPI } = useAntd();
   const { setUser, user } = useCore();
-  const token = useAntdToken();
   const [emailForm] = Form.useForm<VerifyEmailRequest>();
   const [passwordForm] = Form.useForm<PasswordFormParams>();
-  const [profileForm] = Form.useForm<UpdateProfileRequest>();
+  const [profileForm] = Form.useForm<ProfileFormParams>();
   const [usernameForm] = Form.useForm<UpdateUsernameRequest>();
+  const token = useAntdToken();
+
+  const handleProfileSubmit: FormProps<ProfileFormParams>["onFinish"] = async ({
+    firstName,
+    lastName,
+  }) => {
+    if (profileSubmitting) return;
+
+    try {
+      setProfileSubmitting(true);
+      setUser(await updateProfile({ firstName, lastName }));
+      messageAPI.success(t("profileUpdated"));
+    } catch (error) {
+      messageAPI.error(getErrorMessage(error));
+    } finally {
+      setProfileSubmitting(false);
+    }
+  };
+
+  const handleUsernameSubmit: FormProps<UpdateUsernameRequest>["onFinish"] =
+    async (values) => {
+      if (usernameSubmitting) return;
+
+      try {
+        setUsernameSubmitting(true);
+        setUser(await updateUsername(values));
+        messageAPI.success(t("usernameUpdated"));
+      } catch (error) {
+        messageAPI.error(getErrorMessage(error));
+      } finally {
+        setUsernameSubmitting(false);
+      }
+    };
+
+  const handleEmailVerificationRequest = async () => {
+    if (otpSubmitting || otpRemainingSeconds) return;
+
+    try {
+      const { email } = await emailForm.validateFields(["email"]);
+      setOtpSubmitting(true);
+      const { remainingSeconds } = await requestEmailVerification({ email });
+      setOtpRemainingSeconds(remainingSeconds);
+      messageAPI.success(t("otpSent"));
+    } catch (error) {
+      messageAPI.error(getErrorMessage(error));
+    } finally {
+      setOtpSubmitting(false);
+    }
+  };
+
+  const handleEmailSubmit: FormProps<VerifyEmailRequest>["onFinish"] = async (
+    values,
+  ) => {
+    if (emailSubmitting) return;
+
+    try {
+      setEmailSubmitting(true);
+      await verifyEmail(values);
+      setUser(await getAccount());
+      emailForm.setFieldValue("otp", "");
+      messageAPI.success(t("emailUpdated"));
+    } catch (error) {
+      messageAPI.error(getErrorMessage(error));
+    } finally {
+      setEmailSubmitting(false);
+    }
+  };
+
+  const handlePasswordSubmit: FormProps<PasswordFormParams>["onFinish"] =
+    async ({ currentPassword, newPassword }) => {
+      if (passwordSubmitting) return;
+
+      try {
+        setPasswordSubmitting(true);
+        await changePassword({ currentPassword, newPassword });
+        messageAPI.success(t("passwordChanged"));
+        passwordForm.resetFields();
+      } catch (error) {
+        messageAPI.error(getErrorMessage(error));
+      } finally {
+        setPasswordSubmitting(false);
+      }
+    };
 
   useEffect(() => {
     if (!otpRemainingSeconds) return;
@@ -56,133 +141,17 @@ export const AccountPage = () => {
 
   if (!user) return null;
 
-  const showError = (error: unknown) => {
-    messageAPI.error(getErrorMessage(error));
-  };
-
-  const submitProfile = async (values: UpdateProfileRequest) => {
-    if (profileSubmitting) return;
-
-    try {
-      setProfileSubmitting(true);
-      const account = await updateProfile(values);
-      setUser(account);
-      messageAPI.success(t("profileUpdated"));
-    } catch (error) {
-      showError(error);
-    } finally {
-      setProfileSubmitting(false);
-    }
-  };
-
-  const submitUsername = async (values: UpdateUsernameRequest) => {
-    if (usernameSubmitting) return;
-
-    try {
-      setUsernameSubmitting(true);
-      const account = await updateUsername(values);
-      setUser(account);
-      messageAPI.success(t("usernameUpdated"));
-    } catch (error) {
-      showError(error);
-    } finally {
-      setUsernameSubmitting(false);
-    }
-  };
-
-  const handleEmailVerificationRequest = async () => {
-    if (otpSubmitting || otpRemainingSeconds) return;
-
-    try {
-      const { email } = await emailForm.validateFields(["email"]);
-      setOtpSubmitting(true);
-      const response = await requestEmailVerification({ email });
-      setOtpRemainingSeconds(response.remainingSeconds);
-      messageAPI.success(t("otpSent"));
-    } catch (error) {
-      showError(error);
-    } finally {
-      setOtpSubmitting(false);
-    }
-  };
-
-  const submitEmail = async (values: VerifyEmailRequest) => {
-    if (emailSubmitting) return;
-
-    try {
-      setEmailSubmitting(true);
-      await verifyEmail(values);
-      const account = await getAccount();
-      setUser(account);
-      emailForm.setFieldValue("otp", "");
-      messageAPI.success(t("emailUpdated"));
-    } catch (error) {
-      showError(error);
-    } finally {
-      setEmailSubmitting(false);
-    }
-  };
-
-  const submitPassword = async ({
-    currentPassword,
-    newPassword,
-  }: PasswordFormParams) => {
-    if (passwordSubmitting) return;
-
-    try {
-      setPasswordSubmitting(true);
-      await changePassword({ currentPassword, newPassword });
-      messageAPI.success(t("passwordChanged"));
-      passwordForm.resetFields();
-    } catch (error) {
-      showError(error);
-    } finally {
-      setPasswordSubmitting(false);
-    }
-  };
-
-  const handleProfileSubmit: NonNullable<
-    FormProps<UpdateProfileRequest>["onFinish"]
-  > = (values) => {
-    void submitProfile(values);
-  };
-  const handleUsernameSubmit: NonNullable<
-    FormProps<UpdateUsernameRequest>["onFinish"]
-  > = (values) => {
-    void submitUsername(values);
-  };
-  const handleEmailSubmit: NonNullable<
-    FormProps<VerifyEmailRequest>["onFinish"]
-  > = (values) => {
-    void submitEmail(values);
-  };
-  const handlePasswordSubmit: NonNullable<
-    FormProps<PasswordFormParams>["onFinish"]
-  > = (values) => {
-    void submitPassword(values);
-  };
-
   return (
-    <Flex
-      gap={token.marginMD}
-      style={{
-        paddingBlock: token.paddingMD,
-        paddingInline: token.paddingSM,
-      }}
-      vertical
-    >
-      <Typography.Title level={1} style={{ fontSize: 20 }}>
-        {t("account")}
-      </Typography.Title>
-      <Row gutter={[token.marginMD, token.marginMD]}>
-        <Col xs={24} lg={12}>
+    <Row>
+      <Col xs={24} lg={12} xl={8} xxl={6}>
+        <Flex gap={token.marginMD} vertical>
           <Card title={t("basicInfo")} variant="borderless">
-            <Form<UpdateProfileRequest>
+            <Form<ProfileFormParams>
               form={profileForm}
               initialValues={{
                 firstName: user.firstName,
                 lastName: user.lastName,
-                personnelCode: user.personnelCode ?? undefined,
+                mobile: user.mobile,
               }}
               layout="vertical"
               onFinish={handleProfileSubmit}
@@ -201,16 +170,12 @@ export const AccountPage = () => {
               >
                 <Input />
               </Form.Item>
-              <Form.Item label={t("personnelCode")} name="personnelCode">
-                <Input />
-              </Form.Item>
-              <Form.Item htmlFor="account-mobile" label={t("mobile")}>
-                <Input
-                  disabled
-                  id="account-mobile"
-                  value={user.mobile}
-                  style={{ direction: "ltr" }}
-                />
+              <Form.Item
+                label={t("mobile")}
+                name="mobile"
+                rules={[{ required: true }]}
+              >
+                <Input disabled style={{ direction: "ltr" }} />
               </Form.Item>
               <Flex justify="flex-end">
                 <Button
@@ -223,76 +188,70 @@ export const AccountPage = () => {
               </Flex>
             </Form>
           </Card>
-        </Col>
-        <Col xs={24} lg={12}>
-          <Flex gap={token.marginMD} vertical>
-            <Card title={t("username")} variant="borderless">
-              <Form<UpdateUsernameRequest>
-                form={usernameForm}
-                initialValues={{ username: user.username ?? undefined }}
-                layout="vertical"
-                onFinish={handleUsernameSubmit}
+          <Card title={t("username")} variant="borderless">
+            <Form<UpdateUsernameRequest>
+              form={usernameForm}
+              initialValues={{ username: user.username ?? undefined }}
+              layout="vertical"
+              onFinish={handleUsernameSubmit}
+            >
+              <Form.Item
+                label={t("username")}
+                name="username"
+                rules={[{ required: true }]}
               >
-                <Form.Item
-                  label={t("username")}
-                  name="username"
-                  rules={[{ required: true }]}
+                <Input style={{ direction: "ltr" }} />
+              </Form.Item>
+              <Flex justify="flex-end">
+                <Button
+                  htmlType="submit"
+                  loading={usernameSubmitting}
+                  type="primary"
                 >
-                  <Input style={{ direction: "ltr" }} />
-                </Form.Item>
-                <Flex justify="flex-end">
+                  {t("update")}
+                </Button>
+              </Flex>
+            </Form>
+          </Card>
+          <Card title={t("email")} variant="borderless">
+            <Form<VerifyEmailRequest>
+              form={emailForm}
+              initialValues={{ email: user.email ?? undefined }}
+              layout="vertical"
+              onFinish={handleEmailSubmit}
+            >
+              <Form.Item
+                label={t("email")}
+                name="email"
+                rules={[{ required: true, type: "email" }]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item label={t("otp")} required>
+                <Flex gap={token.marginXS}>
+                  <Form.Item name="otp" noStyle rules={[{ required: true }]}>
+                    <OtpInput length={6} style={{ direction: "ltr" }} />
+                  </Form.Item>
                   <Button
-                    htmlType="submit"
-                    loading={usernameSubmitting}
-                    type="primary"
+                    disabled={Boolean(otpRemainingSeconds)}
+                    loading={otpSubmitting}
+                    onClick={() => void handleEmailVerificationRequest()}
                   >
-                    {t("update")}
+                    {otpRemainingSeconds || t("requestOtp")}
                   </Button>
                 </Flex>
-              </Form>
-            </Card>
-            <Card title={t("email")} variant="borderless">
-              <Form<VerifyEmailRequest>
-                form={emailForm}
-                initialValues={{ email: user.email ?? undefined }}
-                layout="vertical"
-                onFinish={handleEmailSubmit}
-              >
-                <Form.Item
-                  label={t("email")}
-                  name="email"
-                  rules={[{ required: true, type: "email" }]}
+              </Form.Item>
+              <Flex justify="flex-end">
+                <Button
+                  htmlType="submit"
+                  loading={emailSubmitting}
+                  type="primary"
                 >
-                  <Input />
-                </Form.Item>
-                <Form.Item label={t("otp")} required>
-                  <Flex gap={token.marginXS}>
-                    <Form.Item name="otp" noStyle rules={[{ required: true }]}>
-                      <OtpInput length={6} style={{ direction: "ltr" }} />
-                    </Form.Item>
-                    <Button
-                      disabled={Boolean(otpRemainingSeconds)}
-                      loading={otpSubmitting}
-                      onClick={() => void handleEmailVerificationRequest()}
-                    >
-                      {otpRemainingSeconds || t("requestOtp")}
-                    </Button>
-                  </Flex>
-                </Form.Item>
-                <Flex justify="flex-end">
-                  <Button
-                    htmlType="submit"
-                    loading={emailSubmitting}
-                    type="primary"
-                  >
-                    {t("verifyEmail")}
-                  </Button>
-                </Flex>
-              </Form>
-            </Card>
-          </Flex>
-        </Col>
-        <Col xs={24} lg={12}>
+                  {t("verifyEmail")}
+                </Button>
+              </Flex>
+            </Form>
+          </Card>
           <Card title={t("changePassword")} variant="borderless">
             <Form<PasswordFormParams>
               form={passwordForm}
@@ -343,8 +302,8 @@ export const AccountPage = () => {
               </Flex>
             </Form>
           </Card>
-        </Col>
-      </Row>
-    </Flex>
+        </Flex>
+      </Col>
+    </Row>
   );
 };

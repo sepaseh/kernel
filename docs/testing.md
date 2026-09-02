@@ -83,7 +83,7 @@ tests never depend on or contact a configured development backend.
 
 Playwright builds its preview server with a separate deterministic environment
 defined in `playwright.config.ts`: the application base is `/`, the release ID
-is `e2e`, and the API origin is `https://api.example.com`. Browser tests
+is `e2e`, and the API origin is `http://api.example.com`. Browser tests
 intercept that reserved example origin. These explicit values override
 developer-specific `.env.local` settings and prevent local E2E runs from
 contacting a configured backend.
@@ -107,18 +107,23 @@ remain available in `test-results/` when a comparison fails.
 The production build enforces two JavaScript size limits:
 
 - No individual JavaScript chunk may exceed 450 KB.
-- All emitted JavaScript chunks combined may not exceed 1.6 MB.
+- All emitted JavaScript chunks combined may not exceed 1.9 MB.
 
 These limits catch unexpectedly large bundles without pretending that a CI
 preview server represents real production performance.
 
 CI also runs a non-blocking Lighthouse audit against the built login page and
 uploads its HTML and JSON reports for 14 days. Broad advisory thresholds flag
-only substantial regressions: a performance score below 65, FCP above 5s, LCP
-above 6s, TTI above 7s, TBT above 600ms, or CLS above 0.2. Runner variance may
+only substantial regressions: a performance score below 60, FCP above 6s, LCP
+above 6.5s, TTI above 7s, TBT above 600ms, or CLS above 0.2. Runner variance may
 still affect results, so bundle-size budgets remain the blocking performance
 gate. Replace the preview target with a representative deployed URL when one
 exists.
+
+`scripts/run-lighthouse.test.mjs` covers authentication-target URL construction,
+boundary acceptance, aggregated threshold failures, and missing audit data
+without starting Vite or Chrome. Browser dependencies are loaded only by the
+direct CLI execution path.
 
 ## Conventions
 

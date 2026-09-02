@@ -1,4 +1,3 @@
-import basicSsl from "@vitejs/plugin-basic-ssl";
 import react from "@vitejs/plugin-react";
 import { defineConfig, loadEnv } from "vite";
 
@@ -6,11 +5,10 @@ import { srcPath } from "./tooling/paths.ts";
 
 const securityHeaders = {
   "Content-Security-Policy":
-    "default-src 'self'; base-uri 'self'; connect-src 'self' https:; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; img-src 'self' data:; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; upgrade-insecure-requests",
+    "default-src 'self'; base-uri 'self'; connect-src 'self' http:; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; img-src 'self' data:; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'",
   "Permissions-Policy":
     "camera=(), geolocation=(), microphone=(), payment=(), usb=()",
   "Referrer-Policy": "strict-origin-when-cross-origin",
-  "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
 };
@@ -48,7 +46,7 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
-    plugins: [react(), basicSsl()],
+    plugins: [react()],
     preview: {
       headers: securityHeaders,
     },
@@ -59,7 +57,7 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       allowedHosts: true,
-      host: true,
+      host: "localhost",
     },
   };
 });

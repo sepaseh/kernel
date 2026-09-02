@@ -2,73 +2,70 @@ import { apiClient } from "@/shared/api";
 import { toSnakeCase } from "@/shared/lib";
 
 import type {
-  CreateUserRequest,
-  ListUsersQuery,
-  UpdateUserRequest,
   User,
-  UserOption,
+  UserListQuery,
   UserPasswordRequest,
+  UserRequest,
   UserRoleRequest,
   UserStatusRequest,
-  UserSummary,
   UserSystemAdminRequest,
 } from "./types";
 
-export const createUser = async (params: CreateUserRequest): Promise<User> => {
-  return apiClient.post<User>("/users", params);
+const basePath = "/users";
+
+export const createUser = async (
+  params: UserRequest & UserPasswordRequest,
+): Promise<User> => {
+  return apiClient.post<User>(basePath, params);
 };
 
-export const deleteUser = async (id: string): Promise<void> => {
-  return apiClient.del<void>(`/users/${id}`);
+export const deleteUser = async (id: User["id"]): Promise<void> => {
+  return apiClient.del<void>(`${basePath}/${id}`);
 };
 
-export const fetchUser = async (id: string): Promise<User> => {
-  return apiClient.get<User>(`/users/${id}`);
-};
-
-export const fetchUserRoleOptions = async (): Promise<UserOption[]> => {
-  return apiClient.get<UserOption[]>("/roles");
+export const fetchUser = async (id: User["id"]): Promise<User> => {
+  return apiClient.get<User>(`${basePath}/${id}`);
 };
 
 export const fetchUsers = async (
-  params: ListUsersQuery,
-): Promise<{ items: UserSummary[]; total: number }> => {
-  return apiClient.get<{ items: UserSummary[]; total: number }>("/users", {
+  params: UserListQuery,
+): Promise<{ items: User[]; total: number }> => {
+  return apiClient.get<{ items: User[]; total: number }>(basePath, {
     params: toSnakeCase(params),
   });
 };
 
 export const updateUser = async (
-  id: string,
-  params: UpdateUserRequest,
+  id: User["id"],
+  params: UserRequest,
 ): Promise<User> => {
-  return apiClient.patch<User>(`/users/${id}`, params);
+  return apiClient.patch<User>(`${basePath}/${id}`, params);
 };
 
 export const updateUserPassword = async (
-  id: string,
+  id: User["id"],
   params: UserPasswordRequest,
 ): Promise<void> => {
-  return apiClient.put<void>(`/users/${id}/password`, params);
+  return apiClient.put<void>(`${basePath}/${id}/password`, params);
 };
 
 export const updateUserRoles = async (
-  id: string,
+  id: User["id"],
   params: UserRoleRequest,
 ): Promise<void> => {
-  return apiClient.put<void>(`/users/${id}/roles`, params);
+  return apiClient.put<void>(`${basePath}/${id}/roles`, params);
 };
 
 export const updateUserStatus = async (
-  id: string,
+  id: User["id"],
   params: UserStatusRequest,
 ): Promise<void> => {
-  return apiClient.patch<void>(`/users/${id}/status`, params);
+  return apiClient.patch<void>(`${basePath}/${id}/status`, params);
 };
 
 export const updateUserSystemAdmin = async (
-  id: string,
+  id: User["id"],
   params: UserSystemAdminRequest,
 ): Promise<void> => {
-  return apiClient.patch<void>(`/users/${id}/system-admin`, params);
+  return apiClient.patch<void>(`${basePath}/${id}/system-admin`, params);
 };

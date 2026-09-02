@@ -14,11 +14,15 @@ const AuthLayoutStory = () => {
   return (
     <CoreContext.Provider
       value={{
+        compact: false,
         currentRoute: "auth",
         language: "en",
         setCurrentRoute: () => undefined,
+        setCompact: () => undefined,
         setLanguage: () => undefined,
+        setLogos: () => undefined,
         setTheme: () => undefined,
+        setThemePalettes: () => undefined,
         setUser,
         theme: "light",
         user,
