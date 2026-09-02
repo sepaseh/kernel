@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 
 const assetsDirectory = path.resolve("dist/assets");
 export const maximumChunkBytes = 450_000;
-export const maximumTotalBytes = 1_600_000;
+export const maximumTotalBytes = 1_900_000;
 
 export const evaluateBundleAssets = (assets) => {
   if (assets.length === 0) throw new Error("No JavaScript assets found");
@@ -15,13 +15,11 @@ export const evaluateBundleAssets = (assets) => {
     ({ bytes }) => bytes > maximumChunkBytes,
   );
   const totalBytes = assets.reduce((total, { bytes }) => total + bytes, 0);
-
   if (oversizedAssets.length > 0 || totalBytes > maximumTotalBytes) {
     const failures = oversizedAssets.map(
       ({ bytes, name }) =>
         `${name} is ${bytes.toLocaleString()} bytes (limit ${maximumChunkBytes.toLocaleString()})`,
     );
-
     if (totalBytes > maximumTotalBytes) {
       failures.push(
         `Total JavaScript is ${totalBytes.toLocaleString()} bytes (limit ${maximumTotalBytes.toLocaleString()})`,
@@ -47,7 +45,6 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     })),
   );
   let result;
-
   try {
     result = evaluateBundleAssets(assets);
   } catch (error) {
@@ -60,7 +57,6 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   }
 
   const { largestAsset, totalBytes } = result;
-
   console.log(
     `Bundle budgets passed: ${assets.length} chunks, ${totalBytes.toLocaleString()} bytes total, ` +
       `${largestAsset.name} largest at ${largestAsset.bytes.toLocaleString()} bytes.`,

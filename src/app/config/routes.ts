@@ -20,6 +20,7 @@ type RouteConfig = {
 
 export const routeTree = {
   account: {
+    label: "account",
     layout: "default",
     path: "/account",
     permissions: { access: "authenticated", actions: {} },
@@ -29,6 +30,15 @@ export const routeTree = {
     layout: "auth",
     path: "/auth",
     permissions: { access: "public", actions: {} },
+  },
+  calendar: {
+    label: "calendar",
+    layout: "default",
+    path: "/calendar",
+    permissions: {
+      access: "calendar.read",
+      actions: { canUpdate: "calendar.update" },
+    },
   },
   forgotPassword: {
     layout: "auth",
@@ -64,6 +74,15 @@ export const routeTree = {
     layout: "default",
     path: "/",
     permissions: { access: "authenticated", actions: {} },
+  },
+  settings: {
+    label: "settings",
+    layout: "default",
+    path: "/settings",
+    permissions: {
+      access: "settings.update",
+      actions: { canUpdate: "settings.update" },
+    },
   },
   users: {
     label: "users",
@@ -103,6 +122,8 @@ export const navigationTree: readonly NavigationItem[] = [
     key: "userManagement",
     label: "userManagement",
   },
+  { route: "calendar" },
+  { route: "settings" },
 ];
 
 export const baseUrl: string = import.meta.env.VITE_APP_BASE_URL ?? "";

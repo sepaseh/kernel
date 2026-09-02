@@ -7,6 +7,5 @@ export const useAntd = () => {
     notification: notificationAPI,
   } = AntdApp.useApp();
   const { token } = antdTheme.useToken();
-
   return { messageAPI, modalAPI, notificationAPI, token };
 };

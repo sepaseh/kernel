@@ -1,0 +1,39 @@
+meta {
+  name: Delete Calendar Date
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{base_url}}/calendar/{{calendar_date}}
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+headers {
+  Accept: application/json
+}
+
+vars:pre-request {
+  calendar_date: 2026-09-15
+}
+
+docs {
+  ## Purpose
+
+  Removes one date from the system calendar.
+
+  ## Authentication
+
+  Requires a valid access token with `calendar.update` permission.
+
+  ## Response
+
+  - `200 OK` — Date removed successfully with no response body.
+  - `401 Unauthorized` — Authentication is missing or invalid.
+  - `403 Forbidden` — The authenticated user cannot update the calendar.
+  - `404 Not Found` — The date is not present on the calendar.
+}

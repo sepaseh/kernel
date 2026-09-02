@@ -6,11 +6,13 @@ const routeState = vi.hoisted(() => ({
   allowedRoutes: new Set([
     "account",
     "auth",
+    "calendar",
     "forgotPassword",
     "notFound",
     "register",
     "roles",
     "root",
+    "settings",
     "users",
   ]),
   dashboardError: false,
@@ -32,14 +34,20 @@ vi.mock("@/features/dashboard", () => ({
     return "Dashboard page";
   },
 }));
-vi.mock("@/features/auth/forgot-pass", () => ({
+vi.mock("@/features/calendar", () => ({
+  CalendarPage: () => "Calendar page",
+}));
+vi.mock("@/features/forgot-pass", () => ({
   ForgotPassPage: () => "Forgot password page",
 }));
-vi.mock("@/features/auth/login", () => ({ LoginPage: () => "Login page" }));
-vi.mock("@/features/auth/register", () => ({
+vi.mock("@/features/login", () => ({ LoginPage: () => "Login page" }));
+vi.mock("@/features/register", () => ({
   RegisterPage: () => "Register page",
 }));
 vi.mock("@/features/roles", () => ({ RolesPage: () => "Roles page" }));
+vi.mock("@/features/settings", () => ({
+  SettingsPage: () => "Settings page",
+}));
 vi.mock("@/features/users", () => ({ UsersPage: () => "Users page" }));
 
 beforeEach(() => {
@@ -61,8 +69,10 @@ describe("application routes", () => {
   it.each([
     ["/", "Dashboard page", "root"],
     ["/account", "Account page", "account"],
+    ["/calendar", "Calendar page", "calendar"],
     ["/users", "Users page", "users"],
     ["/roles", "Roles page", "roles"],
+    ["/settings", "Settings page", "settings"],
     ["/auth", "Login page", "auth"],
     ["/auth/forgot-password", "Forgot password page", "forgotPassword"],
     ["/auth/register", "Register page", "register"],

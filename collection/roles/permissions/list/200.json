@@ -1,0 +1,70 @@
+[
+  {
+    "name": "calendar",
+    "permissions": [
+      {
+        "name": "calendar.read",
+        "title": "مشاهده تقویم"
+      },
+      {
+        "name": "calendar.update",
+        "title": "ویرایش تقویم"
+      }
+    ],
+    "title": "تقویم"
+  },
+  {
+    "name": "roles",
+    "permissions": [
+      {
+        "name": "roles.create",
+        "title": "ایجاد نقش"
+      },
+      {
+        "name": "roles.delete",
+        "title": "حذف نقش"
+      },
+      {
+        "name": "roles.read",
+        "title": "مشاهده نقش‌ها"
+      },
+      {
+        "name": "roles.update",
+        "title": "ویرایش نقش"
+      }
+    ],
+    "title": "نقش‌ها"
+  },
+  {
+    "name": "settings",
+    "permissions": [
+      {
+        "name": "settings.update",
+        "title": "ویرایش تنظیمات"
+      }
+    ],
+    "title": "تنظیمات"
+  },
+  {
+    "name": "users",
+    "permissions": [
+      {
+        "name": "users.create",
+        "title": "ایجاد کاربر"
+      },
+      {
+        "name": "users.delete",
+        "title": "حذف کاربر"
+      },
+      {
+        "name": "users.read",
+        "title": "مشاهده کاربران"
+      },
+      {
+        "name": "users.update",
+        "title": "ویرایش کاربر"
+      }
+    ],
+    "title": "کاربران"
+  }
+]

@@ -1,5 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, Page, test } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 const expectNoAxeViolations = async (page: Page) => {
   const results = await new AxeBuilder({ page })
@@ -16,7 +17,7 @@ const expectNoAxeViolations = async (page: Page) => {
 };
 
 const mockAccount = async (page: Page, permissions: string[]) => {
-  await page.route("https://api.example.com/account/me", async (route) => {
+  await page.route("http://api.example.com/account/me", async (route) => {
     await route.fulfill({
       contentType: "application/json",
       json: {
@@ -27,7 +28,6 @@ const mockAccount = async (page: Page, permissions: string[]) => {
         last_name: "Manager",
         mobile: "09120000000",
         permissions,
-        personnel_code: "100",
         status: "active",
         username: "manager",
       },
@@ -85,21 +85,24 @@ test.describe("accessibility", () => {
     page,
   }) => {
     await mockAccount(page, ["roles.create", "roles.read"]);
-    await page.route("https://api.example.com/roles", async (route) => {
+    await page.route("http://api.example.com/roles", async (route) => {
       await route.fulfill({ contentType: "application/json", json: [] });
     });
-    await page.route("https://api.example.com/permissions", async (route) => {
-      await route.fulfill({
-        contentType: "application/json",
-        json: [
-          {
-            name: "users",
-            permissions: [{ name: "users.read", title: "Read users" }],
-            title: "Users",
-          },
-        ],
-      });
-    });
+    await page.route(
+      "http://api.example.com/roles/permissions",
+      async (route) => {
+        await route.fulfill({
+          contentType: "application/json",
+          json: [
+            {
+              name: "users",
+              permissions: [{ name: "users.read", title: "Read users" }],
+              title: "Users",
+            },
+          ],
+        });
+      },
+    );
     await page.goto("/roles");
     await page.getByRole("button", { name: "Create" }).click();
     const dialog = page.getByRole("dialog", { name: "Create" });
@@ -115,7 +118,7 @@ test.describe("accessibility", () => {
   }) => {
     await mockAccount(page, ["users.read"]);
     await page.route(
-      /https:\/\/api\.example\.com\/users(?:\?.*)?$/,
+      /http:\/\/api\.example\.com\/users(?:\?.*)?$/,
       async (route) => {
         await route.fulfill({
           contentType: "application/json",
@@ -128,7 +131,6 @@ test.describe("accessibility", () => {
                 is_system_admin: false,
                 last_name: "Lovelace",
                 mobile: "09121111111",
-                personnel_code: "200",
                 status: "active",
                 username: "ada",
               },

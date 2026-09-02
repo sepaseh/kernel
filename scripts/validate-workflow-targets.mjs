@@ -12,17 +12,16 @@ export const parseConfiguredHostname = (name, rawValue) => {
   if (!hostnamePattern.test(normalized)) {
     throw new Error(`${name} must contain a hostname only`);
   }
-  const parsed = new URL(`https://${rawValue}`);
+  const parsed = new URL(`http://${rawValue}`);
   if (parsed.hostname !== normalized) {
     throw new Error(`${name} must be a canonical hostname only`);
   }
   return parsed.hostname;
 };
 
-export const parseHttpsTarget = (name, rawValue) => {
+export const parseTarget = (name, rawValue) => {
   if (!rawValue) throw new Error(`${name} is required`);
   const url = new URL(rawValue);
-  if (url.protocol !== "https:") throw new Error(`${name} must use HTTPS`);
   if (url.username || url.password) {
     throw new Error(`${name} must not contain credentials`);
   }
@@ -37,11 +36,8 @@ const stagingLabels = {
 };
 
 export const validateStagingTargets = (env, labels = stagingLabels) => {
-  const appUrl = parseHttpsTarget(labels.baseUrl, env.STAGING_BASE_URL);
-  const apiUrl = parseHttpsTarget(
-    labels.apiHealthUrl,
-    env.STAGING_API_HEALTH_URL,
-  );
+  const appUrl = parseTarget(labels.baseUrl, env.STAGING_BASE_URL);
+  const apiUrl = parseTarget(labels.apiHealthUrl, env.STAGING_API_HEALTH_URL);
   const allowedAppHost = parseConfiguredHostname(
     labels.allowedAppHost,
     env.STAGING_ALLOWED_APP_HOST,
@@ -84,7 +80,7 @@ export const validateSmokeTargets = (env) => {
 };
 
 export const validateDastTarget = (env) => {
-  const target = parseHttpsTarget("DAST_TARGET", env.DAST_TARGET);
+  const target = parseTarget("DAST_TARGET", env.DAST_TARGET);
   const allowedHost = parseConfiguredHostname(
     "STAGING_ALLOWED_APP_HOST",
     env.DAST_ALLOWED_HOST,

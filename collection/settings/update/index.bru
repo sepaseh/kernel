@@ -1,0 +1,70 @@
+meta {
+  name: Update Application Settings
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{base_url}}/settings
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "dark_logo_id": "dark-logo",
+    "dark_theme": {
+      "color_bg_base": "#141414",
+      "color_bg_container": "#1f1f1f",
+      "color_border": "#424242",
+      "color_link": "#1668dc",
+      "color_primary": "#61dafb",
+      "color_text_base": "#ffffff",
+      "color_text_description": "#bfbfbf"
+    },
+    "language_code": "fa",
+    "light_logo_id": "light-logo",
+    "light_theme": {
+      "color_bg_base": "#ffffff",
+      "color_bg_container": "#ffffff",
+      "color_border": "#d9d9d9",
+      "color_link": "#1677ff",
+      "color_primary": "#61dafb",
+      "color_text_base": "#000000",
+      "color_text_description": "#8c8c8c"
+    }
+  }
+}
+
+docs {
+  ## Purpose
+
+  Replaces the editable global settings.
+
+  ## Authentication
+
+  Requires `settings.update`.
+
+  ## Behavior
+
+  - `language_code` must be returned by `GET /languages`.
+  - Logo identifiers are optional public file identifiers returned by `POST /files`.
+  - Both complete palettes are required and the operation is idempotent.
+
+  ## Response
+
+  - `200 OK` — Settings updated successfully.
+  - `400 Bad Request` — Submitted settings are invalid.
+  - `401 Unauthorized` — Authentication is missing or invalid.
+  - `403 Forbidden` — `settings.update` is missing.
+  - `404 Not Found` — A language or logo does not exist.
+}

@@ -23,8 +23,7 @@ body:json {
   {
     "first_name": "علی",
     "last_name": "رضایی",
-    "mobile": "09123456789",
-    "personnel_code": "EMP-1001"
+    "mobile": "09123456789"
   }
 }
 
@@ -42,7 +41,6 @@ docs {
   - Only fields included in the request body are updated.
   - Omitted fields remain unchanged.
   - At least one supported field must be provided.
-  - `personnel_code` must remain unique when changed.
   - Email cannot be changed through this endpoint and requires the OTP verification flow.
   - Language cannot be changed per user; the administrator-selected system language applies to everyone.
   - Username is managed by the user through the account username endpoint.

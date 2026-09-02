@@ -1,4 +1,5 @@
 import { Button, Drawer, type DrawerProps, Space } from "antd";
+import type { FC } from "react";
 import { useTranslation } from "react-i18next";
 
 type FormDrawerProps = Omit<DrawerProps, "onClose"> & {
@@ -7,13 +8,13 @@ type FormDrawerProps = Omit<DrawerProps, "onClose"> & {
   submitting: boolean;
 };
 
-export const FormDrawer = ({
+export const FormDrawer: FC<FormDrawerProps> = ({
   children,
   onClose,
   onSubmit,
   submitting,
   ...rest
-}: FormDrawerProps) => {
+}) => {
   const { t } = useTranslation();
 
   return (

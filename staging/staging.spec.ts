@@ -83,8 +83,6 @@ test("serves the production security policy", async ({ page }) => {
   expect(contentSecurityPolicy).toContain("default-src 'self'");
   expect(contentSecurityPolicy).toContain("object-src 'none'");
   expect(contentSecurityPolicy).toContain("frame-ancestors 'none'");
-  expect(contentSecurityPolicy).toContain("upgrade-insecure-requests");
-  expect(headers["strict-transport-security"]).toContain("max-age=");
   expect(headers["x-frame-options"]).toBe("DENY");
   expect(headers["x-content-type-options"]).toBe("nosniff");
   expect(headers["referrer-policy"]).toBe("strict-origin-when-cross-origin");

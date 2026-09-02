@@ -40,7 +40,7 @@ either required value is missing or invalid.
 Required values usually include:
 
 ```env
-VITE_API_BASE_URL=https://api.example.com
+VITE_API_BASE_URL=http://api.example.com
 VITE_APP_BASE_URL=/
 ```
 
@@ -50,7 +50,7 @@ VITE_APP_BASE_URL=/
 VITE_APP_BASE_URL=/app/
 ```
 
-`VITE_API_BASE_URL` must be an absolute HTTPS URL. `VITE_APP_BASE_URL` must
+`VITE_API_BASE_URL` must be an absolute URL. `VITE_APP_BASE_URL` must
 start and end with `/`; use `/` when the application is served at the domain
 root.
 
@@ -59,7 +59,7 @@ root.
 Set `VITE_RELEASE_ID` to an immutable deployment identifier, such as the Git
 commit SHA. This release is included with every error and performance event.
 
-To deliver events, set `VITE_OBSERVABILITY_URL` to an HTTPS endpoint that
+To deliver events, set `VITE_OBSERVABILITY_URL` to an HTTP endpoint that
 accepts JSON `POST` requests. If it is omitted, instrumentation remains active
 but no events leave the browser. Reports include sanitized application errors,
 unhandled failures, React component failures, largest contentful paint,
@@ -79,16 +79,14 @@ When adding routes in React, no nginx route changes are normally required as lon
 The nginx configuration applies:
 
 - Content Security Policy restricted to same-origin application resources and
-  HTTPS API connections
-- HTTP Strict Transport Security for one year, including subdomains
+  HTTP API connections
 - Denial of framing through CSP and `X-Frame-Options`
 - MIME sniffing protection
 - Strict-origin-when-cross-origin referrer behavior
 - Disabled camera, geolocation, microphone, payment, and USB browser features
 
-HSTS is honored by browsers only over HTTPS. When TLS terminates at a CDN or
-load balancer, configure that edge to preserve these response headers. Run the
-Playwright suite against the production build to verify the complete policy.
+Run the Playwright suite against the production build to verify the complete
+policy.
 
 ## Optional deployment checks
 
@@ -100,7 +98,7 @@ deployment smoke, set `SMOKE_ALLOWED_APP_HOST`, `SMOKE_ALLOWED_API_HOST`, and
 `SMOKE_EXPECTED_DEPLOYMENT_ID`; the expected identifier must match the
 immutable `deployment_id` supplied for the run.
 
-All three workflows validate HTTPS, credentials, canonical hostnames, and
+All three workflows validate URLs, credentials, canonical hostnames, and
 allow-listed targets through `scripts/validate-workflow-targets.mjs`. Smoke
 validation additionally requires the requested and expected immutable
 deployment identifiers to match; DAST validation explicitly rejects the

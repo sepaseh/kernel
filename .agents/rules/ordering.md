@@ -6,6 +6,7 @@ Sort alphabetically wherever order has no semantic meaning.
 
 - Object keys
 - Type fields
+- Type declarations within `types.ts` files
 - Component props
 - Named exports in index files
 - Translation keys

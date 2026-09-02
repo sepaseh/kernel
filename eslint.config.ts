@@ -1,6 +1,7 @@
 import js from "@eslint/js";
-import { AST_NODE_TYPES, TSESTree } from "@typescript-eslint/types";
-import { Rule } from "eslint";
+import type { TSESTree } from "@typescript-eslint/types";
+import { AST_NODE_TYPES } from "@typescript-eslint/types";
+import type { Rule } from "eslint";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
@@ -11,7 +12,8 @@ import path from "path";
 import tseslint from "typescript-eslint";
 import { fileURLToPath } from "url";
 
-const srcRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), "src");
+const repositoryRoot = path.dirname(fileURLToPath(import.meta.url));
+const srcRoot = path.join(repositoryRoot, "src");
 
 const SHORTHAND_LONGHANDS: Record<string, readonly string[]> = {
   animation: [
@@ -366,6 +368,10 @@ export default [
         { allowConstantExport: true },
       ],
       "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        { fixStyle: "separate-type-imports", prefer: "type-imports" },
+      ],
       "no-dupe-keys": "error",
       "simple-import-sort/imports": "error",
       "simple-import-sort/exports": "error",
@@ -374,6 +380,18 @@ export default [
       "local/no-alias-for-same-dir": "error",
       "local/style-props-alphabetical-order": "warn",
       "local/style-props-no-shorthand-conflicts": "error",
+    },
+  },
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    languageOptions: {
+      parserOptions: {
+        project: "./tsconfig.app.json",
+        tsconfigRootDir: repositoryRoot,
+      },
+    },
+    rules: {
+      "@typescript-eslint/consistent-type-exports": "error",
     },
   },
   ...storybook.configs["flat/recommended"],

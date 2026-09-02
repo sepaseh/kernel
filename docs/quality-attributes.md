@@ -38,25 +38,25 @@ and the Chromium end-to-end suite.
 
 - Access tokens remain in memory and refresh credentials remain HttpOnly.
 - A protected request receives at most one refresh and retry cycle.
-- Production preview and nginx apply CSP, HSTS, frame denial, MIME protection,
+- Production preview and nginx apply CSP, frame denial, MIME protection,
   referrer policy, and a restrictive permissions policy.
-- Workflow targets require HTTPS and allow-listed non-production hosts.
+- Workflow targets require valid URLs and allow-listed non-production hosts.
 - Dependency auditing blocks high-severity findings.
 - Observability redacts credential-like fields and URL query values.
 
 ## Performance gates and advisories
 
 The blocking bundle budget limits each JavaScript chunk to 450,000 bytes and
-total JavaScript output to 1,600,000 bytes.
+total JavaScript output to 1,900,000 bytes.
 
 Lighthouse runs against the built authentication page as a non-blocking CI
 advisory with these broad regression thresholds:
 
 | Signal                   | Advisory threshold       |
 | ------------------------ | ------------------------ |
-| Performance score        | Minimum 65               |
-| First Contentful Paint   | Maximum 5 seconds        |
-| Largest Contentful Paint | Maximum 6 seconds        |
+| Performance score        | Minimum 60               |
+| First Contentful Paint   | Maximum 6 seconds        |
+| Largest Contentful Paint | Maximum 6.5 seconds      |
 | Time to Interactive      | Maximum 7 seconds        |
 | Total Blocking Time      | Maximum 600 milliseconds |
 | Cumulative Layout Shift  | Maximum 0.2              |

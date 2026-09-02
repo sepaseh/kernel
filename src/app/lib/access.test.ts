@@ -9,14 +9,12 @@ import {
 } from "./access";
 
 const createUser = (overrides: Partial<Account> = {}): Account => ({
-  email: null,
   firstName: "Test",
   id: "user-1",
   isSystemAdmin: false,
   lastName: "User",
   mobile: "09120000000",
   permissions: [],
-  personnelCode: null,
   status: "active",
   username: "test-user",
   ...overrides,
@@ -33,6 +31,8 @@ describe("access policy", () => {
     const user = createUser();
 
     expect(hasRouteAccess("root", user)).toBe(true);
+    expect(hasRouteAccess("calendar", user)).toBe(false);
+    expect(hasRouteAccess("settings", user)).toBe(false);
     expect(hasRouteAccess("users", user)).toBe(false);
   });
 
@@ -54,6 +54,15 @@ describe("access policy", () => {
         createUser({ permissions: ["users.create", "users.update"] }),
       ),
     ).toEqual({ canCreate: true, canDelete: false, canUpdate: true });
+  });
+
+  it("separates calendar visibility from calendar editing", () => {
+    const user = createUser({ permissions: ["calendar.read"] });
+
+    expect(hasRouteAccess("calendar", user)).toBe(true);
+    expect(getRoutePermissions("calendar", user)).toEqual({
+      canUpdate: false,
+    });
   });
 
   it("removes empty navigation groups", () => {

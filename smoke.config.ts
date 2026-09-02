@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const deploymentUrl = new URL(
-  process.env.SMOKE_BASE_URL ?? "https://smoke-target.invalid/",
+  process.env.SMOKE_BASE_URL ?? "http://smoke-target.invalid/",
 );
 
 if (!deploymentUrl.pathname.endsWith("/")) {
@@ -32,7 +32,6 @@ export default defineConfig({
   testDir: "./smoke",
   use: {
     baseURL: deploymentUrl.href,
-    ignoreHTTPSErrors: process.env.SMOKE_IGNORE_HTTPS_ERRORS === "true",
     screenshot: "only-on-failure",
     trace: "on-first-retry",
   },

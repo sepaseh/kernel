@@ -1,4 +1,5 @@
-import { expect, Page, test } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 const account = {
   email: "ada@example.com",
@@ -8,7 +9,6 @@ const account = {
   last_name: "Lovelace",
   mobile: "09120000000",
   permissions: [],
-  personnel_code: "100",
   status: "active",
   username: "ada",
 };
@@ -21,7 +21,7 @@ const preparePage = async (page: Page) => {
 };
 
 const mockAuthenticatedPage = async (page: Page) => {
-  await page.route("https://api.example.com/account/me", async (route) => {
+  await page.route("http://api.example.com/account/me", async (route) => {
     await route.fulfill({
       contentType: "application/json",
       json: account,
@@ -59,7 +59,7 @@ test.describe("visual regression", () => {
   test("authenticated layout and users table", async ({ page }) => {
     await mockAuthenticatedPage(page);
     await page.route(
-      /https:\/\/api\.example\.com\/users(?:\?.*)?$/,
+      /http:\/\/api\.example\.com\/users(?:\?.*)?$/,
       async (route) => {
         await route.fulfill({
           contentType: "application/json",
@@ -76,7 +76,6 @@ test.describe("visual regression", () => {
                 is_system_admin: false,
                 last_name: "Hopper",
                 mobile: "09121111111",
-                personnel_code: "101",
                 status: "inactive",
                 username: "grace",
               },
@@ -95,22 +94,25 @@ test.describe("visual regression", () => {
 
   test("create role form", async ({ page }) => {
     await mockAuthenticatedPage(page);
-    await page.route("https://api.example.com/permissions", async (route) => {
-      await route.fulfill({
-        contentType: "application/json",
-        json: [
-          {
-            name: "users",
-            permissions: [
-              { name: "users.read", title: "Read users" },
-              { name: "users.update", title: "Update users" },
-            ],
-            title: "Users",
-          },
-        ],
-      });
-    });
-    await page.route("https://api.example.com/roles", async (route) => {
+    await page.route(
+      "http://api.example.com/roles/permissions",
+      async (route) => {
+        await route.fulfill({
+          contentType: "application/json",
+          json: [
+            {
+              name: "users",
+              permissions: [
+                { name: "users.read", title: "Read users" },
+                { name: "users.update", title: "Update users" },
+              ],
+              title: "Users",
+            },
+          ],
+        });
+      },
+    );
+    await page.route("http://api.example.com/roles", async (route) => {
       await route.fulfill({ contentType: "application/json", json: [] });
     });
 

@@ -1,20 +1,21 @@
 import { waitFor } from "@testing-library/react";
+import type * as ReactI18next from "react-i18next";
 import { MemoryRouter } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import * as rolesApi from "@/features/roles/api";
-import { RoleForm } from "@/features/roles/form/Role";
+import { RoleForm } from "@/features/roles/components/role-form/RoleForm";
 import * as usersApi from "@/features/users/api";
-import { UserForm } from "@/features/users/forms/user/User";
-import { UserPasswordForm } from "@/features/users/forms/user-password/UserPassword";
-import { UserFormRole } from "@/features/users/forms/user-role/UserRole";
-import { User } from "@/features/users/types";
+import { UserForm } from "@/features/users/components/user-form/UserForm";
+import { UserRoleForm } from "@/features/users/components/user-role-form/UserRoleForm";
+import type { User } from "@/features/users/types";
 import { render, screen } from "@/test/render";
 
 const mocks = vi.hoisted(() => ({
   goBack: vi.fn(),
   messageError: vi.fn(),
   messageSuccess: vi.fn(),
+  notificationSuccess: vi.fn(),
 }));
 
 vi.mock("@/features/roles/api", () => ({
@@ -25,7 +26,6 @@ vi.mock("@/features/roles/api", () => ({
 vi.mock("@/features/users/api", () => ({
   createUser: vi.fn(),
   updateUser: vi.fn(),
-  updateUserPassword: vi.fn(),
   updateUserRoles: vi.fn(),
 }));
 
@@ -37,6 +37,7 @@ vi.mock("@/app/hooks", () => ({
       error: mocks.messageError,
       success: mocks.messageSuccess,
     },
+    notificationAPI: { success: mocks.notificationSuccess },
   }),
 }));
 
@@ -45,7 +46,7 @@ vi.mock("@/shared/hooks", () => ({
 }));
 
 vi.mock("react-i18next", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("react-i18next")>()),
+  ...(await importOriginal<typeof ReactI18next>()),
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
@@ -56,16 +57,18 @@ const userData: User = {
   isSystemAdmin: false,
   lastName: "Lovelace",
   mobile: "09120000000",
-  personnelCode: "1001",
-  roleIds: ["role-1"],
+  roles: [{ id: "role-1", name: "Operators" }],
+  status: "active",
   username: "ada",
 };
-const mismatchedCredential = "mismatched-test-credential";
-const replacementCredential = "replacement-test-credential";
-const syntheticCredential = "synthetic-test-credential";
-
 const renderAtHash = (ui: React.ReactNode, hash: string) =>
   render(<MemoryRouter initialEntries={[`/${hash}`]}>{ui}</MemoryRouter>);
+
+const findFocusedField = async (name: string) => {
+  const field = await screen.findByLabelText(name);
+  await waitFor(() => expect(field).toHaveFocus());
+  return field;
+};
 
 beforeEach(() => {
   vi.mocked(api.createRole).mockResolvedValue({
@@ -80,7 +83,6 @@ beforeEach(() => {
     permissions: ["users.read"],
   });
   vi.mocked(api.updateUser).mockResolvedValue(userData);
-  vi.mocked(api.updateUserPassword).mockResolvedValue(undefined);
   vi.mocked(api.updateUserRoles).mockResolvedValue(undefined);
 });
 
@@ -89,51 +91,47 @@ describe("user identity form", () => {
     const onFinish = vi.fn();
     const { user } = renderAtHash(<UserForm onFinish={onFinish} />, "#create");
 
-    await user.type(await screen.findByLabelText("firstName"), "Ada");
+    await user.type(await findFocusedField("firstName"), "Ada");
     await user.type(screen.getByLabelText("lastName"), "Lovelace");
     await user.type(screen.getByLabelText("mobile"), "09120000000");
-    await user.type(screen.getByLabelText("personnelCode"), "1001");
-    await user.type(screen.getByLabelText("password"), syntheticCredential);
-    await user.type(screen.getByLabelText("confirmPass"), syntheticCredential);
     await user.click(screen.getByRole("button", { name: "submit" }));
 
-    await waitFor(() =>
-      expect(api.createUser).toHaveBeenCalledWith({
-        firstName: "Ada",
-        lastName: "Lovelace",
-        mobile: "09120000000",
-        password: syntheticCredential,
-        personnelCode: "1001",
-      }),
-    );
+    await waitFor(() => expect(api.createUser).toHaveBeenCalledOnce());
+    const password = vi.mocked(api.createUser).mock.calls[0][0].password;
+    expect(api.createUser).toHaveBeenCalledWith({
+      firstName: "Ada",
+      lastName: "Lovelace",
+      mobile: "09120000000",
+      password,
+    });
+    expect(mocks.notificationSuccess).toHaveBeenCalledWith({
+      description: password,
+      message: "password",
+    });
     expect(mocks.messageSuccess).toHaveBeenCalledWith("userCreated");
     expect(mocks.goBack).toHaveBeenCalledOnce();
     expect(onFinish).toHaveBeenCalledOnce();
   }, 10_000);
 
-  it("rejects mismatched user passwords", async () => {
+  it("requires the user identity fields before generating a password", async () => {
     const { user } = renderAtHash(<UserForm onFinish={vi.fn()} />, "#create");
 
-    await user.type(await screen.findByLabelText("firstName"), "Ada");
-    await user.type(screen.getByLabelText("lastName"), "Lovelace");
-    await user.type(screen.getByLabelText("mobile"), "09120000000");
-    await user.type(screen.getByLabelText("personnelCode"), "1001");
-    await user.type(screen.getByLabelText("password"), syntheticCredential);
-    await user.type(screen.getByLabelText("confirmPass"), mismatchedCredential);
+    await findFocusedField("firstName");
     await user.click(screen.getByRole("button", { name: "submit" }));
 
-    expect(await screen.findByText("passsMismatch")).toBeInTheDocument();
+    expect(await screen.findAllByText(/required/i)).toHaveLength(3);
     expect(api.createUser).not.toHaveBeenCalled();
+    expect(mocks.notificationSuccess).not.toHaveBeenCalled();
   });
 
-  it("updates a user without submitting password fields", async () => {
+  it("updates a user without generating a new password", async () => {
     const onFinish = vi.fn();
     const { user } = renderAtHash(
       <UserForm data={userData} onFinish={onFinish} />,
       "#update",
     );
 
-    const firstName = await screen.findByLabelText("firstName");
+    const firstName = await findFocusedField("firstName");
     await user.clear(firstName);
     await user.type(firstName, "Augusta");
     await user.click(screen.getByRole("button", { name: "submit" }));
@@ -143,10 +141,9 @@ describe("user identity form", () => {
         firstName: "Augusta",
         lastName: "Lovelace",
         mobile: "09120000000",
-        personnelCode: "1001",
       }),
     );
-    expect(screen.queryByLabelText("password")).not.toBeInTheDocument();
+    expect(mocks.notificationSuccess).not.toHaveBeenCalled();
     expect(mocks.messageSuccess).toHaveBeenCalledWith("userUpdated");
     expect(onFinish).toHaveBeenCalledOnce();
   });
@@ -158,18 +155,16 @@ describe("user identity form", () => {
     const onFinish = vi.fn();
     const { user } = renderAtHash(<UserForm onFinish={onFinish} />, "#create");
 
-    await user.type(await screen.findByLabelText("firstName"), "Ada");
+    await user.type(await findFocusedField("firstName"), "Ada");
     await user.type(screen.getByLabelText("lastName"), "Lovelace");
     await user.type(screen.getByLabelText("mobile"), "09120000000");
-    await user.type(screen.getByLabelText("personnelCode"), "1001");
-    await user.type(screen.getByLabelText("password"), syntheticCredential);
-    await user.type(screen.getByLabelText("confirmPass"), syntheticCredential);
     await user.click(screen.getByRole("button", { name: "submit" }));
 
     await waitFor(() =>
       expect(mocks.messageError).toHaveBeenCalledWith("Mobile already exists"),
     );
     expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(mocks.notificationSuccess).not.toHaveBeenCalled();
     expect(mocks.goBack).not.toHaveBeenCalled();
     expect(onFinish).not.toHaveBeenCalled();
   });
@@ -196,7 +191,7 @@ describe("role form", () => {
       "#create",
     );
 
-    await user.type(await screen.findByLabelText("name"), "Operators");
+    await user.type(await findFocusedField("name"), "Operators");
     await user.click(screen.getByLabelText("Read users"));
     await user.click(screen.getByRole("button", { name: "submit" }));
 
@@ -232,7 +227,7 @@ describe("role form", () => {
       "#update",
     );
 
-    const name = await screen.findByLabelText("name");
+    const name = await findFocusedField("name");
     expect(name).toHaveValue("Operators");
     expect(screen.getByLabelText("Read users")).toBeChecked();
     await user.clear(name);
@@ -252,37 +247,15 @@ describe("role form", () => {
 });
 
 describe("user access forms", () => {
-  it("updates a user's password", async () => {
-    const { user } = renderAtHash(
-      <UserPasswordForm data={userData} />,
-      "#password",
-    );
-
-    await user.type(
-      await screen.findByLabelText("newPass"),
-      replacementCredential,
-    );
-    await user.type(
-      screen.getByLabelText("confirmPass"),
-      replacementCredential,
-    );
-    await user.click(screen.getByRole("button", { name: "submit" }));
-
-    await waitFor(() =>
-      expect(api.updateUserPassword).toHaveBeenCalledWith("user-1", {
-        password: replacementCredential,
-      }),
-    );
-    expect(mocks.messageSuccess).toHaveBeenCalledWith("passwordUpdated");
-  });
-
   it("submits the user's current roles", async () => {
     const onFinish = vi.fn();
     const { user } = renderAtHash(
-      <UserFormRole
+      <UserRoleForm
         data={userData}
         onFinish={onFinish}
-        options={{ roles: [{ id: "role-1", name: "Operators" }] }}
+        options={{
+          roles: [{ id: "role-1", name: "Operators", permissions: [] }],
+        }}
       />,
       "#roles",
     );
@@ -297,32 +270,6 @@ describe("user access forms", () => {
     );
     expect(mocks.messageSuccess).toHaveBeenCalledWith("rolesUpdated");
     expect(onFinish).toHaveBeenCalledOnce();
-  });
-
-  it("reports a password update failure without closing", async () => {
-    vi.mocked(api.updateUserPassword).mockRejectedValueOnce(
-      new Error("Password rejected"),
-    );
-    const { user } = renderAtHash(
-      <UserPasswordForm data={userData} />,
-      "#password",
-    );
-
-    await user.type(
-      await screen.findByLabelText("newPass"),
-      replacementCredential,
-    );
-    await user.type(
-      screen.getByLabelText("confirmPass"),
-      replacementCredential,
-    );
-    await user.click(screen.getByRole("button", { name: "submit" }));
-
-    await waitFor(() =>
-      expect(mocks.messageError).toHaveBeenCalledWith("Password rejected"),
-    );
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(mocks.goBack).not.toHaveBeenCalled();
   });
 });
 
@@ -339,14 +286,9 @@ describe("form data guards", () => {
       ui: <RoleForm onFinish={vi.fn()} options={{ permissions: [] }} />,
     },
     {
-      hash: "#password",
-      name: "password",
-      ui: <UserPasswordForm />,
-    },
-    {
       hash: "#roles",
       name: "roles",
-      ui: <UserFormRole onFinish={vi.fn()} options={{ roles: [] }} />,
+      ui: <UserRoleForm onFinish={vi.fn()} options={{ roles: [] }} />,
     },
   ])(
     "closes the $name form when its record is missing",
@@ -372,15 +314,10 @@ describe("form cancellation", () => {
       ui: <RoleForm onFinish={vi.fn()} options={{ permissions: [] }} />,
     },
     {
-      hash: "#password",
-      name: "password",
-      ui: <UserPasswordForm data={userData} />,
-    },
-    {
       hash: "#roles",
       name: "roles",
       ui: (
-        <UserFormRole
+        <UserRoleForm
           data={userData}
           onFinish={vi.fn()}
           options={{ roles: [] }}

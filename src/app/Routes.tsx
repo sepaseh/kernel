@@ -1,26 +1,17 @@
-import {
-  FC,
-  Fragment,
-  lazy,
-  ReactElement,
-  ReactNode,
-  Suspense,
-  useEffect,
-} from "react";
-import {
-  createBrowserRouter,
-  Navigate,
-  RouteObject,
-  useRouteError,
-} from "react-router";
+import type { FC, ReactNode } from "react";
+import { Fragment, lazy, Suspense, useEffect } from "react";
+import type { RouteObject } from "react-router";
+import { createBrowserRouter, Navigate, useRouteError } from "react-router";
 import { RouterProvider } from "react-router/dom";
 
-import { baseUrl, RouteKey, RouteLayout, routeTree } from "@/app/config";
+import type { RouteKey, RouteLayout } from "@/app/config";
+import { baseUrl, routeTree } from "@/app/config";
 import { useCore } from "@/app/hooks";
 import { hasRouteAccess } from "@/app/lib";
 import { NotFoundPage } from "@/app/not-found/NotFound";
 import { reportError } from "@/shared/lib";
 import { ErrorFallback } from "@/shared/ui/error-boundary";
+import { RouteLoading } from "@/shared/ui/route-loading";
 
 const AccountPage = lazy(async () => {
   const { AccountPage } = await import("@/features/account");
@@ -29,6 +20,10 @@ const AccountPage = lazy(async () => {
 const AuthLayout = lazy(async () => {
   const { AuthLayout } = await import("@/layouts/auth");
   return { default: AuthLayout };
+});
+const CalendarPage = lazy(async () => {
+  const { CalendarPage } = await import("@/features/calendar");
+  return { default: CalendarPage };
 });
 const DashboardPage = lazy(async () => {
   const { DashboardPage } = await import("@/features/dashboard");
@@ -39,30 +34,36 @@ const DefaultLayout = lazy(async () => {
   return { default: DefaultLayout };
 });
 const ForgotPassPage = lazy(async () => {
-  const { ForgotPassPage } = await import("@/features/auth/forgot-pass");
+  const { ForgotPassPage } = await import("@/features/forgot-pass");
   return { default: ForgotPassPage };
 });
 const LoginPage = lazy(async () => {
-  const { LoginPage } = await import("@/features/auth/login");
+  const { LoginPage } = await import("@/features/login");
   return { default: LoginPage };
 });
 const RegisterPage = lazy(async () => {
-  const { RegisterPage } = await import("@/features/auth/register");
+  const { RegisterPage } = await import("@/features/register");
   return { default: RegisterPage };
 });
 const RolesPage = lazy(async () => {
   const { RolesPage } = await import("@/features/roles");
   return { default: RolesPage };
 });
+const SettingsPage = lazy(async () => {
+  const { SettingsPage } = await import("@/features/settings");
+  return { default: SettingsPage };
+});
 const UsersPage = lazy(async () => {
   const { UsersPage } = await import("@/features/users");
   return { default: UsersPage };
 });
 
-const RouteWrapper: FC<{ route: RouteKey; children: ReactNode }> = ({
-  route,
-  children,
-}): ReactElement => {
+type RouteWrapperProps = {
+  children: ReactNode;
+  route: RouteKey;
+};
+
+const RouteWrapper: FC<RouteWrapperProps> = ({ route, children }) => {
   const { setCurrentRoute, user } = useCore();
 
   useEffect(() => {
@@ -76,18 +77,20 @@ const RouteWrapper: FC<{ route: RouteKey; children: ReactNode }> = ({
 
 const wrapRoute = (route: RouteKey, element: ReactNode) => (
   <RouteWrapper route={route}>
-    <Suspense fallback={null}>{element}</Suspense>
+    <Suspense fallback={<RouteLoading />}>{element}</Suspense>
   </RouteWrapper>
 );
 
 const pageRegistry = {
   account: <AccountPage />,
   auth: <LoginPage />,
+  calendar: <CalendarPage />,
   forgotPassword: <ForgotPassPage />,
   notFound: <NotFoundPage />,
   register: <RegisterPage />,
   roles: <RolesPage />,
   root: <DashboardPage />,
+  settings: <SettingsPage />,
   users: <UsersPage />,
 } satisfies Record<RouteKey, ReactNode>;
 
@@ -96,7 +99,6 @@ const routeKeys = Object.keys(routeTree) as RouteKey[];
 const createPageRoute = (route: RouteKey): RouteObject => {
   const definition = routeTree[route];
   const element = wrapRoute(route, pageRegistry[route]);
-
   return "index" in definition && definition.index
     ? { element, index: true }
     : { element, path: definition.path };
@@ -124,7 +126,7 @@ const router = createBrowserRouter(
         {
           path: routeTree.auth.path,
           element: (
-            <Suspense fallback={null}>
+            <Suspense fallback={<RouteLoading />}>
               <AuthLayout />
             </Suspense>
           ),
@@ -133,7 +135,7 @@ const router = createBrowserRouter(
         {
           path: routeTree.root.path,
           element: (
-            <Suspense fallback={null}>
+            <Suspense fallback={<RouteLoading />}>
               <DefaultLayout />
             </Suspense>
           ),

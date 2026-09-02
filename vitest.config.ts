@@ -28,6 +28,7 @@ export default defineConfig({
       include: [
         "src/**/*.{ts,tsx}",
         "scripts/check-bundle-size.mjs",
+        "scripts/run-lighthouse.mjs",
         "scripts/validate-production-env.mjs",
         "scripts/validate-workflow-targets.mjs",
       ],

@@ -44,7 +44,6 @@ const loadRoutes = (directory = collectionDirectory) =>
         Object.keys(responseFiles)
           .map(Number)
           .find((status) => status < 300) ?? 200;
-
       return {
         method,
         parameterNames,

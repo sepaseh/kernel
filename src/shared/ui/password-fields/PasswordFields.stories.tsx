@@ -1,13 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Button, Form } from "antd";
-import type { ComponentProps } from "react";
+import type { ComponentProps, FC } from "react";
 
 import { PasswordFields } from "./PasswordFields";
 
-const PasswordFieldsStory = ({
+type PasswordFieldsStoryProps = ComponentProps<typeof PasswordFields>;
+
+const PasswordFieldsStory: FC<PasswordFieldsStoryProps> = ({
   passwordLabel,
   size,
-}: ComponentProps<typeof PasswordFields>) => (
+}) => (
   <Form layout="vertical" style={{ width: 320 }}>
     <PasswordFields passwordLabel={passwordLabel} size={size} />
     <Button htmlType="submit" type="primary">

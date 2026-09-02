@@ -73,7 +73,6 @@ describe("Kernel API consumer contract", () => {
           last_name: "Lovelace",
           mobile: "09121111111",
           permissions: ["users.read"],
-          personnel_code: "200",
           status: "active",
           username: "ada",
         });
@@ -91,7 +90,6 @@ describe("Kernel API consumer contract", () => {
           lastName: "Lovelace",
           mobile: "09121111111",
           permissions: ["users.read"],
-          personnelCode: "200",
           status: "active",
           username: "ada",
         });

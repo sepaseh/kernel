@@ -1,6 +1,5 @@
-import { expect, Page, test } from "@playwright/test";
-
-import { syntheticCredential } from "./fixtures";
+import type { Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 type RoleRecord = {
   id: string;
@@ -9,15 +8,15 @@ type RoleRecord = {
 };
 
 type UserRecord = {
-  email: string | null;
+  email?: string;
   first_name: string;
   id: string;
   is_system_admin: boolean;
   last_name: string;
   mobile: string;
-  personnel_code: string;
+  roles: Array<Pick<RoleRecord, "id" | "name">>;
   status: "active" | "inactive";
-  username: string | null;
+  username?: string;
 };
 
 const mockAccount = async (
@@ -25,7 +24,7 @@ const mockAccount = async (
   permissions: string[],
   isSystemAdmin = false,
 ) => {
-  await page.route("https://api.example.com/account/me", async (route) => {
+  await page.route("http://api.example.com/account/me", async (route) => {
     await route.fulfill({
       contentType: "application/json",
       json: {
@@ -36,7 +35,6 @@ const mockAccount = async (
         last_name: "Manager",
         mobile: "09120000000",
         permissions,
-        personnel_code: "100",
         status: "active",
         username: "manager",
       },
@@ -58,22 +56,25 @@ test.describe("role and user management", () => {
     let createRequestCount = 0;
 
     await mockAccount(page, ["roles.create", "roles.read"]);
-    await page.route("https://api.example.com/permissions", async (route) => {
-      await route.fulfill({
-        contentType: "application/json",
-        json: [
-          {
-            name: "users",
-            permissions: [
-              { name: "users.read", title: "Read users" },
-              { name: "users.update", title: "Update users" },
-            ],
-            title: "Users",
-          },
-        ],
-      });
-    });
-    await page.route("https://api.example.com/roles", async (route) => {
+    await page.route(
+      "http://api.example.com/roles/permissions",
+      async (route) => {
+        await route.fulfill({
+          contentType: "application/json",
+          json: [
+            {
+              name: "users",
+              permissions: [
+                { name: "users.read", title: "Read users" },
+                { name: "users.update", title: "Update users" },
+              ],
+              title: "Users",
+            },
+          ],
+        });
+      },
+    );
+    await page.route("http://api.example.com/roles", async (route) => {
       if (route.request().method() === "POST") {
         createRequestCount += 1;
         expect(route.request().postDataJSON()).toEqual({
@@ -95,7 +96,7 @@ test.describe("role and user management", () => {
       await route.fulfill({ contentType: "application/json", json: roles });
     });
     await page.goto("/roles");
-    await expect(page.getByRole("link", { name: "kernel" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Logo" })).toBeVisible();
 
     await page.getByRole("button", { name: "Create" }).click();
     await page.getByRole("button", { name: "Submit" }).click();
@@ -122,13 +123,16 @@ test.describe("role and user management", () => {
     ];
 
     await mockAccount(page, ["roles.delete", "roles.read", "roles.update"]);
-    await page.route("https://api.example.com/permissions", async (route) => {
-      await route.fulfill({ contentType: "application/json", json: [] });
-    });
-    await page.route("https://api.example.com/roles", async (route) => {
+    await page.route(
+      "http://api.example.com/roles/permissions",
+      async (route) => {
+        await route.fulfill({ contentType: "application/json", json: [] });
+      },
+    );
+    await page.route("http://api.example.com/roles", async (route) => {
       await route.fulfill({ contentType: "application/json", json: roles });
     });
-    await page.route("https://api.example.com/roles/role-1", async (route) => {
+    await page.route("http://api.example.com/roles/role-1", async (route) => {
       if (route.request().method() === "PATCH") {
         expect(route.request().postDataJSON()).toEqual({
           name: "Support",
@@ -188,34 +192,31 @@ test.describe("role and user management", () => {
       "users.read",
       "users.update",
     ]);
-    await page.route("https://api.example.com/roles", async (route) => {
+    await page.route("http://api.example.com/roles", async (route) => {
       await route.fulfill({ contentType: "application/json", json: [] });
     });
     await page.route(
-      /https:\/\/api\.example\.com\/users(?:\?.*)?$/,
+      /http:\/\/api\.example\.com\/users(?:\?.*)?$/,
       async (route) => {
         if (route.request().method() === "POST") {
           expect(route.request().postDataJSON()).toEqual({
             first_name: "Ada",
             last_name: "Lovelace",
             mobile: "09121111111",
-            password: syntheticCredential,
-            personnel_code: "200",
+            password: expect.any(String),
           });
           users.push({
-            email: null,
             first_name: "Ada",
             id: "user-1",
             is_system_admin: false,
             last_name: "Lovelace",
             mobile: "09121111111",
-            personnel_code: "200",
+            roles: [],
             status: "active",
-            username: null,
           });
           await route.fulfill({
             contentType: "application/json",
-            json: { ...users[0], role_ids: [] },
+            json: users[0],
           });
           return;
         }
@@ -226,18 +227,17 @@ test.describe("role and user management", () => {
         });
       },
     );
-    await page.route("https://api.example.com/users/user-1", async (route) => {
+    await page.route("http://api.example.com/users/user-1", async (route) => {
       if (route.request().method() === "PATCH") {
         expect(route.request().postDataJSON()).toEqual({
           first_name: "Augusta",
           last_name: "Lovelace",
           mobile: "09121111111",
-          personnel_code: "200",
         });
         users[0] = { ...users[0], first_name: "Augusta" };
         await route.fulfill({
           contentType: "application/json",
-          json: { ...users[0], role_ids: [] },
+          json: users[0],
         });
         return;
       }
@@ -253,7 +253,7 @@ test.describe("role and user management", () => {
 
       await route.fulfill({
         contentType: "application/json",
-        json: { ...users[0], role_ids: [] },
+        json: users[0],
       });
     });
     await page.goto("/users");
@@ -262,14 +262,9 @@ test.describe("role and user management", () => {
     await page.getByRole("button", { name: "Submit" }).click();
     await expect(page.getByText("Please enter First name")).toBeVisible();
     const createDialog = page.getByRole("dialog", { name: "Create" });
-    await createDialog.getByLabel("First name").fill("Ada");
-    await createDialog.getByLabel("Last name").fill("Lovelace");
+    await createDialog.getByRole("textbox").nth(0).fill("Ada");
+    await createDialog.getByRole("textbox").nth(1).fill("Lovelace");
     await createDialog.getByRole("textbox").nth(2).fill("09121111111");
-    await createDialog.getByLabel("Personnel code").fill("200");
-    await createDialog
-      .getByLabel("Password", { exact: true })
-      .fill(syntheticCredential);
-    await createDialog.getByLabel("Confirm password").fill(syntheticCredential);
     await createDialog.getByRole("button", { name: "Submit" }).click();
     await expect(page.getByText("User created successfully.")).toBeVisible();
     await expect(page.getByText("Ada Lovelace")).toBeVisible();
@@ -279,7 +274,7 @@ test.describe("role and user management", () => {
       .getByRole("button", { name: "Update" })
       .click();
     const updateDialog = page.getByRole("dialog", { name: "Update" });
-    await updateDialog.getByLabel("First name").fill("Augusta");
+    await updateDialog.getByRole("textbox").nth(0).fill("Augusta");
     await updateDialog.getByRole("button", { name: "Submit" }).click();
     await expect(page.getByText("User updated successfully.")).toBeVisible();
     await expect(page.getByText("Augusta Lovelace")).toBeVisible();
@@ -300,7 +295,7 @@ test.describe("role and user management", () => {
   test("hides mutation controls from a read-only user", async ({ page }) => {
     await mockAccount(page, ["users.read"]);
     await page.route(
-      /https:\/\/api\.example\.com\/users(?:\?.*)?$/,
+      /http:\/\/api\.example\.com\/users(?:\?.*)?$/,
       async (route) => {
         await route.fulfill({
           contentType: "application/json",
@@ -313,7 +308,7 @@ test.describe("role and user management", () => {
                 is_system_admin: false,
                 last_name: "Lovelace",
                 mobile: "09121111111",
-                personnel_code: "200",
+                roles: [],
                 status: "active",
                 username: "ada",
               },

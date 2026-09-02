@@ -24,21 +24,32 @@ beforeEach(() => {
 
 describe("user API helper contracts", () => {
   it("maps create, read, update, and delete operations", async () => {
-    await users.createUser({ firstName: "Ada" } as never);
-    expect(apiClient.post).toHaveBeenCalledWith("/users", { firstName: "Ada" });
+    await users.createUser({
+      firstName: "Ada",
+      lastName: "Lovelace",
+      mobile: "09120000000",
+      password: "secret",
+    });
+    expect(apiClient.post).toHaveBeenCalledWith("/users", {
+      firstName: "Ada",
+      lastName: "Lovelace",
+      mobile: "09120000000",
+      password: "secret",
+    });
     await users.fetchUser("user-1");
     expect(apiClient.get).toHaveBeenCalledWith("/users/user-1");
-    await users.updateUser("user-1", { firstName: "Augusta" });
+    await users.updateUser("user-1", {
+      firstName: "Augusta",
+      lastName: "Lovelace",
+      mobile: "09120000000",
+    });
     expect(apiClient.patch).toHaveBeenCalledWith("/users/user-1", {
       firstName: "Augusta",
+      lastName: "Lovelace",
+      mobile: "09120000000",
     });
     await users.deleteUser("user-1");
     expect(apiClient.del).toHaveBeenCalledWith("/users/user-1");
-  });
-
-  it("maps the role options endpoint", async () => {
-    await users.fetchUserRoleOptions();
-    expect(apiClient.get).toHaveBeenCalledWith("/roles");
   });
 
   it.each([

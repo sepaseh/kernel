@@ -10,7 +10,7 @@ import {
   fetchRoles,
   updateRole,
 } from "./api";
-import { RoleRequest } from "./types";
+import type { RoleRequest } from "./types";
 
 vi.mock("@/shared/api", () => ({
   apiClient: {
@@ -51,6 +51,6 @@ describe("roles API", () => {
 
     expect(apiClient.get).toHaveBeenNthCalledWith(1, "/roles");
     expect(apiClient.get).toHaveBeenNthCalledWith(2, "/roles/role-1");
-    expect(apiClient.get).toHaveBeenNthCalledWith(3, "/permissions");
+    expect(apiClient.get).toHaveBeenNthCalledWith(3, "/roles/permissions");
   });
 });

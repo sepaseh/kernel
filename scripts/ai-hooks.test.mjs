@@ -20,7 +20,7 @@ describe.skipIf(!hasBashAndJq)("AI dangerous-command hook", () => {
     ["direct main push", { command: "git push origin main" }],
     ["secret edit", { file_path: ".env.production" }],
     ["environment dump", { command: "printenv" }],
-    ["production endpoint", { command: "curl https://production.example.com" }],
+    ["production endpoint", { command: "curl http://production.example.com" }],
   ])("blocks %s", (_name, payload) => {
     expect(runHook(payload).status).toBe(2);
   });

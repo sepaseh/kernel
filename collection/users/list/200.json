@@ -7,18 +7,22 @@
       "is_system_admin": true,
       "last_name": "رضایی",
       "mobile": "09123456789",
-      "personnel_code": "EMP-1001",
+      "roles": [],
       "status": "active",
       "username": "john.doe"
     },
     {
-      "email": null,
       "first_name": "سارا",
       "id": "89a975c0-f6a4-4cb8-97c6-c558381b68d2",
       "is_system_admin": false,
       "last_name": "رضایی",
       "mobile": "09120000000",
-      "personnel_code": "EMP-1002",
+      "roles": [
+        {
+          "id": "3ecb1f52-6d6e-43b9-a8fb-4e0772c9f863",
+          "name": "کاربر"
+        }
+      ],
       "status": "inactive",
       "username": "jane.doe"
     }

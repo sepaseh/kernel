@@ -1,16 +1,17 @@
-import axios, {
+import type {
   AxiosError,
   AxiosRequestConfig,
   AxiosResponse,
   InternalAxiosRequestConfig,
 } from "axios";
+import axios from "axios";
 
 import { i18nInstance } from "@/shared/i18n";
 import { toCamelCase, toSnakeCase } from "@/shared/lib";
 
 import { apiUrl } from "./config";
 import { clearAccessToken, getAccessToken, setAccessToken } from "./token";
-import { AccessTokenProps } from "./types";
+import type { AccessTokenProps } from "./types";
 const api = axios.create({ baseURL: apiUrl, withCredentials: true });
 const refreshUrl = "/auth/refresh-token";
 const publicAuthUrls = new Set([
@@ -62,15 +63,12 @@ const refreshAccessToken = (): Promise<AccessTokenProps> => {
     })
     .then(({ data }) => {
       const result = toCamelCase(data);
-
       setAccessToken(result.accessToken);
-
       return result;
     })
     .finally(() => {
       refreshPromise = null;
     });
-
   return refreshPromise;
 };
 
@@ -81,7 +79,6 @@ const retryUnauthorizedRequest = async (
 
   const requestConfig = error.config as RetryableRequestConfig | undefined;
   const isPublicAuthRequest = publicAuthUrls.has(requestConfig?.url ?? "");
-
   if (!requestConfig || requestConfig._retried || isPublicAuthRequest) {
     if (!isPublicAuthRequest) handleUnauthorized();
     return;
@@ -108,11 +105,9 @@ const createResponseError = (data: unknown): Error => {
 api.interceptors.request.use(
   (config) => {
     const authToken = getAccessToken();
-
     if (!authToken) return config;
 
     isHandlingUnauthorized = false;
-
     return {
       ...config,
       headers: config.headers.setAuthorization(`Bearer ${authToken}`),
@@ -131,7 +126,6 @@ api.interceptors.response.use(
     }
 
     const retryResponse = await retryUnauthorizedRequest(error);
-
     if (retryResponse) return retryResponse;
 
     if (error.response) {
@@ -154,7 +148,6 @@ const blob = async (
     ...config,
     responseType: "blob",
   });
-
   return data;
 };
 

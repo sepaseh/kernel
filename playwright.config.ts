@@ -1,6 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const baseURL = "https://127.0.0.1:4173";
+const baseURL = "http://127.0.0.1:4173";
 
 export default defineConfig({
   expect: {
@@ -59,7 +59,6 @@ export default defineConfig({
   testDir: "./e2e",
   use: {
     baseURL,
-    ignoreHTTPSErrors: true,
     screenshot: "only-on-failure",
     trace: "on-first-retry",
     video: process.env.CI ? "retain-on-failure" : "off",
@@ -68,11 +67,10 @@ export default defineConfig({
     command: "npm run build && npm run preview -- --host 127.0.0.1 --port 4173",
     env: {
       ...process.env,
-      VITE_API_BASE_URL: "https://api.example.com",
+      VITE_API_BASE_URL: "http://api.example.com",
       VITE_APP_BASE_URL: "/",
       VITE_RELEASE_ID: "e2e",
     },
-    ignoreHTTPSErrors: true,
     reuseExistingServer: false,
     timeout: 120_000,
     url: baseURL,

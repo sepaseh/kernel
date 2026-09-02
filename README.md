@@ -1,30 +1,42 @@
 # Kernel
 
-React starter kit upgraded as a dashboard-ready foundation under the `kernel` project name. It includes authentication, protected routing, an Ant Design layout, multilingual setup, API examples, and starter user/role management screens.
+Kernel is a React administration frontend and reusable dashboard foundation. It
+includes authentication and account flows, permission-aware routing, user and
+role management, a system calendar, runtime branding and theme settings, a
+collection-driven local API, and production-oriented quality gates.
 
 ## Stack
 
-| Layer                | Library                     |
-| -------------------- | --------------------------- |
-| UI framework         | React 19 + TypeScript       |
-| Build tool           | Vite                        |
-| Component library    | Ant Design 6                |
-| Routing              | `react-router` 8.3          |
-| Internationalization | `i18next` + `react-i18next` |
-| HTTP                 | Axios                       |
-| Date handling        | Day.js + Jalaliday          |
-| Linting              | ESLint + simple import sort |
-| Cleanup checks       | Knip                        |
+| Layer                    | Library or tool                |
+| ------------------------ | ------------------------------ |
+| UI framework             | React 19 + TypeScript          |
+| Build tool               | Vite                           |
+| Component library        | Ant Design 6 + `antd-style`    |
+| Routing                  | `react-router` 8.3             |
+| Internationalization     | `i18next` + `react-i18next`    |
+| HTTP                     | Axios                          |
+| Date handling            | Day.js + Jalaliday             |
+| API collection           | Bruno                          |
+| Local mock API           | Node.js HTTP + Bruno responses |
+| Unit and component tests | Vitest + Testing Library       |
+| API mocking              | MSW                            |
+| Contract tests           | Pact                           |
+| Browser and a11y tests   | Playwright + axe-core          |
+| UI development           | Storybook                      |
+| Mutation tests           | Stryker                        |
+| Performance checks       | Lighthouse + bundle-size gate  |
+| Static quality           | ESLint + Prettier + Knip       |
+| Code analysis            | SonarQube + CodeQL             |
 
 ## Getting Started
 
-Install dependencies:
+Use Node.js 24.15.0 or newer within the Node.js 24 line. CI uses the exact
+version recorded in `.nvmrc`; select it before installing dependencies:
 
 ```bash
-npm install
+nvm use
+npm ci
 ```
-
-The exact Node.js version used by CI is recorded in `.nvmrc`.
 
 Create a local environment file:
 
@@ -38,71 +50,147 @@ Start the development server:
 npm run dev
 ```
 
+The frontend starts on `http://localhost:5173`. For a self-contained local
+environment, start `npm run server` in a second terminal before starting Vite.
+Windows users can copy `.env.example` to `.env.local` with their preferred shell
+or file manager.
+
 ## Scripts
 
-```bash
-npm run dev        # start Vite dev server
-npm run build      # typecheck and build for production
-npm run preview    # preview production build
-npm run server     # start the collection-driven local mock API
-npm run server:test # test the local mock API
-npm run lint       # run ESLint
-npm run lint:fix   # run ESLint with auto-fix
-npm run audit      # check dependencies for high-severity vulnerabilities
-npm run typecheck  # typecheck only
-npm run knip       # detect unused files, exports, and dependencies
-```
+| Command                   | Purpose                                               |
+| ------------------------- | ----------------------------------------------------- |
+| `npm run dev`             | Start Vite on `localhost`                             |
+| `npm run build`           | Validate production environment, typecheck, and build |
+| `npm run preview`         | Preview the production build                          |
+| `npm run server`          | Start the collection-driven local mock API            |
+| `npm run audit`           | Check for high-severity dependency vulnerabilities    |
+| `npm run typecheck`       | Run TypeScript without emitting files                 |
+| `npm run lint`            | Run ESLint                                            |
+| `npm run lint:fix`        | Apply safe ESLint fixes                               |
+| `npm run format`          | Format tracked source and documentation               |
+| `npm run format:check`    | Verify Prettier formatting                            |
+| `npm run knip`            | Detect unused files, exports, and dependencies        |
+| `npm run test`            | Run unit and component tests                          |
+| `npm run test:watch`      | Run Vitest in watch mode                              |
+| `npm run test:coverage`   | Run tests and produce coverage for CI and Sonar       |
+| `npm run test:contract`   | Generate and verify Pact consumer contracts           |
+| `npm run server:test`     | Test collection discovery and mock API behavior       |
+| `npm run test:e2e`        | Run Playwright browser journeys                       |
+| `npm run storybook`       | Start the component explorer                          |
+| `npm run test:storybook`  | Run Storybook interaction and accessibility tests     |
+| `npm run build-storybook` | Build the static Storybook                            |
+| `npm run performance`     | Build and enforce bundle-size budgets                 |
+| `npm run lighthouse`      | Run the advisory local Lighthouse audit               |
+
+Specialized mutation, smoke, staging, interactive browser, and visual-baseline
+commands are documented in [Testing](docs/testing.md). Run the complete required
+gate from [CONTRIBUTING.md](CONTRIBUTING.md) before committing or pushing.
 
 ## Environment
 
-| Variable                 | Description                                              | Fallback                |
-| ------------------------ | -------------------------------------------------------- | ----------------------- |
-| `MOCK_ALLOWED_ORIGIN`    | Exact frontend origin allowed by the local mock API CORS | `http://127.0.0.1:5173` |
-| `VITE_API_BASE_URL`      | Backend HTTP API base URL (development fallback only)    | `http://<current-host>` |
-| `VITE_APP_BASE_URL`      | Router basename / deployed base path                     | empty string            |
-| `VITE_OBSERVABILITY_URL` | Optional HTTPS event collector                           | disabled                |
-| `VITE_RELEASE_ID`        | Immutable release identifier attached to events          | `local`                 |
+| Variable                 | Scope    | Requirement or default                                              |
+| ------------------------ | -------- | ------------------------------------------------------------------- |
+| `VITE_API_BASE_URL`      | Frontend | Required absolute URL in production; current origin otherwise       |
+| `VITE_APP_BASE_URL`      | Frontend | Required in production; must start and end with `/`                 |
+| `VITE_OBSERVABILITY_URL` | Frontend | Optional absolute event-collector URL; disabled when omitted        |
+| `VITE_RELEASE_ID`        | Frontend | Optional immutable release identifier; defaults to `unknown`        |
+| `HOST`                   | Mock API | Bind host; defaults to `localhost`                                  |
+| `PORT`                   | Mock API | Bind port; defaults to `3000`                                       |
+| `MOCK_ALLOWED_ORIGIN`    | Mock API | Exact credentialed CORS origin; defaults to `http://localhost:5173` |
+| `JWT_SECRET`             | Mock API | Local signing secret; has a development-only fallback               |
 
-Example values are available in `.env.example`.
+Frontend variables are embedded by Vite at build time. Production builds stop
+before compilation when either required variable is missing or malformed;
+`VITE_OBSERVABILITY_URL`, when supplied, must also be an absolute URL. Example
+local values are available in `.env.example`. Keep machine-specific values in
+`.env.local` and do not commit secrets.
 
-For local development without a backend, start `npm run server`, set
-`VITE_API_BASE_URL=http://127.0.0.1:3000`, and sign in with `09123456789` /
-`password123`. See the [mock server guide](server/README.md).
+## Local Mock API
+
+For local development without a backend, start `npm run server` and set
+`VITE_API_BASE_URL=http://localhost:3000`. The server binds to `localhost:3000`
+by default and allows credentialed CORS from `http://localhost:5173`.
+
+The mock reads request methods, paths, authentication requirements, success
+statuses, and saved response examples directly from the Bruno collection. It
+provides deterministic users and lists, locally signed access tokens, a
+placeholder HttpOnly refresh cookie, and saved-error simulation without
+contacting an external service. Mutation responses are not persisted.
+
+Use `09123456789` / `password123` for the system-administrator flow. Runtime
+inspection is available through `GET /__mock/health` and `GET /__mock/routes`.
+Saved errors can be selected with the `mock_status` query parameter or the
+`X-Mock-Status` header. See the [mock server guide](server/README.md) for
+configuration, limitations, and examples.
+
+## Included Features
+
+- Authentication provides login, registration, forgotten-password, refresh,
+  logout, and authenticated password-change operations.
+- Account management keeps profile, username, verified email, and password
+  forms in one vertical flow.
+- User management provides server-side filtering and pagination, create/edit,
+  activation, role assignment, password reset, system-administrator toggling,
+  and deletion. Boolean status columns use semantic check/close icons.
+- Role management provides create/edit/delete flows and loads assignable
+  permission groups from `/roles/permissions`.
+- Calendar management displays Gregorian API dates in the active Day.js
+  calendar and lets authorized users add or remove dates by selecting a cell.
+- System settings manage language, separate light/dark logos, and complete Ant
+  Design palettes, applying successful updates to the current session.
+- The responsive authenticated layout uses permission-filtered navigation,
+  breadcrumbs, and a centered maximum-width header and content container.
+- The user menu provides account navigation, light/dark theme switching,
+  compact/normal density switching, and logout. Theme, density, and language
+  preferences are synchronized through local storage.
+- Persian uses the Jalali Day.js calendar and RTL direction. Arabic is also RTL;
+  the remaining supported languages are LTR. The bundled `public/logo.svg` is
+  the fallback logo for both themes, and `#61dafb` is the default primary color.
 
 ## Routes
 
-| Path                    | Page                                   | Access          |
-| ----------------------- | -------------------------------------- | --------------- |
-| `/auth`                 | Login                                  | public          |
-| `/auth/forgot-password` | Forgot password                        | public          |
-| `/auth/register`        | Registration                           | public          |
-| `/`                     | Empty dashboard starter page           | authenticated   |
-| `/account`              | Profile, username, email, and password | authenticated   |
-| `/roles`                | Roles and permissions                  | `roles.read`    |
-| `/users`                | Users                                  | `users.read`    |
-| `*`                     | Not found                              | public fallback |
+| Path                    | Page                                   | Access            |
+| ----------------------- | -------------------------------------- | ----------------- |
+| `/auth`                 | Login                                  | public            |
+| `/auth/forgot-password` | Forgot password                        | public            |
+| `/auth/register`        | Registration                           | public            |
+| `/`                     | Empty dashboard starter page           | authenticated     |
+| `/account`              | Profile, username, email, and password | authenticated     |
+| `/calendar`             | Calendar                               | `calendar.read`   |
+| `/roles`                | Roles and permissions                  | `roles.read`      |
+| `/settings`             | System settings                        | `settings.update` |
+| `/users`                | Users                                  | `users.read`      |
+| `*`                     | Not found                              | public fallback   |
 
-## API Examples
+## API Surface
 
-The API layer includes reusable authentication and account endpoints alongside generic administration examples.
+The Bruno collection is the executable source of truth for observable HTTP
+behavior. Feature-local API modules expose the same contracts to the frontend,
+while `src/shared/api` owns transport, token refresh, case conversion, and file
+upload infrastructure.
 
-| Area    | Endpoint examples                                                                                                                             |
-| ------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| Auth    | `/auth/register`, `/auth/login`, `/auth/otp-request`, `/auth/forgot-password`, `/auth/refresh-token`, `/auth/change-password`, `/auth/logout` |
-| Account | `/account/me`, `/account/update-profile`, `/account/update-username`, `/account/request-email-verification`, `/account/verify-email`          |
-| Users   | `/users`, `/users/:id`, `/users/:id/roles`, `/users/:id/password`, `/users/:id/status`, `/users/:id/system-admin`                             |
-| Roles   | `/roles`, `/roles/:id`, `/permissions`                                                                                                        |
+| Area     | Endpoint examples                                                                                                                             |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Auth     | `/auth/register`, `/auth/login`, `/auth/otp-request`, `/auth/forgot-password`, `/auth/refresh-token`, `/auth/change-password`, `/auth/logout` |
+| Account  | `/account/me`, `/account/update-profile`, `/account/update-username`, `/account/request-email-verification`, `/account/verify-email`          |
+| Calendar | `/calendar`, `/calendar/:date`                                                                                                                |
+| Users    | `/users`, `/users/:id`, `/users/:id/roles`, `/users/:id/password`, `/users/:id/status`, `/users/:id/system-admin`                             |
+| Roles    | `/roles`, `/roles/:id`, `/roles/permissions`                                                                                                  |
+| Settings | `/settings`, `/languages`, `/files`                                                                                                           |
 
 Protected API requests automatically make one refresh attempt after a `401`.
 Concurrent failures share the same `/auth/refresh-token` request, whose
 backend-managed HttpOnly refresh cookie is sent with browser credentials.
 
-Run the test suite once with `npm test`, or use `npm run test:watch` during
-development. See [Testing](docs/testing.md) for the complete unit, component,
-API-mocking, coverage, and browser testing strategy.
 Access tokens are kept in frontend memory only and are never written to cookies
 or local storage. If refresh fails, authentication state is cleared and the
 user returns to the login page.
+
+Request bodies are converted from camelCase to snake_case, responses from
+snake_case to camelCase, and `null` response properties are omitted so nullable
+backend values become optional frontend properties. See the
+[API client guide](docs/api-client.md) and [collection guide](docs/collection-guide.md)
+for the detailed contract and ownership rules.
 
 ## Permissions
 
@@ -113,27 +201,49 @@ Permission-gated routes use `.read` permissions for access and can expose
 create, delete, and update actions through `getRoutePermissions(route, user)`:
 
 ```ts
-// Route access
-"roles.read" | "users.read";
+type RouteAccessPermission =
+  "calendar.read" | "roles.read" | "settings.update" | "users.read";
 
-// Route actions
-"roles.create" | "roles.delete" | "roles.update";
-"users.create" | "users.delete" | "users.update";
+type RouteActionPermission =
+  | "calendar.update"
+  | "roles.create"
+  | "roles.delete"
+  | "roles.update"
+  | "users.create"
+  | "users.delete"
+  | "users.update";
 ```
 
-Password pages/actions only require a valid auth token.
+`SYSTEM_ADMIN` bypasses role permission checks. Changing the authenticated
+account's own password requires a valid token; resetting another user's
+password and changing `is_system_admin` are separate system-administrator
+contracts and are not assignable role permissions.
 
 ## Project Structure
 
 ```text
+.agents/       Provider-neutral assistant rules, skills, and safety hooks
+.github/       CI, security, staging, deployment-smoke, and release workflows
+collection/   Executable Bruno HTTP contracts and saved responses
+docs/         Architecture, development, testing, security, and operations guides
+e2e/          Playwright browser, accessibility, localization, and visual tests
+public/       Public application assets, including the fallback logo and favicon
+scripts/      Environment, bundle, Lighthouse, and workflow validation scripts
+server/       Collection-driven local mock API
 src/
-  app/          Application composition, routes, providers, access policy, and app hooks
-  assets/       Fonts and global styles
-  features/     Account, authentication, role, user, and dashboard slices
-  layouts/      Auth and authenticated application shells
-  shared/       Reusable API infrastructure, config, hooks, i18n, storage, UI, and utilities
-  test/         Shared test infrastructure and cross-feature integration tests
+  app/        Application composition, routes, providers, access policy, and app hooks
+  assets/     Local fonts and global styles
+  features/   Route screens and domain modules
+  layouts/    Public and authenticated application shells
+  shared/     Reusable API, config, hooks, i18n, storage, UI, and utilities
+  test/       Shared test infrastructure and cross-feature integration suites
+tooling/      Shared paths and repository tooling helpers
 ```
+
+Feature code owns its API, types, components, tests, stories, and page-level
+composition. Cross-feature imports use each feature's public `index.ts`; reusable
+infrastructure belongs in `shared`, which cannot depend on app, feature, or
+layout layers. The `@/` alias resolves to `src/`.
 
 ## AI Guidance
 
@@ -143,9 +253,27 @@ lives in `.agents/`. The complete subsystem-to-document index is available in
 
 ## Icons
 
-Icons are centralized in `src/shared/ui/icon/Icon.tsx`. Add new icon names to the internal `iconMap`, then render them with:
+Feature and layout code must use the shared semantic `Icon` component instead of
+importing an icon package or rendering emoji. Each icon is a separate local SVG
+component under `src/shared/ui/icon`, built on `SvgIcon` so it inherits
+`currentColor` and remains decorative to assistive technology.
+
+To add an icon:
+
+1. Copy only the required Material UI SVG path from `@mui/icons-material` into a
+   new local `NameIcon.tsx` component; MUI is not a runtime dependency.
+2. Render the path through `SvgIcon` and accept `SvgIconProps` using
+   `FC<SvgIconProps>`.
+3. Register a semantic call-site name in the private `iconMap` in `Icon.tsx`.
+4. Add the name to the Icon story controls and cover mapping behavior when the
+   shared contract changes.
+
+Call sites select the semantic name and may override the inherited size:
 
 ```tsx
 <Icon name="user" />
 <Icon name="delete" size={14} />
 ```
+
+Icons are decorative by default; the owning button, link, or control must supply
+its accessible name.

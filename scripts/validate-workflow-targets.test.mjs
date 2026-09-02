@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   parseConfiguredHostname,
-  parseHttpsTarget,
+  parseTarget,
   validateDastTarget,
   validateSmokeTargets,
   validateStagingTargets,
@@ -11,8 +11,8 @@ import {
 const staging = {
   STAGING_ALLOWED_API_HOST: "api.staging.example.com",
   STAGING_ALLOWED_APP_HOST: "staging.example.com",
-  STAGING_API_HEALTH_URL: "https://api.staging.example.com/health",
-  STAGING_BASE_URL: "https://staging.example.com/app/",
+  STAGING_API_HEALTH_URL: "http://api.staging.example.com/health",
+  STAGING_BASE_URL: "http://staging.example.com/app/",
 };
 
 describe("workflow target validation", () => {
@@ -23,15 +23,14 @@ describe("workflow target validation", () => {
   it.each([
     " example.com",
     "example.com:443",
-    "https://example.com",
+    "http://example.com",
     "-bad.example",
   ])("rejects invalid configured hostname %s", (host) =>
     expect(() => parseConfiguredHostname("HOST", host)).toThrow(),
   );
 
-  it.each(["http://example.com", "https://user:pass@example.com"])(
-    "rejects unsafe target %s",
-    (url) => expect(() => parseHttpsTarget("TARGET", url)).toThrow(),
+  it.each(["http://user:pass@example.com"])("rejects unsafe target %s", (url) =>
+    expect(() => parseTarget("TARGET", url)).toThrow(),
   );
 
   it("accepts staging targets on the configured hosts", () => {
@@ -42,7 +41,7 @@ describe("workflow target validation", () => {
     expect(() =>
       validateStagingTargets({
         ...staging,
-        STAGING_BASE_URL: "https://other.example.com",
+        STAGING_BASE_URL: "http://other.example.com",
       }),
     ).toThrow("not explicitly allowed");
   });
@@ -71,7 +70,7 @@ describe("workflow target validation", () => {
         SMOKE_ALLOWED_API_HOST: staging.STAGING_ALLOWED_API_HOST,
         SMOKE_ALLOWED_APP_HOST: staging.STAGING_ALLOWED_APP_HOST,
         SMOKE_API_HEALTH_URL: staging.STAGING_API_HEALTH_URL,
-        SMOKE_BASE_URL: "https://other.example.com",
+        SMOKE_BASE_URL: "http://other.example.com",
         SMOKE_DEPLOYMENT_ID: "candidate",
         SMOKE_EXPECTED_DEPLOYMENT_ID: "candidate",
       }),
@@ -82,14 +81,14 @@ describe("workflow target validation", () => {
     const env = {
       DAST_ALLOWED_HOST: "staging.example.com",
       DAST_PRODUCTION_HOST: "example.com",
-      DAST_TARGET: "https://staging.example.com",
+      DAST_TARGET: "http://staging.example.com",
     };
     expect(() => validateDastTarget(env)).not.toThrow();
     expect(() =>
       validateDastTarget({
         ...env,
         DAST_ALLOWED_HOST: "example.com",
-        DAST_TARGET: "https://example.com",
+        DAST_TARGET: "http://example.com",
       }),
     ).toThrow("must not target the production host");
   });

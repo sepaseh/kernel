@@ -18,7 +18,6 @@ const signToken = (extraClaims = {}, expiresInSeconds = 3600) => {
     .createHmac("sha256", secret)
     .update(`${header}.${payload}`)
     .digest("base64url");
-
   return `${header}.${payload}.${signature}`;
 };
 

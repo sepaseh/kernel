@@ -19,7 +19,6 @@ export const useFilterParams = <T extends Record<string, string>>() => {
     (newFilters: Partial<T>) => {
       setSearchParams((current) => {
         const next = new URLSearchParams(current);
-
         for (const [key, value] of Object.entries(newFilters)) {
           if (value === undefined || value === null || value === "") {
             next.delete(key);
@@ -27,12 +26,10 @@ export const useFilterParams = <T extends Record<string, string>>() => {
             next.set(key, value);
           }
         }
-
         return next;
       });
     },
     [setSearchParams],
   );
-
   return { filters, setFilters };
 };

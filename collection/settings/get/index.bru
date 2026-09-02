@@ -1,0 +1,29 @@
+meta {
+  name: Get Application Settings
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/settings
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  ## Purpose
+
+  Returns the global language, logos, and light/dark theme palettes.
+
+  ## Authentication
+
+  Public endpoint so the application can apply settings before authentication.
+
+  ## Response
+
+  - `200 OK` — Settings returned successfully.
+}

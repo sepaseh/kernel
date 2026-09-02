@@ -1,10 +1,12 @@
-import { ReactNode, useMemo, useState } from "react";
+import type { FC, ReactNode } from "react";
+import { useMemo, useState } from "react";
 import { MemoryRouter } from "react-router";
 
-import { CoreContext, CoreContextValue } from "@/app/contexts";
+import type { CoreContextValue } from "@/app/contexts";
+import { CoreContext } from "@/app/contexts";
 import { AntdProvider } from "@/app/providers";
-import { Account } from "@/features/account";
-import { Language, Theme } from "@/shared/config";
+import type { Account } from "@/features/account";
+import type { Language, Theme } from "@/shared/config";
 
 import { sampleAccount } from "./fixtures";
 
@@ -13,33 +15,45 @@ type StoryShellProps = {
   initialEntries?: string[];
   initialLanguage?: Language;
   initialTheme?: Theme;
-  initialUser?: Account | null;
+  initialUser?: Account;
+  withUser?: boolean;
 };
 
-export const StoryShell = ({
+export const StoryShell: FC<StoryShellProps> = ({
   children,
   initialEntries = ["/"],
   initialLanguage = "en",
   initialTheme = "light",
   initialUser = sampleAccount,
-}: StoryShellProps) => {
+  withUser = true,
+}) => {
+  const [compact, setCompact] = useState(false);
   const [language, setLanguage] = useState(initialLanguage);
+  const [logos, setLogos] = useState<CoreContextValue["logos"]>();
   const [theme, setTheme] = useState(initialTheme);
+  const [themePalettes, setThemePalettes] =
+    useState<CoreContextValue["themePalettes"]>();
   const [user, setUser] = useState<CoreContextValue["user"]>(
-    initialUser ?? undefined,
+    withUser ? initialUser : undefined,
   );
   const value = useMemo<CoreContextValue>(
     () => ({
+      compact,
       currentRoute: "root",
       language,
+      logos,
+      setCompact,
       setCurrentRoute: () => undefined,
       setLanguage,
+      setLogos,
       setTheme,
+      setThemePalettes,
       setUser,
       theme,
+      themePalettes,
       user,
     }),
-    [language, theme, user],
+    [compact, language, logos, theme, themePalettes, user],
   );
 
   return (

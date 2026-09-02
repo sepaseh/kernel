@@ -1,12 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useMemo, useState } from "react";
+import { type FC, useMemo, useState } from "react";
 import { MemoryRouter, Route, Routes } from "react-router";
 import { mocked } from "storybook/test";
 
-import { CoreContext, CoreContextValue } from "@/app/contexts";
+import type { CoreContextValue } from "@/app/contexts";
+import { CoreContext } from "@/app/contexts";
 import { AntdProvider } from "@/app/providers";
-import { Account, getAccount } from "@/features/account";
-import { Language, Theme } from "@/shared/config";
+import type { Account } from "@/features/account";
+import { getAccount } from "@/features/account";
+import type { Language, Theme } from "@/shared/config";
 
 import { DefaultLayout } from "./Default";
 
@@ -18,32 +20,39 @@ const account: Account = {
   lastName: "Admin",
   mobile: "09120000000",
   permissions: [],
-  personnelCode: "1001",
   status: "active",
   username: "admin",
 };
 
-const DefaultLayoutStory = ({
+type DefaultLayoutStoryProps = {
+  initialLanguage?: Language;
+  initialTheme?: Theme;
+  initialUser?: Account;
+  withUser?: boolean;
+};
+
+const DefaultLayoutStory: FC<DefaultLayoutStoryProps> = ({
   initialLanguage = "en",
   initialTheme = "light",
   initialUser = account,
-}: {
-  initialLanguage?: Language;
-  initialTheme?: Theme;
-  initialUser?: Account | null;
+  withUser = true,
 }) => {
   const [language, setLanguage] = useState<Language>(initialLanguage);
   const [theme, setTheme] = useState<Theme>(initialTheme);
   const [user, setUser] = useState<CoreContextValue["user"]>(
-    initialUser ?? undefined,
+    withUser ? initialUser : undefined,
   );
   const value = useMemo<CoreContextValue>(
     () => ({
+      compact: false,
       currentRoute: "root",
       language,
       setCurrentRoute: () => undefined,
+      setCompact: () => undefined,
       setLanguage,
+      setLogos: () => undefined,
       setTheme,
+      setThemePalettes: () => undefined,
       setUser,
       theme,
       user,
@@ -96,7 +105,7 @@ export const LoadingAccount: Story = {
   beforeEach() {
     mocked(getAccount).mockReturnValue(new Promise(() => undefined));
   },
-  render: () => <DefaultLayoutStory initialUser={null} />,
+  render: () => <DefaultLayoutStory withUser={false} />,
 };
 
 export const DarkRtl: Story = {

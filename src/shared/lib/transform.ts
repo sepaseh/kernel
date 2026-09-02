@@ -6,7 +6,6 @@ const isObject = (value: unknown): value is Record<string, unknown> => {
   }
 
   const prototype = Object.getPrototypeOf(value);
-
   return prototype === Object.prototype || prototype === null;
 };
 
@@ -22,6 +21,8 @@ export const toCamelCase = <T>(obj: T): T => {
   if (isObject(obj)) {
     const result: Record<string, unknown> = {};
     Object.keys(obj).forEach((key) => {
+      if (obj[key] === null) return;
+
       result[toCamel(key)] = toCamelCase(obj[key]);
     });
     return result as T;
@@ -35,6 +36,8 @@ export const toSnakeCase = <T>(obj: T): T => {
   if (isObject(obj)) {
     const result: Record<string, unknown> = {};
     Object.keys(obj).forEach((key) => {
+      if (obj[key] === null) return;
+
       result[toSnake(key)] = toSnakeCase(obj[key]);
     });
     return result as T;

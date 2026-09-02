@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const stagingUrl = new URL(
-  process.env.STAGING_BASE_URL ?? "https://staging-target.invalid/",
+  process.env.STAGING_BASE_URL ?? "http://staging-target.invalid/",
 );
 
 if (!stagingUrl.pathname.endsWith("/")) {

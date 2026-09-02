@@ -1,9 +1,7 @@
-import {
-  render as testingLibraryRender,
-  RenderOptions,
-} from "@testing-library/react";
+import type { RenderOptions } from "@testing-library/react";
+import { render as testingLibraryRender } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 export { screen } from "@testing-library/react";
 

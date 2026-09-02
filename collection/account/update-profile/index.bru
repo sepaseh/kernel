@@ -22,8 +22,7 @@ headers {
 body:json {
   {
     "first_name": "علی",
-    "last_name": "رضایی",
-    "personnel_code": "EMP-1001"
+    "last_name": "رضایی"
   }
 }
 
@@ -41,8 +40,7 @@ docs {
   - Only fields included in the request body are updated.
   - Omitted fields remain unchanged.
   - At least one supported field must be provided.
-  - Supported fields are `first_name`, `last_name`, and `personnel_code`.
-  - `personnel_code` must remain unique when changed.
+  - Supported fields are `first_name` and `last_name`.
   - Users do not have individual language preferences.
   - Username and email are managed through their dedicated endpoints.
   - Avatar management is not included until the file system contract is defined.

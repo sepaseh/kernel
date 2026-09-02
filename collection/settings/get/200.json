@@ -1,0 +1,35 @@
+{
+  "dark_logo": {
+    "id": "dark-logo",
+    "url": "http://localhost:5173/logo.svg"
+  },
+  "dark_theme": {
+    "color_bg_base": "#141414",
+    "color_bg_container": "#1f1f1f",
+    "color_border": "#424242",
+    "color_link": "#1668dc",
+    "color_primary": "#61dafb",
+    "color_text_base": "#ffffff",
+    "color_text_description": "#bfbfbf"
+  },
+  "language": {
+    "calendar": "jalali",
+    "code": "fa",
+    "direction": "rtl",
+    "name": "Persian",
+    "native_name": "فارسی"
+  },
+  "light_logo": {
+    "id": "light-logo",
+    "url": "http://localhost:5173/logo.svg"
+  },
+  "light_theme": {
+    "color_bg_base": "#ffffff",
+    "color_bg_container": "#ffffff",
+    "color_border": "#d9d9d9",
+    "color_link": "#1677ff",
+    "color_primary": "#61dafb",
+    "color_text_base": "#000000",
+    "color_text_description": "#8c8c8c"
+  }
+}

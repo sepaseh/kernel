@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { MemoryRouter, Route, Routes } from "react-router";
 
-import { CoreContext, CoreContextValue } from "@/app/contexts";
+import type { CoreContextValue } from "@/app/contexts";
+import { CoreContext } from "@/app/contexts";
 import { AntdProvider } from "@/app/providers";
 
 import { AuthLayout } from "./Auth";
@@ -13,11 +14,15 @@ const AuthLayoutStory = () => {
   return (
     <CoreContext.Provider
       value={{
+        compact: false,
         currentRoute: "auth",
         language: "en",
         setCurrentRoute: () => undefined,
+        setCompact: () => undefined,
         setLanguage: () => undefined,
+        setLogos: () => undefined,
         setTheme: () => undefined,
+        setThemePalettes: () => undefined,
         setUser,
         theme: "light",
         user,

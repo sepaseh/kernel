@@ -12,11 +12,11 @@ From the repository root:
 npm run server
 ```
 
-The API listens on `http://127.0.0.1:3000` by default. Set `HOST` or `PORT` to
+The API listens on `http://localhost:3000` by default. Set `HOST` or `PORT` to
 override the bind address or port. Configure the frontend with:
 
 ```text
-VITE_API_BASE_URL=http://127.0.0.1:3000
+VITE_API_BASE_URL=http://localhost:3000
 ```
 
 Useful development endpoints:
@@ -24,7 +24,7 @@ Useful development endpoints:
 - `GET /__mock/health` reports server status and the discovered route count.
 - `GET /__mock/routes` lists the HTTP routes discovered in `collection/`.
 
-Credentialed CORS defaults to `http://127.0.0.1:5173`. Set
+Credentialed CORS defaults to `http://localhost:5173`. Set
 `MOCK_ALLOWED_ORIGIN` to the exact frontend origin when using another local
 host or port. Other origins do not receive credentialed CORS headers.
 

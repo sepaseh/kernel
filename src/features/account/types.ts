@@ -1,30 +1,27 @@
 import type { PermissionKey } from "@/features/roles";
 
 export type Account = {
-  email: null | string;
+  email?: string;
   firstName: string;
   id: string;
   isSystemAdmin: boolean;
   lastName: string;
   mobile: string;
   permissions: PermissionKey[];
-  personnelCode: null | string;
   status: string;
-  username: null | string;
+  username?: string;
 };
 
 export type EmailVerificationRequest = {
-  email: string;
+  email: NonNullable<Account["email"]>;
 };
 
-export type UpdateProfileRequest = {
-  firstName?: string;
-  lastName?: string;
-  personnelCode?: string;
-};
+export type UpdateProfileRequest = Partial<
+  Pick<Account, "firstName" | "lastName">
+>;
 
 export type UpdateUsernameRequest = {
-  username: string;
+  username: NonNullable<Account["username"]>;
 };
 
 export type VerifyEmailRequest = EmailVerificationRequest & {

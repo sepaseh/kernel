@@ -18,6 +18,8 @@ describe("users API", () => {
 
         expect(url.searchParams.get("offset")).toBe("12");
         expect(url.searchParams.get("size")).toBe("12");
+        expect(url.searchParams.get("first_name")).toBe("Ada");
+        expect(url.searchParams.get("last_name")).toBe("Lovelace");
 
         return HttpResponse.json({
           items: [
@@ -28,7 +30,7 @@ describe("users API", () => {
               is_system_admin: false,
               last_name: "Lovelace",
               mobile: "09120000000",
-              personnel_code: "100",
+              roles: [{ id: "role-1", name: "Operators" }],
               status: "active",
               username: "ada",
             },
@@ -38,16 +40,22 @@ describe("users API", () => {
       }),
     );
 
-    await expect(fetchUsers({ offset: "12", size: "12" })).resolves.toEqual({
+    await expect(
+      fetchUsers({
+        firstName: "Ada",
+        lastName: "Lovelace",
+        offset: "12",
+        size: "12",
+      }),
+    ).resolves.toEqual({
       items: [
         {
-          email: null,
           firstName: "Ada",
           id: "user-1",
           isSystemAdmin: false,
           lastName: "Lovelace",
           mobile: "09120000000",
-          personnelCode: "100",
+          roles: [{ id: "role-1", name: "Operators" }],
           status: "active",
           username: "ada",
         },

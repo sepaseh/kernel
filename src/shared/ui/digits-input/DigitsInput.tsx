@@ -1,5 +1,6 @@
-import { Input, InputProps } from "antd";
-import { FC } from "react";
+import type { InputProps } from "antd";
+import { Input } from "antd";
+import type { FC } from "react";
 
 type DigitsInputProps = InputProps;
 
