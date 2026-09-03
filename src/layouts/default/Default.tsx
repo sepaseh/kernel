@@ -23,7 +23,15 @@ import { getAllowedNavigation } from "@/app/lib";
 import { getAccount } from "@/features/account";
 import { logout } from "@/features/auth";
 import { clearAccessToken, setUnauthorizedHandler } from "@/shared/api";
-import { Icon } from "@/shared/ui/icon";
+import {
+  CompactIcon,
+  DarkModeIcon,
+  ExpandIcon,
+  LightModeIcon,
+  LogoutIcon,
+  MenuIcon,
+  PersonIcon,
+} from "@/shared/ui/icon";
 
 const { useBreakpoint } = Grid;
 
@@ -165,7 +173,7 @@ export const DefaultLayout = () => {
             <Flex style={{ flexGrow: 1 }}>
               <Button
                 aria-label={t("menu")}
-                icon={<Icon name="menu" />}
+                icon={<MenuIcon />}
                 onClick={() => setOpen(true)}
                 type="text"
               />
@@ -175,27 +183,27 @@ export const DefaultLayout = () => {
             menu={{
               items: [
                 {
-                  icon: <Icon name="user" />,
+                  icon: <PersonIcon />,
                   key: "1",
                   label: t("account"),
                   onClick: () =>
                     navigate(routeTree.account.path, { replace: true }),
                 },
                 {
-                  icon: <Icon name={darkMode ? "lightMode" : "moon"} />,
+                  icon: darkMode ? <LightModeIcon /> : <DarkModeIcon />,
                   key: "2",
                   label: t(darkMode ? "lightMode" : "darkMode"),
                   onClick: () => setTheme(darkMode ? "light" : "dark"),
                 },
                 {
-                  icon: <Icon name={compact ? "expand" : "compact"} />,
+                  icon: compact ? <ExpandIcon /> : <CompactIcon />,
                   key: "3",
                   label: t(compact ? "normalMode" : "compactMode"),
                   onClick: () => setCompact(!compact),
                 },
                 {
                   danger: true,
-                  icon: <Icon name="logout" />,
+                  icon: <LogoutIcon />,
                   key: "4",
                   label: t("logout"),
                   onClick: handleLogout,
@@ -206,7 +214,7 @@ export const DefaultLayout = () => {
             <Tooltip placement="right" title={userName}>
               <Button
                 aria-label={t("account")}
-                icon={<Avatar icon={<Icon name="user" />} />}
+                icon={<Avatar icon={<PersonIcon />} />}
                 type="text"
               />
             </Tooltip>

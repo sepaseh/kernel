@@ -24,7 +24,15 @@ import { UserRoleForm } from "@/features/users/components/user-role-form/UserRol
 import { useFilterParams } from "@/shared/hooks";
 import { getErrorMessage, tinyId } from "@/shared/lib";
 import { DigitsInput } from "@/shared/ui/digits-input";
-import { Icon } from "@/shared/ui/icon";
+import {
+  AddIcon,
+  CheckIcon,
+  CloseIcon,
+  DeleteIcon,
+  EditIcon,
+  KeyIcon,
+  LockIcon,
+} from "@/shared/ui/icon";
 
 import {
   deleteUser,
@@ -223,7 +231,7 @@ export const UsersPage = () => {
                   <Button
                     aria-label={label}
                     color={isSystemAdmin ? "green" : "red"}
-                    icon={<Icon name={isSystemAdmin ? "check" : "close"} />}
+                    icon={isSystemAdmin ? <CheckIcon /> : <CloseIcon />}
                     onClick={() =>
                       handleSystemAdmin(id, { isSystemAdmin: !isSystemAdmin })
                     }
@@ -250,7 +258,7 @@ export const UsersPage = () => {
               <Button
                 aria-label={label}
                 color={active ? "green" : "red"}
-                icon={<Icon name={active ? "check" : "close"} />}
+                icon={active ? <CheckIcon /> : <CloseIcon />}
                 onClick={() =>
                   handleStatus(id, {
                     status: active ? "inactive" : "active",
@@ -266,7 +274,7 @@ export const UsersPage = () => {
                   color: active ? token.colorSuccess : token.colorError,
                 }}
               >
-                <Icon name={active ? "check" : "close"} />
+                {active ? <CheckIcon /> : <CloseIcon />}
               </span>
             )}
           </Tooltip>
@@ -287,7 +295,7 @@ export const UsersPage = () => {
                     <Tooltip title={t("update")}>
                       <Button
                         aria-label={t("update")}
-                        icon={<Icon name="edit" />}
+                        icon={<EditIcon />}
                         onClick={() =>
                           openUserDrawer(record.id, userDrawerKeys.update)
                         }
@@ -297,7 +305,7 @@ export const UsersPage = () => {
                     <Tooltip title={t("roles")}>
                       <Button
                         aria-label={t("roles")}
-                        icon={<Icon name="key" />}
+                        icon={<KeyIcon />}
                         onClick={() =>
                           openUserDrawer(record.id, userDrawerKeys.roles)
                         }
@@ -307,7 +315,7 @@ export const UsersPage = () => {
                     <Tooltip title={t("password")}>
                       <Button
                         aria-label={t("password")}
-                        icon={<Icon name="lock" />}
+                        icon={<LockIcon />}
                         onClick={() => handlePassword(record.id)}
                         type="text"
                       />
@@ -318,7 +326,7 @@ export const UsersPage = () => {
                   <Tooltip title={t("delete")}>
                     <Button
                       aria-label={t("delete")}
-                      icon={<Icon name="delete" />}
+                      icon={<DeleteIcon />}
                       onClick={() => handleDelete(record.id)}
                       type="text"
                     />
@@ -435,7 +443,7 @@ export const UsersPage = () => {
       {canCreate && (
         <FloatButton
           aria-label={t("create")}
-          icon={<Icon name="add" />}
+          icon={<AddIcon />}
           onClick={() =>
             navigate(
               { hash: userDrawerKeys.create, pathname, search },

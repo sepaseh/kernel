@@ -89,9 +89,10 @@ All user-visible text should go through `react-i18next`.
 
 ## Icons
 
-- Use the shared `Icon` component with semantic names at call sites; do not
-  render emoji or import an icon package directly into feature components.
-- Keep each SVG icon as a local component beside `Icon`. Copy only the required
+- Import and render the specific local icon component at call sites; do not
+  render emoji, route icons through a name-based wrapper, or import an icon
+  package directly into feature components.
+- Keep each SVG icon as a local component beside `SvgIcon`. Copy only the required
   Material UI SVG path from `@mui/icons-material`; do not add MUI as a runtime
   dependency solely for icons.
 - Render SVGs with `currentColor` so color follows the surrounding control, and
