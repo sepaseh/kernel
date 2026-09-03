@@ -1,14 +1,16 @@
-import type { FC } from "react";
+import type { FC, SVGProps } from "react";
 
-import type { SvgIconProps } from "./types";
-
-export const SvgIcon: FC<SvgIconProps> = ({ children, ...props }) => (
+export const SvgIcon: FC<SVGProps<SVGSVGElement>> = ({
+  children,
+  ...props
+}) => (
   <svg
     fill="currentColor"
     height="1em"
     viewBox="0 0 24 24"
     width="1em"
     {...props}
+    aria-hidden
   >
     {children}
   </svg>

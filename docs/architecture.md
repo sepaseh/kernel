@@ -91,6 +91,10 @@ utilities in `src/shared/lib`, and HTTP/token infrastructure in `src/shared/api`
 Application composition belongs in `src/app`; layouts and static assets retain
 their dedicated top-level directories.
 
+Icons are local components under `src/shared/ui/icon`. Feature and layout call
+sites import the specific icon component they render; `SvgIcon` owns the shared
+SVG behavior, including inherited color and decorative accessibility.
+
 Public authentication screens are independent top-level features under
 `src/features/login`, `src/features/register`, and `src/features/forgot-pass`.
 Shared authentication requests and contracts remain in `src/features/auth` and

@@ -13,7 +13,7 @@ import {
 } from "@/features/auth";
 import { getErrorMessage } from "@/shared/lib";
 import { DigitsInput } from "@/shared/ui/digits-input";
-import { Icon } from "@/shared/ui/icon";
+import { LockIcon } from "@/shared/ui/icon";
 import { OtpInput } from "@/shared/ui/otp-input";
 import { PasswordFields } from "@/shared/ui/password-fields";
 
@@ -82,7 +82,7 @@ export const ForgotPassPage = () => {
   return (
     <Flex gap={32} vertical>
       <Flex align="center" gap={8} vertical>
-        <Icon name="lock" size={28} />
+        <LockIcon style={{ fontSize: 28 }} />
         <Typography.Title level={1} style={{ fontSize: 16 }}>
           {t("forgotPassword")}
         </Typography.Title>

@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 
 import { uploadFile } from "@/shared/api";
 import { getErrorMessage } from "@/shared/lib";
-import { Icon } from "@/shared/ui/icon";
+import { UploadIcon } from "@/shared/ui/icon";
 
 const useStyles = createStyles(({ css }) => ({
   root: css`
@@ -85,7 +85,7 @@ export const LogoUpload: FC<LogoUploadProps> = ({ onChange, url, value }) => {
       {url ? (
         <img alt={t("logo")} className={styles.image} src={url} />
       ) : (
-        <Icon name="upload" />
+        <UploadIcon />
       )}
     </Upload>
   );
