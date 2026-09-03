@@ -253,26 +253,28 @@ lives in `.agents/`. The complete subsystem-to-document index is available in
 
 ## Icons
 
-Feature and layout code must use the shared semantic `Icon` component instead of
-importing an icon package or rendering emoji. Each icon is a separate local SVG
-component under `src/shared/ui/icon`, built on `SvgIcon` so it inherits
-`currentColor` and remains decorative to assistive technology.
+Feature and layout code imports and renders the specific local icon component it
+needs instead of routing icons through a name-based wrapper, importing an icon
+package, or rendering emoji. Each icon lives under `src/shared/ui/icon` and is
+built on `SvgIcon`, so it inherits `currentColor` and remains decorative to
+assistive technology.
 
 To add an icon:
 
 1. Copy only the required Material UI SVG path from `@mui/icons-material` into a
    new local `NameIcon.tsx` component; MUI is not a runtime dependency.
-2. Render the path through `SvgIcon` and accept `SvgIconProps` using
-   `FC<SvgIconProps>`.
-3. Register a semantic call-site name in the private `iconMap` in `Icon.tsx`.
-4. Add the name to the Icon story controls and cover mapping behavior when the
-   shared contract changes.
+2. Render the path through `SvgIcon` and type the component with
+   `FC<SVGProps<SVGSVGElement>>`.
+3. Export the component from `src/shared/ui/icon/index.ts`.
+4. Add or update Storybook coverage when the icon has a meaningful visual state.
 
-Call sites select the semantic name and may override the inherited size:
+Call sites render the component directly and may override the inherited size:
 
 ```tsx
-<Icon name="user" />
-<Icon name="delete" size={14} />
+import { DeleteIcon, PersonIcon } from "@/shared/ui/icon";
+
+<PersonIcon />
+<DeleteIcon style={{ fontSize: 14 }} />
 ```
 
 Icons are decorative by default; the owning button, link, or control must supply

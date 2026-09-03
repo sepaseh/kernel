@@ -9,7 +9,7 @@ import { useAntd, useCore } from "@/app/hooks";
 import { getRoutePermissions } from "@/app/lib";
 import { RoleForm } from "@/features/roles/components/role-form/RoleForm";
 import { getErrorMessage } from "@/shared/lib";
-import { Icon } from "@/shared/ui/icon";
+import { AddIcon, DeleteIcon, EditIcon } from "@/shared/ui/icon";
 
 import { deleteRole, fetchPermissions, fetchRole, fetchRoles } from "./api";
 import { roleDrawerKeys } from "./constants";
@@ -103,7 +103,7 @@ export const RolesPage = () => {
             <Tooltip title={t("update")}>
               <Button
                 aria-label={t("update")}
-                icon={<Icon name="edit" />}
+                icon={<EditIcon />}
                 onClick={() => handleUpdate(record.id)}
                 type="text"
               />
@@ -113,7 +113,7 @@ export const RolesPage = () => {
             <Tooltip title={t("delete")}>
               <Button
                 aria-label={t("delete")}
-                icon={<Icon name="delete" size={14} />}
+                icon={<DeleteIcon style={{ fontSize: 14 }} />}
                 onClick={() => handleDelete(record.id)}
                 type="text"
               />
@@ -165,7 +165,7 @@ export const RolesPage = () => {
       {canCreate && (
         <FloatButton
           aria-label={t("create")}
-          icon={<Icon name="add" />}
+          icon={<AddIcon />}
           onClick={() =>
             navigate(
               { hash: roleDrawerKeys.create, pathname, search },
