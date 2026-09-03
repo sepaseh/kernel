@@ -41,8 +41,9 @@ threshold is not an exception.
 - The empty dashboard is starter scaffolding with no behavior or meaningful
   visual state. Add tests and stories when it gains behavior.
 - The settings page and logo upload have focused tests and Storybook coverage.
-- The shared icon wrapper mapping, sizing, and decorative accessibility are
-  covered by its colocated unit test and Storybook stories.
+- Local SVG icons are static visual assets without meaningful behavioral
+  variants, so dedicated unit tests are omitted; representative visual coverage
+  remains in Storybook.
 
 New visual components should ship with both behavioral tests and stories unless
 an exception is explicit and evident in the implementation.

@@ -9,7 +9,7 @@ import { useAntd } from "@/app/hooks";
 import { register, type RegisterParams, requestOtp } from "@/features/auth";
 import { getErrorMessage } from "@/shared/lib";
 import { DigitsInput } from "@/shared/ui/digits-input";
-import { Icon } from "@/shared/ui/icon";
+import { PersonIcon } from "@/shared/ui/icon";
 import { OtpInput } from "@/shared/ui/otp-input";
 import { PasswordFields } from "@/shared/ui/password-fields";
 
@@ -76,7 +76,7 @@ export const RegisterPage = () => {
   return (
     <Flex gap={32} vertical>
       <Flex align="center" gap={8} vertical>
-        <Icon name="user" size={28} />
+        <PersonIcon style={{ fontSize: 28 }} />
         <Typography.Title level={1} style={{ fontSize: 16 }}>
           {t("register")}
         </Typography.Title>

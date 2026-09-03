@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 import { useAntd, useCore } from "@/app/hooks";
 import { getRoutePermissions } from "@/app/lib";
 import { getErrorMessage } from "@/shared/lib";
-import { Icon } from "@/shared/ui/icon";
+import { ChevronLeftIcon, ChevronRightIcon } from "@/shared/ui/icon";
 
 import {
   createCalendarDate,
@@ -139,12 +139,12 @@ export const CalendarPage = () => {
           <Button
             aria-label={t("previousMonth")}
             disabled={!hasPreviousMonth}
-            icon={<Icon name="chevronRight" />}
+            icon={<ChevronRightIcon />}
             onClick={() => onChange(value.clone().subtract(1, "month"))}
           />
           <Button
             aria-label={t("nextMonth")}
-            icon={<Icon name="chevronLeft" />}
+            icon={<ChevronLeftIcon />}
             onClick={() => onChange(value.clone().add(1, "month"))}
           />
         </Flex>
