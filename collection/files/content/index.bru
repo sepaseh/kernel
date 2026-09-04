@@ -1,0 +1,27 @@
+meta {
+  name: Get Public File Content
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}/files/{{file_id}}/content
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: */*
+}
+
+docs {
+  ## Purpose
+
+  Returns the bytes of a public uploaded file. Local-storage URLs use this
+  endpoint; MinIO deployments may return a direct public object URL instead.
+
+  ## Response
+
+  - `200 OK` — Public file bytes with the stored content type.
+  - `404 Not Found` — The file does not exist or is private.
+}

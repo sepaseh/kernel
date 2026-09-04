@@ -32,5 +32,5 @@ npm run knip
 ## Current project shape
 
 This is a React 19 + TypeScript + Vite starter kit using Ant Design, Axios, React Router, i18next, Day.js/Jalaliday, ESLint, and Knip.
-The Bruno collection and local mock server define the executable API examples
-used during development.
+The Bruno collection defines executable API contracts; the standalone Hono
+server implements them with Better Auth, Drizzle/SQLite, and MinIO.

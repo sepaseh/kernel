@@ -394,5 +394,20 @@ export default [
       "@typescript-eslint/consistent-type-exports": "error",
     },
   },
+  {
+    files: ["drizzle.config.ts", "server/**/*.ts"],
+    languageOptions: {
+      globals: globals.node,
+      parserOptions: {
+        project: "./tsconfig.server.json",
+        tsconfigRootDir: repositoryRoot,
+      },
+    },
+    rules: {
+      "local/architecture-boundaries": "off",
+      "local/no-alias-for-same-dir": "off",
+      "local/no-parent-relative-imports": "off",
+    },
+  },
   ...storybook.configs["flat/recommended"],
 ];

@@ -6,7 +6,7 @@
 - Search for obsolete field names after renames.
 - Check Bruno template variables against the documented environment values.
 - Review request scripts after response-field changes.
-- Confirm collection examples, mock-server behavior, tests, and documentation
+- Confirm collection examples, backend behavior, tests, and documentation
   describe the same behavior.
 
 ## Scope and readability

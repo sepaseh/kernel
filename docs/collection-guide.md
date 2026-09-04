@@ -1,7 +1,7 @@
-# Executable API collection and local mock
+# Executable API collection and backend
 
-Kernel's Bruno collection is the executable source of truth for the HTTP
-boundary used by the frontend and local mock API.
+Kernel's Bruno collection is the executable source of truth for the public HTTP
+boundary shared by the frontend and standalone backend.
 
 ## Ownership
 
@@ -12,61 +12,48 @@ Each operation directory contains:
 - status-named JSON files such as `200.json`, `401.json`, and `409.json` for
   saved response bodies.
 
-The frontend feature `api.ts` and `types.ts` files consume this boundary. The
-mock server reads it at startup through `server/collection.cjs`; it does not
-maintain a second route registry or generated service catalog.
+Frontend feature `api.ts` and `types.ts` modules consume the boundary. Hono
+routes under `server/src/routes` implement it. Saved examples are documentation
+and executable client examples; the server does not return them as fixtures.
 
 ## Change sequence
 
 When observable API behavior changes:
 
-1. Update the Bruno request and saved response examples.
-2. Update the owning feature API helper and types.
-3. Update unit, contract, mock-server, and browser tests as applicable.
-4. Update API or feature documentation when behavior or error handling changes.
+1. Update the Bruno request, operation notes, and saved responses.
+2. Update the owning frontend API helper and types.
+3. Update the Hono route and its database/application behavior.
+4. Add or update focused backend, consumer-contract, and browser tests.
+5. Update the mapped documentation when configuration or behavior changes.
 
-Adding, moving, or removing a request automatically changes the routes loaded
-the next time the mock process starts. Run `npm run server:test` to verify route
-discovery and core local behavior.
+Run `npm run server:test` for backend behavior, `npm run test:contract` for the
+consumer boundary, and the smallest affected frontend tests.
 
 ## Runtime behavior
 
-The mock server derives these values from the collection:
+The backend preserves the collection's snake_case payloads and documented
+status codes while adding persistent behavior:
 
-- method and path, including `{{parameter}}` path segments;
-- whether bearer authentication is required;
-- successful status and saved response body;
-- saved error bodies available for simulation;
-- system-administrator-only requirements documented by an operation.
+- server-owned messages and permission titles use the global language stored
+  in application settings, while user-entered content is never translated;
+- Better Auth validates passwords and owns revocable database sessions;
+- authorization checks system-administrator status and role permissions from
+  SQLite on every protected operation;
+- Drizzle transactions maintain role assignments and related records;
+- application settings, users, roles, calendar dates, OTP challenges, and file
+  metadata survive process restarts;
+- the selected storage driver stores object bytes separately from SQLite;
+  local development uses private/public directories and MinIO uses separate
+  private/public buckets.
 
-Authentication tokens, account identity, user-list filtering, pagination, CORS,
-and mock control endpoints are local runtime behavior implemented under
-`server/`. Mutation responses are deterministic examples and are not persisted.
+The old `mock_status` query, `X-Mock-Status` header, and `__mock` inspection
+endpoints no longer exist. Tests that need an error must establish the relevant
+state or send invalid input, so they exercise actual behavior.
 
-## Error simulation
+## Contract scope
 
-Use a query parameter or request header to select an error status:
-
-```text
-GET /users?mock_status=403
-X-Mock-Status: 409
-```
-
-The server checks route authentication and authorization before returning the
-saved response. Otherwise it returns a generic message identifying the
-simulated method, route, and status. Tests for protected UI error states must
-provide a valid local token.
-
-## Contract limitations
-
-The mock validates route-level authentication and local credentials, but it is
-not a backend conformance implementation. It does not prove:
-
-- field-level request validation;
-- authorization enforcement for every action permission;
-- cookie rotation, revocation, CSRF defenses, or production cookie flags;
-- database constraints, transactions, audit logging, or mutation persistence;
-- rate limiting, capacity, latency, or availability behavior.
-
-Use Pact and provider verification for consumer compatibility, and use an
-authorized deployed environment for security and operational validation.
+The collection describes observable HTTP compatibility. Database schema,
+migrations, Better Auth internals, storage layout, operational limits, and runtime
+composition are owned by `server/` and documented in the
+[backend guide](../server/README.md). Pact protects selected consumer
+interactions; backend integration tests protect persistence and authorization.

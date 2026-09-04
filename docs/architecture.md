@@ -161,10 +161,16 @@ builds; the application does not depend on an external font provider.
 
 Prefer Ant Design components and theme tokens for new UI so layout, spacing, RTL behavior, and dark/light themes stay consistent.
 
-## Local API Boundary
+## API and backend boundary
 
 The Bruno collection defines the executable HTTP boundary. Feature API modules
 and types consume it, Pact tests protect selected consumer contracts, and the
-dependency-free server under `server/` reads it directly for local development.
-The mock server is a development adapter, not part of the browser application or
-production deployment architecture. See the [collection guide](collection-guide.md).
+standalone Hono server under `server/` implements it. The backend composes API
+routes, application behavior, Better Auth, Drizzle/SQLite, and pluggable local
+or MinIO object storage without a frontend framework dependency.
+
+Server-owned messages and permission labels are translated from the global
+`settings.language_code`. User-entered names and titles remain ordinary domain
+data and are returned unchanged. Backend locale resources cover every language
+available in application settings. See the [collection guide](collection-guide.md) and
+[backend guide](../server/README.md).

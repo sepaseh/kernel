@@ -3,30 +3,32 @@
 Kernel is a React administration frontend and reusable dashboard foundation. It
 includes authentication and account flows, permission-aware routing, user and
 role management, a system calendar, runtime branding and theme settings, a
-collection-driven local API, and production-oriented quality gates.
+standalone persistent API, and production-oriented quality gates.
 
 ## Stack
 
-| Layer                    | Library or tool                |
-| ------------------------ | ------------------------------ |
-| UI framework             | React 19 + TypeScript          |
-| Build tool               | Vite                           |
-| Component library        | Ant Design 6 + `antd-style`    |
-| Routing                  | `react-router` 8.3             |
-| Internationalization     | `i18next` + `react-i18next`    |
-| HTTP                     | Axios                          |
-| Date handling            | Day.js + Jalaliday             |
-| API collection           | Bruno                          |
-| Local mock API           | Node.js HTTP + Bruno responses |
-| Unit and component tests | Vitest + Testing Library       |
-| API mocking              | MSW                            |
-| Contract tests           | Pact                           |
-| Browser and a11y tests   | Playwright + axe-core          |
-| UI development           | Storybook                      |
-| Mutation tests           | Stryker                        |
-| Performance checks       | Lighthouse + bundle-size gate  |
-| Static quality           | ESLint + Prettier + Knip       |
-| Code analysis            | SonarQube + CodeQL             |
+| Layer                    | Library or tool               |
+| ------------------------ | ----------------------------- |
+| UI framework             | React 19 + TypeScript         |
+| Build tool               | Vite                          |
+| Component library        | Ant Design 6 + `antd-style`   |
+| Routing                  | `react-router` 8.3            |
+| Internationalization     | `i18next` + `react-i18next`   |
+| HTTP                     | Axios                         |
+| Date handling            | Day.js + Jalaliday            |
+| API collection           | Bruno                         |
+| Backend API              | Hono + Better Auth            |
+| Persistence              | Drizzle ORM + SQLite          |
+| Object storage           | Local filesystem or MinIO     |
+| Unit and component tests | Vitest + Testing Library      |
+| API mocking              | MSW                           |
+| Contract tests           | Pact                          |
+| Browser and a11y tests   | Playwright + axe-core         |
+| UI development           | Storybook                     |
+| Mutation tests           | Stryker                       |
+| Performance checks       | Lighthouse + bundle-size gate |
+| Static quality           | ESLint + Prettier + Knip      |
+| Code analysis            | SonarQube + CodeQL            |
 
 ## Getting Started
 
@@ -62,7 +64,9 @@ or file manager.
 | `npm run dev`             | Start Vite on `localhost`                             |
 | `npm run build`           | Validate production environment, typecheck, and build |
 | `npm run preview`         | Preview the production build                          |
-| `npm run server`          | Start the collection-driven local mock API            |
+| `npm run server`          | Start the standalone local API                        |
+| `npm run server:generate` | Generate a reviewed Drizzle migration                 |
+| `npm run server:migrate`  | Apply pending SQLite migrations                       |
 | `npm run audit`           | Check for high-severity dependency vulnerabilities    |
 | `npm run typecheck`       | Run TypeScript without emitting files                 |
 | `npm run lint`            | Run ESLint                                            |
@@ -74,7 +78,7 @@ or file manager.
 | `npm run test:watch`      | Run Vitest in watch mode                              |
 | `npm run test:coverage`   | Run tests and produce coverage for CI and Sonar       |
 | `npm run test:contract`   | Generate and verify Pact consumer contracts           |
-| `npm run server:test`     | Test collection discovery and mock API behavior       |
+| `npm run server:test`     | Test backend persistence and API behavior             |
 | `npm run test:e2e`        | Run Playwright browser journeys                       |
 | `npm run storybook`       | Start the component explorer                          |
 | `npm run test:storybook`  | Run Storybook interaction and accessibility tests     |
@@ -88,16 +92,23 @@ gate from [CONTRIBUTING.md](CONTRIBUTING.md) before committing or pushing.
 
 ## Environment
 
-| Variable                 | Scope    | Requirement or default                                              |
-| ------------------------ | -------- | ------------------------------------------------------------------- |
-| `VITE_API_BASE_URL`      | Frontend | Required absolute URL in production; current origin otherwise       |
-| `VITE_APP_BASE_URL`      | Frontend | Required in production; must start and end with `/`                 |
-| `VITE_OBSERVABILITY_URL` | Frontend | Optional absolute event-collector URL; disabled when omitted        |
-| `VITE_RELEASE_ID`        | Frontend | Optional immutable release identifier; defaults to `unknown`        |
-| `HOST`                   | Mock API | Bind host; defaults to `localhost`                                  |
-| `PORT`                   | Mock API | Bind port; defaults to `3000`                                       |
-| `MOCK_ALLOWED_ORIGIN`    | Mock API | Exact credentialed CORS origin; defaults to `http://localhost:5173` |
-| `JWT_SECRET`             | Mock API | Local signing secret; has a development-only fallback               |
+| Variable                       | Scope    | Requirement or default                                              |
+| ------------------------------ | -------- | ------------------------------------------------------------------- |
+| `VITE_API_BASE_URL`            | Frontend | Required absolute URL in production; current origin otherwise       |
+| `VITE_APP_BASE_URL`            | Frontend | Required in production; must start and end with `/`                 |
+| `VITE_OBSERVABILITY_URL`       | Frontend | Optional absolute event-collector URL; disabled when omitted        |
+| `VITE_RELEASE_ID`              | Frontend | Optional immutable release identifier; defaults to `unknown`        |
+| `HOST` / `PORT`                | Backend  | Bind address; defaults to `localhost:3000`                          |
+| `SERVER_ALLOWED_ORIGIN`        | Backend  | Exact credentialed CORS origin; defaults to `http://localhost:5173` |
+| `SERVER_SEED_DEVELOPMENT_DATA` | Backend  | Enables synthetic local seed data; disabled in production           |
+| `BETTER_AUTH_SECRET`           | Backend  | Better Auth secret; replace the local fallback outside development  |
+| `BETTER_AUTH_URL`              | Backend  | Canonical backend URL; defaults to `http://localhost:3000`          |
+| `DATABASE_URL`                 | Backend  | SQLite URL; defaults to `file:server/data/kernel.sqlite`            |
+| `STORAGE_DRIVER`               | Backend  | `local` by default outside production; `minio` in production        |
+| `LOCAL_STORAGE_PATH`           | Backend  | Local upload directory; defaults to `server/data/uploads`           |
+| `MINIO_*`                      | Backend  | Required when `STORAGE_DRIVER=minio`                                |
+| `UPLOAD_LIMIT_BYTES`           | Backend  | Maximum uploaded file size; defaults to 5 MiB                       |
+| `OTP_FIXED_CODE`               | Backend  | Local-only OTP value; defaults to `123456`                          |
 
 Frontend variables are embedded by Vite at build time. Production builds stop
 before compilation when either required variable is missing or malformed;
@@ -105,23 +116,19 @@ before compilation when either required variable is missing or malformed;
 local values are available in `.env.example`. Keep machine-specific values in
 `.env.local` and do not commit secrets.
 
-## Local Mock API
+## Local API
 
-For local development without a backend, start `npm run server` and set
-`VITE_API_BASE_URL=http://localhost:3000`. The server binds to `localhost:3000`
-by default and allows credentialed CORS from `http://localhost:5173`.
+For local development, start `npm run server` and set
+`VITE_API_BASE_URL=http://localhost:3000`. The backend binds to
+`localhost:3000`, applies SQLite migrations, stores uploads under
+`server/data/uploads`, and allows credentialed CORS from
+`http://localhost:5173` by default. Docker is not required for this default.
 
-The mock reads request methods, paths, authentication requirements, success
-statuses, and saved response examples directly from the Bruno collection. It
-provides deterministic users and lists, locally signed access tokens, a
-placeholder HttpOnly refresh cookie, and saved-error simulation without
-contacting an external service. Mutation responses are not persisted.
-
-Use `09123456789` / `password123` for the system-administrator flow. Runtime
-inspection is available through `GET /__mock/health` and `GET /__mock/routes`.
-Saved errors can be selected with the `mock_status` query parameter or the
-`X-Mock-Status` header. See the [mock server guide](server/README.md) for
-configuration, limitations, and examples.
+Use `09123456789` / `password123` for the seeded system-administrator flow and
+`123456` for local OTP flows. `GET /health` reports API health. All domain
+mutations persist in SQLite, while uploaded bytes are stored by the selected
+storage driver and only their metadata/references are stored in the database. See the
+[backend guide](server/README.md) for configuration and data ownership.
 
 ## Included Features
 
@@ -229,7 +236,7 @@ docs/         Architecture, development, testing, security, and operations guide
 e2e/          Playwright browser, accessibility, localization, and visual tests
 public/       Public application assets, including the fallback logo and favicon
 scripts/      Environment, bundle, Lighthouse, and workflow validation scripts
-server/       Collection-driven local mock API
+server/       Standalone Hono API, migrations, persistence, auth, and storage
 src/
   app/        Application composition, routes, providers, access policy, and app hooks
   assets/     Local fonts and global styles

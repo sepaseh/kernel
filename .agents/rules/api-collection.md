@@ -1,12 +1,12 @@
 # API collection
 
 - Treat `collection/` as the executable source of truth for observable HTTP
-  behavior. Keep it aligned with feature API modules, types, mock-server
-  behavior, tests, and the documents identified by `docs/README.md`.
+  behavior. Keep it aligned with feature API modules, types, backend behavior,
+  tests, and the documents identified by `docs/README.md`.
 - Update every affected contract surface in the same change. A request field,
   response field, default value, validation rule, status code, or endpoint
   behavior change is incomplete until the collection example and operation
-  docs, frontend types and API module, mock behavior, affected tests, and the
+  docs, frontend types and API module, backend behavior, affected tests, and the
   mapped repository documentation agree.
 - Review both request and response examples when changing creation defaults.
   Defaults owned by the backend must not be sent by frontend forms, and must be

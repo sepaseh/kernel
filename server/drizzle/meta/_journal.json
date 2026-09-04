@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1788376953867,
+      "tag": "0000_init_backend",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1788452543557,
+      "tag": "0001_optional_profile_email",
+      "breakpoints": true
+    }
+  ]
+}

@@ -3,14 +3,15 @@
 ## Scope
 
 This model covers the Kernel browser application, its static hosting layer, the
-configured API origin, and the authentication/session exchange between them.
-The backend implementation, identity provider, CI platform, and hosting
-provider are dependencies and must maintain their own threat models.
+standalone API, SQLite data, stored file objects, and the authentication/session
+exchange between them. The hosting and CI providers remain dependencies and
+must maintain their own threat models.
 
-The local mock API is development and test tooling outside the production trust
-boundary. It uses synthetic data, a local signing secret, permissive reflected
-CORS, and incomplete authorization semantics. It must not receive real
-credentials or be deployed as a production service.
+The checked-in backend configuration contains local seed credentials, a fixed
+OTP adapter, and development MinIO credentials. Those defaults must never be
+used in a shared or production deployment. A production OTP delivery provider,
+secret management, TLS, backups, monitoring, and deployment-specific controls
+remain required.
 
 Review this document for authentication, authorization, data-flow,
 infrastructure, or trust-boundary changes and at least quarterly.
@@ -19,6 +20,7 @@ infrastructure, or trust-boundary changes and at least quarterly.
 
 - Access and refresh credentials.
 - User identity, profile, role, permission, and account data.
+- SQLite records and private/public local or MinIO objects.
 - Administrative operations for users and roles.
 - Build artifacts, release identifiers, source code, and CI credentials.
 - Application availability, integrity, audit evidence, and observability data.
@@ -36,6 +38,9 @@ infrastructure, or trust-boundary changes and at least quarterly.
 6. CI builds artifacts and security reports without deployment credentials.
 7. Sanitized browser errors and performance events may cross into the configured
    observability service.
+8. The API stores relational state in SQLite and object bytes through the
+   configured storage adapter; file rows hold metadata and object references
+   only.
 
 ## Primary threats and controls
 
@@ -71,13 +76,14 @@ infrastructure, or trust-boundary changes and at least quarterly.
 - Refresh cookies are inaccessible to JavaScript and narrowly scoped.
 - Logout and terminal refresh failure clear client and server session state.
 - Error reports, logs, build artifacts, and test evidence contain no secrets.
-- Collection examples and mock-server fixtures contain synthetic data only.
+- Collection examples, development seeds, and test fixtures contain synthetic data only.
 - Production can return to a known-good build once deployment automation is
   introduced.
 
 ## Residual risks
 
-The frontend cannot verify API authorization, cookie flags, refresh-token
-rotation, revocation, rate limiting, audit logging, database isolation, or
-backend input validation. These remain release blockers until confirmed through
-backend evidence, integration tests, or a documented security review.
+The backend now enforces role permissions, persists sessions and domain state,
+limits upload size, and separates public/private storage. Production
+release blockers still include real OTP delivery and throttling, audit logging,
+secret rotation, TLS and secure cookie verification, backup/restore exercises,
+malware/content scanning, and an environment-specific security review.
