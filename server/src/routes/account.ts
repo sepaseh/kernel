@@ -79,14 +79,19 @@ export const createAccountRoutes = () => {
   });
 
   app.post("/request-email-verification", async (context) => {
-    await authenticate(context);
+    const { account } = await authenticate(context);
     const body = await parseJson(context);
     const email = requiredString(body.email, "email").toLowerCase();
     if (!/^\S+@\S+\.\S+$/.test(email)) {
       throw new ApiError(400, "emailInvalid");
     }
     return context.json(
-      await issueOtp(context.get("dependencies"), email, "verify_email"),
+      await issueOtp(
+        context.get("dependencies"),
+        email,
+        "verify_email",
+        account.id,
+      ),
     );
   });
 
@@ -96,7 +101,7 @@ export const createAccountRoutes = () => {
     const email = requiredString(body.email, "email").toLowerCase();
     const otp = requiredString(body.otp, "otp");
     const dependencies = context.get("dependencies");
-    await consumeOtp(dependencies, email, "verify_email", otp);
+    await consumeOtp(dependencies, email, "verify_email", otp, account.id);
     try {
       await dependencies.database
         .update(user)

@@ -10,6 +10,15 @@ import { ApiError, authenticate } from "../http.ts";
 const safeObjectName = (name: string) =>
   name.replace(/[^a-zA-Z0-9._-]/g, "-").replace(/-+/g, "-");
 
+const inlineContentTypes = new Set([
+  "image/avif",
+  "image/gif",
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "text/plain",
+]);
+
 export const createFileRoutes = () => {
   const app = new Hono<AppEnvironment>();
 
@@ -25,11 +34,18 @@ export const createFileRoutes = () => {
       record.bucket,
       record.objectKey,
     );
+    const inline = inlineContentTypes.has(record.contentType.toLowerCase());
     return new Response(Buffer.from(contents), {
       headers: {
         "Cache-Control": "public, max-age=3600",
+        ...(!inline && {
+          "Content-Disposition": `attachment; filename*=UTF-8''${encodeURIComponent(record.originalName)}`,
+        }),
         "Content-Length": String(contents.byteLength),
-        "Content-Type": record.contentType,
+        "Content-Type": inline
+          ? record.contentType
+          : "application/octet-stream",
+        "X-Content-Type-Options": "nosniff",
       },
     });
   });
@@ -68,17 +84,29 @@ export const createFileRoutes = () => {
       objectKey,
       visibility,
     });
-    await dependencies.database.insert(files).values({
-      bucket: stored.bucket,
-      contentType,
-      createdAt: new Date(),
-      createdBy: account.id,
-      id,
-      objectKey: stored.objectKey,
-      originalName: file.name || "upload",
-      size: file.size,
-      visibility,
-    });
+    try {
+      await dependencies.database.insert(files).values({
+        bucket: stored.bucket,
+        contentType,
+        createdAt: new Date(),
+        createdBy: account.id,
+        id,
+        objectKey: stored.objectKey,
+        originalName: file.name || "upload",
+        size: file.size,
+        visibility,
+      });
+    } catch (error) {
+      try {
+        await dependencies.storage.delete(stored.bucket, stored.objectKey);
+      } catch (cleanupError) {
+        console.error("Failed to remove an object after metadata failure.", {
+          cleanupError,
+          objectKey: stored.objectKey,
+        });
+      }
+      throw error;
+    }
     const url = dependencies.storage.url(
       stored.bucket,
       stored.objectKey,

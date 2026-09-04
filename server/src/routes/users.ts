@@ -1,4 +1,4 @@
-import { and, asc, eq, like, or } from "drizzle-orm";
+import { and, asc, count, eq, like, or } from "drizzle-orm";
 import { Hono } from "hono";
 
 import { account, roles, session, user, userRoles } from "../db/schema.ts";
@@ -54,12 +54,17 @@ export const createUserRoutes = () => {
     const offset = parsePagination(query.offset, 0);
     const requestedSize = parsePagination(query.size, 12);
     const size = requestedSize > 0 ? requestedSize : 12;
-    const all = await database
-      .select()
-      .from(user)
-      .where(conditions.length ? and(...conditions) : undefined)
-      .orderBy(asc(user.createdAt));
-    const page = all.slice(offset, offset + size);
+    const where = conditions.length ? and(...conditions) : undefined;
+    const [page, totals] = await Promise.all([
+      database
+        .select()
+        .from(user)
+        .where(where)
+        .orderBy(asc(user.createdAt))
+        .limit(size)
+        .offset(offset),
+      database.select({ total: count() }).from(user).where(where),
+    ]);
     const rolesByUser = await getRolesByUserIds(
       database,
       page.map(({ id }) => id),
@@ -68,7 +73,7 @@ export const createUserRoutes = () => {
       items: page.map((value) =>
         serializeUser(value, rolesByUser.get(value.id) ?? []),
       ),
-      total: all.length,
+      total: totals[0]?.total ?? 0,
     });
   });
 
@@ -163,20 +168,19 @@ export const createUserRoutes = () => {
     if (existing.id === actor.id) {
       throw new ApiError(409, "userCannotDeleteSelf");
     }
-    if (existing.isSystemAdmin) {
-      const administrators = await context
-        .get("dependencies")
-        .database.select({ id: user.id })
-        .from(user)
-        .where(eq(user.isSystemAdmin, true));
-      if (administrators.length === 1) {
-        throw new ApiError(409, "finalAdminDelete");
+    const database = context.get("dependencies").database;
+    await database.transaction(async (transaction) => {
+      if (existing.isSystemAdmin && existing.status === "active") {
+        const [result] = await transaction
+          .select({ total: count() })
+          .from(user)
+          .where(and(eq(user.isSystemAdmin, true), eq(user.status, "active")));
+        if ((result?.total ?? 0) <= 1) {
+          throw new ApiError(409, "finalAdminDelete");
+        }
       }
-    }
-    await context
-      .get("dependencies")
-      .database.delete(user)
-      .where(eq(user.id, existing.id));
+      await transaction.delete(user).where(eq(user.id, existing.id));
+    });
     return context.body(null, 200);
   });
 
@@ -189,14 +193,30 @@ export const createUserRoutes = () => {
     if (body.status !== "active" && body.status !== "inactive") {
       throw new ApiError(400, "userStatusInvalid");
     }
-    if (existing.id === actor.id && body.status === "inactive") {
+    const status = body.status;
+    if (existing.id === actor.id && status === "inactive") {
       throw new ApiError(409, "userCannotDeactivateSelf");
     }
-    await context
-      .get("dependencies")
-      .database.update(user)
-      .set({ status: body.status, updatedAt: new Date() })
-      .where(eq(user.id, existing.id));
+    const database = context.get("dependencies").database;
+    await database.transaction(async (transaction) => {
+      if (
+        existing.isSystemAdmin &&
+        existing.status === "active" &&
+        status === "inactive"
+      ) {
+        const [result] = await transaction
+          .select({ total: count() })
+          .from(user)
+          .where(and(eq(user.isSystemAdmin, true), eq(user.status, "active")));
+        if ((result?.total ?? 0) <= 1) {
+          throw new ApiError(409, "finalAdminDelete");
+        }
+      }
+      await transaction
+        .update(user)
+        .set({ status, updatedAt: new Date() })
+        .where(eq(user.id, existing.id));
+    });
     return context.body(null, 200);
   });
 
@@ -240,11 +260,27 @@ export const createUserRoutes = () => {
     if (typeof body.is_system_admin !== "boolean") {
       throw new ApiError(400, "systemAdminInvalid");
     }
-    await context
-      .get("dependencies")
-      .database.update(user)
-      .set({ isSystemAdmin: body.is_system_admin, updatedAt: new Date() })
-      .where(eq(user.id, existing.id));
+    const isSystemAdmin = body.is_system_admin;
+    const database = context.get("dependencies").database;
+    await database.transaction(async (transaction) => {
+      if (
+        existing.isSystemAdmin &&
+        existing.status === "active" &&
+        !isSystemAdmin
+      ) {
+        const [result] = await transaction
+          .select({ total: count() })
+          .from(user)
+          .where(and(eq(user.isSystemAdmin, true), eq(user.status, "active")));
+        if ((result?.total ?? 0) <= 1) {
+          throw new ApiError(409, "finalAdminDelete");
+        }
+      }
+      await transaction
+        .update(user)
+        .set({ isSystemAdmin, updatedAt: new Date() })
+        .where(eq(user.id, existing.id));
+    });
     return context.body(null, 200);
   });
 

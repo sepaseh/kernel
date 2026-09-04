@@ -170,10 +170,15 @@ export const otpCodes = sqliteTable(
     expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
     id: text("id").primaryKey(),
     purpose: text("purpose").notNull(),
+    subject: text("subject"),
     valueHash: text("value_hash").notNull(),
   },
   (table) => [
-    index("otp_destination_purpose_index").on(table.destination, table.purpose),
+    index("otp_destination_purpose_index").on(
+      table.destination,
+      table.purpose,
+      table.subject,
+    ),
   ],
 );
 

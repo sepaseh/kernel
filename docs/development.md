@@ -50,11 +50,12 @@ pluggable object storage. Start the API in a second terminal:
 npm run server
 ```
 
-Use `VITE_API_BASE_URL=http://localhost:3000` and sign in with identifier
-`09123456789` and password `password123`. SQLite migrations and the idempotent
-development seed run at startup. User, role, calendar, settings, authentication,
-and file-metadata mutations persist across restarts. The default local driver
-stores uploaded bytes under `server/data/uploads`.
+Set `SERVER_SEED_DEVELOPMENT_DATA=true` with local-only administrator
+credentials, use `VITE_API_BASE_URL=http://localhost:3000`, and sign in with the
+seeded account. SQLite migrations and the optional idempotent development seed
+run at startup. User, role, calendar, settings, authentication, and
+file-metadata mutations persist across restarts. The default local driver stores
+uploaded bytes under `server/data/uploads`.
 
 To exercise MinIO instead, set `STORAGE_DRIVER=minio` and start the included
 service before the API:

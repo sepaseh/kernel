@@ -33,7 +33,7 @@ docker compose up -d minio
 npm run server
 ```
 
-The API defaults to `http://localhost:3000`; `GET /health` reports readiness.
+The API defaults to `http://localhost:3000`; `GET /health` is a liveness probe.
 With the MinIO driver, its API and console default to ports `9000` and `9001`.
 The server creates separate private and public buckets on startup and assigns
 public-read policy only to the public bucket.
@@ -57,38 +57,40 @@ npm run server:generate -- --name descriptive_name
 
 ## Local account and OTP
 
-The idempotent development seed creates a system administrator:
+The optional idempotent development seed creates a system administrator from
+local-only seed values. Enable it deliberately with
+`SERVER_SEED_DEVELOPMENT_DATA=true`; never reuse its credentials in a deployed
+environment.
 
-| Identifier    | Password      |
-| ------------- | ------------- |
-| `09123456789` | `password123` |
+Local OTP flows require an explicit `OTP_FIXED_CODE`. This is a development
+delivery adapter, not a production SMS or email provider. Production startup
+rejects fixed OTP configuration; integrate a real delivery adapter before
+exposing OTP authentication flows.
 
-Local OTP flows use `OTP_FIXED_CODE`, which defaults to `123456`. This is a
-development delivery adapter, not a production SMS or email provider. Configure
-a real delivery integration and remove the fixed code before deploying the
-authentication flows publicly.
+The included MinIO Compose service also uses local-only credentials from the
+developer environment. Replace them before connecting to any non-local service.
 
 ## Configuration
 
 | Variable                       | Default                          | Purpose                                   |
 | ------------------------------ | -------------------------------- | ----------------------------------------- |
-| `BETTER_AUTH_SECRET`           | local-only development value     | Better Auth signing and encryption secret |
+| `BETTER_AUTH_SECRET`           | required                         | Better Auth signing and encryption secret |
 | `BETTER_AUTH_URL`              | `http://localhost:3000`          | Canonical backend URL                     |
 | `DATABASE_URL`                 | `file:server/data/kernel.sqlite` | SQLite/libSQL connection URL              |
 | `HOST` / `PORT`                | `localhost` / `3000`             | HTTP bind address                         |
 | `SERVER_ALLOWED_ORIGIN`        | `http://localhost:5173`          | Exact credentialed CORS origin            |
-| `SERVER_SEED_DEVELOPMENT_DATA` | `true` outside production        | Create local admin and sample records     |
+| `SERVER_SEED_DEVELOPMENT_DATA` | `false`                          | Create local admin and sample records     |
 | `STORAGE_DRIVER`               | `local` outside production       | Select `local` or `minio` storage         |
 | `LOCAL_STORAGE_PATH`           | `server/data/uploads`            | Local object root                         |
 | `MINIO_ENDPOINT`               | `localhost`                      | MinIO hostname without protocol           |
 | `MINIO_PORT`                   | `9000`                           | MinIO API port                            |
 | `MINIO_USE_SSL`                | `false`                          | Enable TLS for MinIO                      |
-| `MINIO_ACCESS_KEY`             | `minioadmin`                     | MinIO access key                          |
-| `MINIO_SECRET_KEY`             | `minioadmin`                     | MinIO secret key                          |
+| `MINIO_ACCESS_KEY`             | local placeholder                | MinIO access key                          |
+| `MINIO_SECRET_KEY`             | local placeholder                | MinIO secret key                          |
 | `MINIO_BUCKET`                 | `kernel`                         | Prefix for public/private buckets         |
 | `MINIO_PUBLIC_URL`             | `http://localhost:9000`          | Browser-visible object origin             |
 | `UPLOAD_LIMIT_BYTES`           | `5242880`                        | Maximum multipart file size               |
-| `OTP_FIXED_CODE`               | `123456`                         | Local-only OTP delivery value             |
+| `OTP_FIXED_CODE`               | none                             | Explicit local-only OTP delivery value    |
 
 Production defaults to the MinIO driver. MinIO configuration is required in
 production only when that driver is selected. Local filesystem storage is

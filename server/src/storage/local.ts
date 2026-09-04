@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import type { ServerConfig } from "../config.ts";
@@ -16,6 +16,10 @@ export class LocalFileStorage implements ObjectStorage {
   constructor(config: Pick<ServerConfig, "baseUrl" | "localStoragePath">) {
     this.#baseUrl = config.baseUrl.replace(/\/$/, "");
     this.#root = path.resolve(config.localStoragePath);
+  }
+
+  async delete(bucket: string, objectKey: string) {
+    await unlink(this.#resolve(bucket, objectKey));
   }
 
   async ensureReady() {

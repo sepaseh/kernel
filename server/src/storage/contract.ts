@@ -4,6 +4,7 @@ type StoredObject = {
 };
 
 export type ObjectStorage = {
+  delete(bucket: string, objectKey: string): Promise<void>;
   ensureReady(): Promise<void>;
   get(bucket: string, objectKey: string): Promise<Uint8Array>;
   put(input: {

@@ -14,6 +14,7 @@ import { initializeDatabase } from "./db/initialize.ts";
 import { files, settings, user } from "./db/schema.ts";
 import { LocalFileStorage } from "./storage/local.ts";
 import { MemoryObjectStorage } from "./storage/memory.ts";
+import { MinioObjectStorage } from "./storage/minio.ts";
 
 let app: ReturnType<typeof createApp>;
 let baseConfig: ReturnType<typeof loadConfig>;
@@ -45,6 +46,7 @@ before(async () => {
     DATABASE_URL: `file:${databasePath}`,
     OTP_FIXED_CODE: "123456",
     SERVER_ALLOWED_ORIGIN: "http://localhost:5173",
+    SERVER_SEED_DEVELOPMENT_DATA: "true",
   });
   ({ client, database } = createDatabase(baseConfig));
   const auth = createAuth(baseConfig, database);
@@ -80,6 +82,28 @@ test("never enables synthetic seed data in production", () => {
   assert.equal(production.seedDevelopmentData, false);
   assert.equal(production.storageDriver, "minio");
   assert.equal(baseConfig.storageDriver, "local");
+  assert.throws(() => loadConfig({}), /BETTER_AUTH_SECRET is required/);
+  assert.throws(
+    () =>
+      loadConfig({
+        BETTER_AUTH_SECRET:
+          "production-secret-with-at-least-thirty-two-characters",
+        BETTER_AUTH_URL: "https://api.example.com",
+        DATABASE_URL: "file:production.sqlite",
+        MINIO_ACCESS_KEY: "access-key",
+        MINIO_ENDPOINT: "storage.example.com",
+        MINIO_PUBLIC_URL: "https://storage.example.com",
+        MINIO_SECRET_KEY: "secret-key",
+        NODE_ENV: "production",
+        OTP_FIXED_CODE: "123456",
+        SERVER_ALLOWED_ORIGIN: "https://app.example.com",
+      }),
+    /OTP_FIXED_CODE is not allowed in production/,
+  );
+  assert.equal(
+    loadConfig({ BETTER_AUTH_SECRET: "local-secret" }).seedDevelopmentData,
+    false,
+  );
 });
 
 test("stores local objects without allowing path traversal", async () => {
@@ -101,6 +125,28 @@ test("stores local objects without allowing path traversal", async () => {
     "http://localhost:3000/files/file-id/content",
   );
   await assert.rejects(() => local.get("local-public", "../outside.txt"));
+  await local.delete("local-public", "file-id/example.txt");
+  await assert.rejects(() => local.get("local-public", "file-id/example.txt"));
+});
+
+test("requires TLS for non-loopback MinIO endpoints", () => {
+  assert.throws(
+    () =>
+      new MinioObjectStorage({
+        ...baseConfig.minio,
+        endPoint: "storage.example.com",
+        useSSL: false,
+      }),
+    /TLS is required/,
+  );
+  assert.doesNotThrow(
+    () =>
+      new MinioObjectStorage({
+        ...baseConfig.minio,
+        endPoint: "127.0.0.1",
+        useSSL: false,
+      }),
+  );
 });
 
 test("reports health and restricts credentialed CORS", async () => {
@@ -257,6 +303,28 @@ test("persists role and user management operations", async () => {
   const listBody = (await list.json()) as { total: number };
   assert.equal(listBody.total, 1);
 
+  const paginated = await request("/users?size=1&offset=1", authenticated());
+  const paginatedBody = (await paginated.json()) as {
+    items: unknown[];
+    total: number;
+  };
+  assert.equal(paginatedBody.items.length, 1);
+  assert.ok(paginatedBody.total >= 2);
+
+  const administrator = await database.query.user.findFirst({
+    where: eq(user.mobile, "09123456789"),
+  });
+  assert.ok(administrator);
+  const demoteFinalAdministrator = await request(
+    `/users/${administrator.id}/system-admin`,
+    authenticated({
+      body: JSON.stringify({ is_system_admin: false }),
+      headers: { "Content-Type": "application/json" },
+      method: "PATCH",
+    }),
+  );
+  assert.equal(demoteFinalAdministrator.status, 409);
+
   const login = await request("/auth/login", {
     body: JSON.stringify({
       identifier: "09120000000",
@@ -312,8 +380,39 @@ test("stores uploaded bytes in object storage and only metadata in SQLite", asyn
 
   const publicContents = await request(`/files/${body.id}/content`);
   assert.equal(publicContents.status, 200);
-  assert.equal(publicContents.headers.get("content-type"), "image/svg+xml");
+  assert.equal(
+    publicContents.headers.get("content-type"),
+    "application/octet-stream",
+  );
+  assert.match(
+    publicContents.headers.get("content-disposition") ?? "",
+    /^attachment;/,
+  );
+  assert.equal(publicContents.headers.get("x-content-type-options"), "nosniff");
   assert.equal(await publicContents.text(), "<svg />");
+
+  const htmlForm = new FormData();
+  htmlForm.set(
+    "file",
+    new File(["<script>alert(1)</script>"], "page.html", {
+      type: "text/html",
+    }),
+  );
+  htmlForm.set("visibility", "public");
+  const htmlUpload = await request(
+    "/files",
+    authenticated({ body: htmlForm, method: "POST" }),
+  );
+  const htmlBody = (await htmlUpload.json()) as { id: string };
+  const htmlContents = await request(`/files/${htmlBody.id}/content`);
+  assert.equal(
+    htmlContents.headers.get("content-type"),
+    "application/octet-stream",
+  );
+  assert.match(
+    htmlContents.headers.get("content-disposition") ?? "",
+    /^attachment;/,
+  );
 
   const privateForm = new FormData();
   privateForm.set(

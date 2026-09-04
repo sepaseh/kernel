@@ -4,6 +4,10 @@ import { publicObjectUrl } from "./contract.ts";
 export class MemoryObjectStorage implements ObjectStorage {
   readonly objects = new Map<string, Uint8Array>();
 
+  async delete(bucket: string, objectKey: string) {
+    this.objects.delete(`${bucket}/${objectKey}`);
+  }
+
   async ensureReady() {}
 
   async get(bucket: string, objectKey: string) {

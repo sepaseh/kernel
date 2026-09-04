@@ -42,9 +42,10 @@ Do not store real passwords or access tokens in this shared collection.
 ## Local backend integration
 
 The standalone backend implements these contracts under `server/src`. Run it
-from the repository root with `npm run server`, and run `npm run server:test`
-after contract or backend changes. Saved responses do not drive runtime output;
-update both the collection and the matching Hono route when behavior changes.
+from the repository root with `npm run server`. Run `npm run test:contract`
+after collection changes and `npm run server:test` after backend changes. Saved
+responses do not drive runtime output; update both the collection and the
+matching Hono route when behavior changes.
 
 See the [collection and backend integration guide](../docs/collection-guide.md)
 for source-of-truth rules, change sequencing, and ownership.

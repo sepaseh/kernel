@@ -18,6 +18,12 @@ const publicReadPolicy = (bucket: string) =>
     Version: "2012-10-17",
   });
 
+const isLoopbackEndpoint = (endpoint: string) =>
+  endpoint === "localhost" ||
+  endpoint === "::1" ||
+  endpoint === "[::1]" ||
+  /^127(?:\.\d{1,3}){3}$/.test(endpoint);
+
 export class MinioObjectStorage implements ObjectStorage {
   readonly #client: Client;
   readonly #privateBucket: string;
@@ -25,6 +31,9 @@ export class MinioObjectStorage implements ObjectStorage {
   readonly #publicUrl: string;
 
   constructor(config: ServerConfig["minio"]) {
+    if (!config.useSSL && !isLoopbackEndpoint(config.endPoint)) {
+      throw new Error("TLS is required for non-loopback MinIO endpoints.");
+    }
     this.#client = new Client({
       accessKey: config.accessKey,
       endPoint: config.endPoint,
@@ -35,6 +44,10 @@ export class MinioObjectStorage implements ObjectStorage {
     this.#privateBucket = `${config.bucket}-private`;
     this.#publicBucket = `${config.bucket}-public`;
     this.#publicUrl = config.publicUrl.replace(/\/$/, "");
+  }
+
+  async delete(bucket: string, objectKey: string) {
+    await this.#client.removeObject(bucket, objectKey);
   }
 
   async ensureReady() {

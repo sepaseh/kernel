@@ -17,7 +17,7 @@ export type ServerConfig = {
     secretKey: string;
     useSSL: boolean;
   };
-  otpCode: string;
+  otpCode?: string;
   port: number;
   seedDevelopmentData: boolean;
   storageDriver: "local" | "minio";
@@ -32,6 +32,12 @@ const numberFromEnvironment = (value: string | undefined, fallback: number) => {
 export const loadConfig = (
   environment: NodeJS.ProcessEnv = process.env,
 ): ServerConfig => {
+  if (!environment.BETTER_AUTH_SECRET?.trim()) {
+    throw new Error("BETTER_AUTH_SECRET is required.");
+  }
+  if (environment.NODE_ENV === "production" && environment.OTP_FIXED_CODE) {
+    throw new Error("OTP_FIXED_CODE is not allowed in production.");
+  }
   const storageDriver =
     environment.STORAGE_DRIVER === "minio" ||
     environment.STORAGE_DRIVER === "local"
@@ -69,9 +75,7 @@ export const loadConfig = (
 
   return {
     allowedOrigin: environment.SERVER_ALLOWED_ORIGIN ?? "http://localhost:5173",
-    authSecret:
-      environment.BETTER_AUTH_SECRET ??
-      "kernel-local-development-secret-change-before-deployment",
+    authSecret: environment.BETTER_AUTH_SECRET,
     baseUrl: environment.BETTER_AUTH_URL ?? `http://localhost:${port}`,
     databaseUrl:
       environment.DATABASE_URL ??
@@ -91,11 +95,11 @@ export const loadConfig = (
       secretKey: environment.MINIO_SECRET_KEY ?? "minioadmin",
       useSSL: minioUseSSL,
     },
-    otpCode: environment.OTP_FIXED_CODE ?? "123456",
+    otpCode: environment.OTP_FIXED_CODE,
     port,
     seedDevelopmentData:
       environment.NODE_ENV !== "production" &&
-      environment.SERVER_SEED_DEVELOPMENT_DATA !== "false",
+      environment.SERVER_SEED_DEVELOPMENT_DATA === "true",
     storageDriver,
     uploadLimitBytes: numberFromEnvironment(
       environment.UPLOAD_LIMIT_BYTES,

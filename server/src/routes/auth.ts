@@ -43,13 +43,18 @@ export const issueOtp = async (
   dependencies: AppEnvironment["Variables"]["dependencies"],
   destination: string,
   purpose: OtpPurpose,
+  subject?: string,
 ) => {
+  if (!dependencies.config.otpCode) {
+    throw new Error("No OTP delivery adapter is configured.");
+  }
   const now = new Date();
   const latest = await dependencies.database.query.otpCodes.findFirst({
     orderBy: [desc(otpCodes.createdAt)],
     where: and(
       eq(otpCodes.destination, destination),
       eq(otpCodes.purpose, purpose),
+      subject ? eq(otpCodes.subject, subject) : isNull(otpCodes.subject),
     ),
   });
   if (latest && latest.createdAt.getTime() + 120_000 > now.getTime()) {
@@ -62,6 +67,7 @@ export const issueOtp = async (
     expiresAt,
     id: randomUUID(),
     purpose,
+    subject,
     valueHash: otpHash(
       dependencies.config.authSecret,
       destination,
@@ -78,12 +84,14 @@ export const consumeOtp = async (
   destination: string,
   purpose: OtpPurpose,
   value: string,
+  subject?: string,
 ) => {
   const record = await dependencies.database.query.otpCodes.findFirst({
     orderBy: [desc(otpCodes.createdAt)],
     where: and(
       eq(otpCodes.destination, destination),
       eq(otpCodes.purpose, purpose),
+      subject ? eq(otpCodes.subject, subject) : isNull(otpCodes.subject),
       isNull(otpCodes.consumedAt),
     ),
   });
@@ -100,10 +108,12 @@ export const consumeOtp = async (
   ) {
     throw new ApiError(400, "otpInvalid");
   }
-  await dependencies.database
+  const consumed = await dependencies.database
     .update(otpCodes)
     .set({ consumedAt: new Date() })
-    .where(eq(otpCodes.id, record.id));
+    .where(and(eq(otpCodes.id, record.id), isNull(otpCodes.consumedAt)))
+    .returning({ id: otpCodes.id });
+  if (consumed.length !== 1) throw new ApiError(400, "otpInvalid");
 };
 
 const accessTokenResponse = (

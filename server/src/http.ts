@@ -94,4 +94,6 @@ export const authenticate = async (
 };
 
 export const isUniqueConstraintError = (error: unknown) =>
-  error instanceof Error && /unique constraint/i.test(error.message);
+  error instanceof Error &&
+  (("code" in error && error.code === "SQLITE_CONSTRAINT_UNIQUE") ||
+    /unique constraint/i.test(error.message));

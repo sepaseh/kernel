@@ -232,6 +232,7 @@ Deleting a referenced logo sets the corresponding setting to `NULL`.
 | `id`          | text              | no   | PK             | OTP challenge identifier                            |
 | `destination` | text              | no   | compound index | Mobile number or email destination                  |
 | `purpose`     | text              | no   | compound index | Login, registration, reset, or verification purpose |
+| `subject`     | text              | yes  | compound index | Account binding for authenticated OTP flows         |
 | `value_hash`  | text              | no   | —              | Hash of the OTP, never the plaintext code           |
 | `created_at`  | integer/timestamp | no   | —              | Issue time                                          |
 | `expires_at`  | integer/timestamp | no   | —              | Expiry time                                         |
@@ -260,31 +261,31 @@ The date is a natural key; a separate UUID would not add identity information.
 
 ## Indexes and unique constraints
 
-| Table              | Columns                | Kind       | Supports                                       |
-| ------------------ | ---------------------- | ---------- | ---------------------------------------------- |
-| `user`             | `id`                   | primary    | Lookup by user ID                              |
-| `user`             | `auth_email`           | unique     | Better Auth identity lookup                    |
-| `user`             | `email`                | unique     | Optional profile-email lookup and uniqueness   |
-| `user`             | `mobile`               | unique     | Login and exact mobile lookup                  |
-| `user`             | `username`             | unique     | Username lookup and uniqueness                 |
-| `session`          | `id`                   | primary    | Lookup by session ID                           |
-| `session`          | `token`                | unique     | Authentication by token                        |
-| `session`          | `user_id`              | non-unique | Sessions belonging to a user                   |
-| `account`          | `id`                   | primary    | Lookup by account ID                           |
-| `account`          | `user_id`              | non-unique | Accounts belonging to a user                   |
-| `account`          | `issuer, account_id`   | unique     | Provider-scoped account identity               |
-| `verification`     | `id`                   | primary    | Lookup by verification ID                      |
-| `verification`     | `identifier`           | non-unique | Latest verification for a subject              |
-| `roles`            | `id`                   | primary    | Lookup by role ID                              |
-| `roles`            | `name`                 | unique     | Role-name uniqueness                           |
-| `role_permissions` | `role_id, permission`  | primary    | Permissions of a role and duplicate prevention |
-| `user_roles`       | `user_id, role_id`     | primary    | Roles of a user and duplicate prevention       |
-| `files`            | `id`                   | primary    | Lookup by file ID                              |
-| `files`            | `object_key`           | unique     | Storage object reference                       |
-| `settings`         | `id`                   | primary    | Singleton lookup                               |
-| `otp_codes`        | `id`                   | primary    | Lookup by challenge ID                         |
-| `otp_codes`        | `destination, purpose` | non-unique | Latest challenge for a flow                    |
-| `calendar_dates`   | `date`                 | primary    | Lookup and uniqueness by date                  |
+| Table              | Columns                         | Kind       | Supports                                        |
+| ------------------ | ------------------------------- | ---------- | ----------------------------------------------- |
+| `user`             | `id`                            | primary    | Lookup by user ID                               |
+| `user`             | `auth_email`                    | unique     | Better Auth identity lookup                     |
+| `user`             | `email`                         | unique     | Optional profile-email lookup and uniqueness    |
+| `user`             | `mobile`                        | unique     | Login and exact mobile lookup                   |
+| `user`             | `username`                      | unique     | Username lookup and uniqueness                  |
+| `session`          | `id`                            | primary    | Lookup by session ID                            |
+| `session`          | `token`                         | unique     | Authentication by token                         |
+| `session`          | `user_id`                       | non-unique | Sessions belonging to a user                    |
+| `account`          | `id`                            | primary    | Lookup by account ID                            |
+| `account`          | `user_id`                       | non-unique | Accounts belonging to a user                    |
+| `account`          | `issuer, account_id`            | unique     | Provider-scoped account identity                |
+| `verification`     | `id`                            | primary    | Lookup by verification ID                       |
+| `verification`     | `identifier`                    | non-unique | Latest verification for a subject               |
+| `roles`            | `id`                            | primary    | Lookup by role ID                               |
+| `roles`            | `name`                          | unique     | Role-name uniqueness                            |
+| `role_permissions` | `role_id, permission`           | primary    | Permissions of a role and duplicate prevention  |
+| `user_roles`       | `user_id, role_id`              | primary    | Roles of a user and duplicate prevention        |
+| `files`            | `id`                            | primary    | Lookup by file ID                               |
+| `files`            | `object_key`                    | unique     | Storage object reference                        |
+| `settings`         | `id`                            | primary    | Singleton lookup                                |
+| `otp_codes`        | `id`                            | primary    | Lookup by challenge ID                          |
+| `otp_codes`        | `destination, purpose, subject` | non-unique | Latest challenge for a flow and account binding |
+| `calendar_dates`   | `date`                          | primary    | Lookup and uniqueness by date                   |
 
 Primary keys and unique constraints create indexes in SQLite. Add another index
 only for an observed query pattern; every index improves selected reads but adds
