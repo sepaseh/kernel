@@ -10,7 +10,7 @@
     "qs": "^6.15.3"
   },
   "scripts": {
-    "audit": "npm audit --audit-level=high",
+    "audit": "node scripts/run-audit.mjs",
     "build-storybook": "storybook build",
     "bundle:size": "node scripts/check-bundle-size.mjs",
     "dev": "vite --host localhost",

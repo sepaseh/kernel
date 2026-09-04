@@ -95,6 +95,10 @@ npm run test:storybook
 npm run test:e2e -- --project=chromium
 ```
 
+The audit command uses the npm registry first. If the advisory endpoint is
+temporarily unavailable, it reruns against npm's local advisory cache; a
+completed report containing high or critical vulnerabilities remains blocking.
+
 Run type checking:
 
 ```bash
