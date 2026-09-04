@@ -7,7 +7,9 @@ This project is a Vite React application written in TypeScript.
 - Node.js 24.15.0 or newer in the Node.js 24 LTS line; `.nvmrc` contains the
   exact version used by CI
 - npm
-- Access to the backend API, or the included local mock API
+
+Docker and MinIO are optional. They are needed only when testing the MinIO
+storage driver locally.
 
 ## Setup
 
@@ -36,23 +38,32 @@ Start the app:
 npm run dev
 ```
 
-Vite is configured to bind to `localhost`, matching the mock API CORS origin.
+Vite is configured to bind to `localhost`, matching the backend's default CORS
+origin.
 
-## Local Mock API
+## Local API
 
-Kernel includes a dependency-free mock server that discovers HTTP contracts and
-saved response examples directly from `collection/`. Start it in a second
-terminal:
+Kernel includes a standalone Hono backend with Better Auth, Drizzle/SQLite, and
+pluggable object storage. Start the API in a second terminal:
 
 ```bash
 npm run server
 ```
 
-Use `VITE_API_BASE_URL=http://localhost:3000` and sign in with identifier
-`09123456789` and password `password123`. The server provides local JWT and
-refresh-cookie behavior, authenticated account data, list filtering, CORS,
-parameterized routes, and saved error simulation without contacting an external
-service.
+Set `SERVER_SEED_DEVELOPMENT_DATA=true` with local-only administrator
+credentials, use `VITE_API_BASE_URL=http://localhost:3000`, and sign in with the
+seeded account. SQLite migrations and the optional idempotent development seed
+run at startup. User, role, calendar, settings, authentication, and
+file-metadata mutations persist across restarts. The default local driver stores
+uploaded bytes under `server/data/uploads`.
+
+To exercise MinIO instead, set `STORAGE_DRIVER=minio` and start the included
+service before the API:
+
+```bash
+docker compose up -d minio
+npm run server
+```
 
 Run its focused tests with:
 
@@ -60,10 +71,9 @@ Run its focused tests with:
 npm run server:test
 ```
 
-See the [mock server guide](../server/README.md) for health, route-discovery, and
-error-simulation endpoints. Credentialed CORS accepts only the exact
-`MOCK_ALLOWED_ORIGIN`, which defaults to `http://localhost:5173`. The mock and
-its local signing secret are for development only.
+See the [backend guide](../server/README.md) for migrations, storage, local OTP,
+data ownership, and all environment variables. Credentialed CORS accepts only
+the exact `SERVER_ALLOWED_ORIGIN`, which defaults to `http://localhost:5173`.
 
 ## Quality Checks
 
@@ -84,6 +94,11 @@ npm run build-storybook
 npm run test:storybook
 npm run test:e2e -- --project=chromium
 ```
+
+The audit command makes up to three bounded attempts against the npm registry.
+It requires a complete live report, fails when the advisory endpoint remains
+unavailable, and blocks on high or critical vulnerabilities. Cached advisory
+data is not accepted as a fresh CI audit.
 
 Run type checking:
 

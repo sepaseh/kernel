@@ -20,6 +20,9 @@ storybook-static
 blob-report
 *.local
 .vitest-cache
+server/data/*.sqlite
+server/data/*.sqlite-*
+server/data/uploads/
 
 # Editor directories and files
 .vscode/*

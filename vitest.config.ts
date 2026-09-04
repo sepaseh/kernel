@@ -29,6 +29,7 @@ export default defineConfig({
         "src/**/*.{ts,tsx}",
         "scripts/check-bundle-size.mjs",
         "scripts/run-lighthouse.mjs",
+        "scripts/run-audit.mjs",
         "scripts/validate-production-env.mjs",
         "scripts/validate-workflow-targets.mjs",
       ],

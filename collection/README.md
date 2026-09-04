@@ -39,12 +39,13 @@ status code.
 
 Do not store real passwords or access tokens in this shared collection.
 
-## Local mock integration
+## Local backend integration
 
-The development mock server reads this directory directly at startup. Run it
-from the repository root with `npm run server`; changes to requests or saved
-responses take effect after restarting the process. Run `npm run server:test`
-after contract changes.
+The standalone backend implements these contracts under `server/src`. Run it
+from the repository root with `npm run server`. Run `npm run test:contract`
+after collection changes and `npm run server:test` after backend changes. Saved
+responses do not drive runtime output; update both the collection and the
+matching Hono route when behavior changes.
 
-See the [collection and mock integration guide](../docs/collection-guide.md) for
-source-of-truth rules, change sequencing, error simulation, and limitations.
+See the [collection and backend integration guide](../docs/collection-guide.md)
+for source-of-truth rules, change sequencing, and ownership.

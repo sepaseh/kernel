@@ -119,7 +119,9 @@ describe("user identity form", () => {
     await findFocusedField("firstName");
     await user.click(screen.getByRole("button", { name: "submit" }));
 
-    expect(await screen.findAllByText(/required/i)).toHaveLength(3);
+    await waitFor(() =>
+      expect(screen.getAllByText(/required/i)).toHaveLength(3),
+    );
     expect(api.createUser).not.toHaveBeenCalled();
     expect(mocks.notificationSuccess).not.toHaveBeenCalled();
   });

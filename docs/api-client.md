@@ -104,6 +104,6 @@ at this boundary and represented as optional fields in domain models.
 Add endpoint helpers to the owning feature's `api.ts`. Put only transport-level code used by multiple features in `src/shared/api`; do not create a global domain-service barrel.
 
 Update the corresponding Bruno operation and saved response before changing an
-observable endpoint contract. The local mock reloads those contracts on process
-restart; see the [collection guide](collection-guide.md) and
-[mock server guide](../server/README.md).
+observable endpoint contract. Update the matching Hono route in the same change;
+see the [collection guide](collection-guide.md) and
+[backend guide](../server/README.md).
