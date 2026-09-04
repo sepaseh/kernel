@@ -99,10 +99,9 @@ export const createFileRoutes = () => {
     } catch (error) {
       try {
         await dependencies.storage.delete(stored.bucket, stored.objectKey);
-      } catch (cleanupError) {
+      } catch {
         console.error("Failed to remove an object after metadata failure.", {
-          cleanupError,
-          objectKey: stored.objectKey,
+          fileId: id,
         });
       }
       throw error;
