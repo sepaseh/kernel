@@ -26,6 +26,57 @@ afterEach(() => {
 });
 
 describe("Kernel API consumer contract", () => {
+  it("surfaces a recovery password-policy rejection", async () => {
+    await createPact()
+      .addInteraction()
+      .given("a recovery OTP exists and the password is too short")
+      .uponReceiving("a recovery request outside the password policy")
+      .withRequest("POST", "/auth/forgot-password", (request) => {
+        request.jsonBody({
+          mobile: "09120000002",
+          otp: "123456",
+          password: "short",
+        });
+      })
+      .willRespondWith(400, (response) => {
+        response.jsonBody({ message: "Password reset data is invalid." });
+      })
+      .executeTest(async ({ url }) => {
+        const [, { forgotPassword }] = await loadApiFor(url);
+        await expect(
+          forgotPassword({
+            mobile: "09120000002",
+            otp: "123456",
+            password: "short",
+          }),
+        ).rejects.toThrow("Password reset data is invalid.");
+      });
+  });
+
+  it("surfaces the conflict when demoting the final administrator", async () => {
+    await createPact()
+      .addInteraction()
+      .given("the target is the final active system administrator")
+      .uponReceiving("a demotion of the final active administrator")
+      .withRequest("PATCH", "/users/user-1/system-admin", (request) => {
+        request.headers({ Authorization: "Bearer access-token" });
+        request.jsonBody({ is_system_admin: false });
+      })
+      .willRespondWith(409, (response) => {
+        response.jsonBody({
+          message: "The final system administrator cannot be deleted.",
+        });
+      })
+      .executeTest(async ({ url }) => {
+        const [, , { setAccessToken }] = await loadApiFor(url);
+        const { updateUserSystemAdmin } = await import("@/features/users/api");
+        setAccessToken("access-token");
+        await expect(
+          updateUserSystemAdmin("user-1", { isSystemAdmin: false }),
+        ).rejects.toThrow("The final system administrator cannot be deleted.");
+      });
+  });
+
   it("logs in with the expected request and token response", async () => {
     await createPact()
       .addInteraction()

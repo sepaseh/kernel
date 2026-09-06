@@ -88,6 +88,9 @@ at this boundary and represented as optional fields in domain models.
   the role-update request continues to send `roleIds` as a command payload.
 - User creation does not send `status`; the backend initializes it to `active`
   and returns the required field in the created user response.
+- User creation and administrator resets generate 16-character temporary
+  passwords compatible with the backend policy; password fields remain strings
+  and the feature API request shapes are unchanged.
 - Permission identifiers are server-provided dotted strings.
 - `GET /roles/permissions` returns the calendar, role, settings, and user permission groups supported
   by Kernel, with display-ready titles.
@@ -97,7 +100,14 @@ at this boundary and represented as optional fields in domain models.
 - The language catalog includes Arabic, German, English, Spanish, Persian,
   French, Italian, Portuguese, Russian, and Turkish. Locale files may be filled
   incrementally; missing keys fall back to Persian.
-- User password reset is an authenticated action and does not have a dedicated permission key.
+- Administrator password resets require a system administrator; public recovery
+  uses a mobile-bound OTP. Both enforce Better Auth's configured password lengths
+  and report policy rejection as `400`. Recovery leaves the OTP usable after a
+  password-length rejection.
+- Deleting, deactivating, or demoting the final active system administrator
+  reports `409`, including when concurrent requests change the target's status
+  or capability. Existing `Promise<void>` helpers and request types remain
+  unchanged; the transport surfaces the server's localized error message.
 
 ## Adding Modules
 

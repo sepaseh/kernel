@@ -249,13 +249,19 @@ export const createAuthRoutes = () => {
     const otp = requiredString(body.otp, "otp");
     const password = requiredString(body.password, "password");
     const dependencies = context.get("dependencies");
+    const { password: passwordPolicy } = await dependencies.auth.$context;
+    if (
+      password.length < passwordPolicy.config.minPasswordLength ||
+      password.length > passwordPolicy.config.maxPasswordLength
+    ) {
+      throw new ApiError(400, "passwordResetInvalid");
+    }
     await consumeOtp(dependencies, mobile, "forgot_password", otp);
     const existingUser = await dependencies.database.query.user.findFirst({
       where: eq(user.mobile, mobile),
     });
     if (!existingUser) throw new ApiError(400, "passwordResetInvalid");
-    const { hashPassword } = await import("better-auth/crypto");
-    const passwordHash = await hashPassword(password);
+    const passwordHash = await passwordPolicy.hash(password);
     const result = await dependencies.database
       .update(account)
       .set({ password: passwordHash, updatedAt: new Date() })

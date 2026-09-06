@@ -1,6 +1,7 @@
 import { and, asc, count, eq, like, or } from "drizzle-orm";
 import { Hono } from "hono";
 
+import type { Database } from "../db/client.ts";
 import { account, roles, session, user, userRoles } from "../db/schema.ts";
 import { getRolesByUserIds, internalEmail, serializeUser } from "../domain.ts";
 import type { AppEnvironment } from "../http.ts";
@@ -15,12 +16,11 @@ import {
 const findUser = async (
   context: Parameters<typeof authenticate>[0],
   userId: string,
+  database: Pick<Database, "query"> = context.get("dependencies").database,
 ) => {
-  const result = await context
-    .get("dependencies")
-    .database.query.user.findFirst({
-      where: eq(user.id, userId),
-    });
+  const result = await database.query.user.findFirst({
+    where: eq(user.id, userId),
+  });
   if (!result) throw new ApiError(404, "userNotFound");
   return result;
 };
@@ -170,7 +170,8 @@ export const createUserRoutes = () => {
     }
     const database = context.get("dependencies").database;
     await database.transaction(async (transaction) => {
-      if (existing.isSystemAdmin && existing.status === "active") {
+      const current = await findUser(context, existing.id, transaction);
+      if (current.isSystemAdmin && current.status === "active") {
         const [result] = await transaction
           .select({ total: count() })
           .from(user)
@@ -199,9 +200,10 @@ export const createUserRoutes = () => {
     }
     const database = context.get("dependencies").database;
     await database.transaction(async (transaction) => {
+      const current = await findUser(context, existing.id, transaction);
       if (
-        existing.isSystemAdmin &&
-        existing.status === "active" &&
+        current.isSystemAdmin &&
+        current.status === "active" &&
         status === "inactive"
       ) {
         const [result] = await transaction
@@ -263,9 +265,10 @@ export const createUserRoutes = () => {
     const isSystemAdmin = body.is_system_admin;
     const database = context.get("dependencies").database;
     await database.transaction(async (transaction) => {
+      const current = await findUser(context, existing.id, transaction);
       if (
-        existing.isSystemAdmin &&
-        existing.status === "active" &&
+        current.isSystemAdmin &&
+        current.status === "active" &&
         !isSystemAdmin
       ) {
         const [result] = await transaction
@@ -289,9 +292,15 @@ export const createUserRoutes = () => {
     const existing = await findUser(context, context.req.param("userId"));
     const body = await parseJson(context);
     const password = requiredString(body.password, "password");
-    if (password.length < 8) throw new ApiError(400, "passwordTooShort");
-    const { hashPassword } = await import("better-auth/crypto");
-    const passwordHash = await hashPassword(password);
+    const { password: passwordPolicy } =
+      await context.get("dependencies").auth.$context;
+    if (password.length < passwordPolicy.config.minPasswordLength) {
+      throw new ApiError(400, "passwordTooShort");
+    }
+    if (password.length > passwordPolicy.config.maxPasswordLength) {
+      throw new ApiError(400, "passwordResetInvalid");
+    }
+    const passwordHash = await passwordPolicy.hash(password);
     const database = context.get("dependencies").database;
     const updated = await database
       .update(account)

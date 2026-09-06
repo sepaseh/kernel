@@ -58,6 +58,17 @@ temporary directory, and replace object storage with an in-memory adapter for
 API integration tests.
 Neither layer contacts a developer-configured or production API.
 
+Backend authentication-invariant tests use isolated in-memory SQLite databases
+with the real migrations and Better Auth integration. They deterministically
+interleave administrator mutations before the pending write transaction starts,
+checking that deletion, deactivation, and demotion preserve the final active
+administrator after concurrent promotion or activation. Password-reset tests
+cover both configured length limits, unchanged credentials on rejection, and
+OTP reuse after validation failure followed by single-use enforcement on success.
+The same suite imports the browser's pure temporary-password generator and checks
+user creation, administrator reset, and subsequent login with the real backend;
+runtime server code remains independent of frontend modules.
+
 ## Commands
 
 - `npm test` runs Vitest once.

@@ -601,11 +601,11 @@ describe("users page", () => {
     });
     await confirmation.onOk();
     expect(api.updateUserPassword).toHaveBeenCalledWith("user-1", {
-      password: "i00000",
+      password: "i000000000000000",
     });
-    expect(mocks.writeClipboard).toHaveBeenCalledWith("i00000");
+    expect(mocks.writeClipboard).toHaveBeenCalledWith("i000000000000000");
     expect(mocks.notificationSuccess).toHaveBeenCalledWith({
-      description: "i00000",
+      description: "i000000000000000",
       message: "password",
     });
     randomValues.mockRestore();

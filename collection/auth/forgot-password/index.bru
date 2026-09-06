@@ -38,6 +38,8 @@ docs {
   - The mobile number must belong to an existing user.
   - The OTP must be valid, unexpired, and issued for the same mobile number and purpose.
   - The new password must satisfy the configured password policy.
+  - Password length is checked against Better Auth's configured limits (currently 8–128 characters) before the OTP is consumed.
+  - A password-policy rejection leaves the current password and unexpired OTP unchanged.
   - The OTP becomes unusable after a successful password reset.
   - The current password is not required.
   - A successful password reset does not create an authenticated session.

@@ -104,6 +104,17 @@ an approved operational process before any shared deployment.
 
 ## Data ownership
 
+Deleting, deactivating, or demoting a user must leave an active system
+administrator. These operations read the target's current state, count active
+administrators, and mutate within one SQLite write transaction. A target promoted
+or activated by a concurrent request receives the same protection; a stale
+pre-transaction read cannot bypass the guard. Conflicts return `409`.
+
+OTP recovery and administrator password resets validate both length limits from
+Better Auth's password configuration (currently 8–128 characters) before hashing
+or changing credentials. Recovery validates length before consuming the OTP, so
+an invalid password can be corrected with the same unexpired code.
+
 - Better Auth tables store users, credential password hashes, sessions, and
   verification primitives. Better Auth's required `auth_email` is an internal
   identifier for mobile-first accounts; the nullable `email` column is the
@@ -127,3 +138,11 @@ adapters. They exercise migrations, seeded authentication, Better Auth bearer
 sessions, persisted user/role behavior, OTP registration, CORS, uploads, public
 file reads, path traversal protection, and file metadata without contacting
 MinIO or any production service.
+
+`server/src/auth-invariants.test.ts` uses a fresh in-memory SQLite database per
+test, applies the same migrations, and exercises real Better Auth sessions. It
+controls request interleavings at the transaction boundary to verify final-admin
+protection after promotion and activation, and covers password-policy rejection,
+unchanged credentials, OTP reuse after validation failure, and replay rejection.
+It also verifies that frontend-generated temporary passwords work for user
+creation and administrator resets, including subsequent login.

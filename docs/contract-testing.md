@@ -22,6 +22,11 @@ mock provider. It verifies the request method, path, JSON body, wire-format
 field names, response shape, and the frontend's snake-case to camel-case
 transformation.
 
+The consumer suite also checks password-policy rejection during recovery and
+the conflict response when demoting the final active administrator through the
+real feature API helpers. Backend invariant tests separately verify the database
+state and concurrent request behavior behind these responses.
+
 The generated `pacts/kernel-web-kernel-api.json` contract is a CI artifact.
 Kernel does not currently assume a Pact Broker or provider-verification
 pipeline. A downstream project should verify the contract against its candidate
