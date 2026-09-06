@@ -37,6 +37,8 @@ docs {
   ## Behavior
 
   - `status` must be either `"active"` or `"inactive"`.
+  - A user cannot deactivate themselves or the final active system administrator.
+  - The target's current capability and activation state are checked atomically with deactivation, including concurrent promotion or activation requests.
   - The operation is idempotent.
   - A successful request returns no response body.
 

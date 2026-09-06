@@ -37,6 +37,8 @@ docs {
   ## Behavior
 
   - `password` is required and must satisfy the configured password policy.
+  - Both the minimum and maximum lengths come from Better Auth's configured policy (currently 8–128 characters).
+  - A password-policy rejection leaves the current password and sessions unchanged.
   - The frontend sends the new password directly; no confirmation field is part of the API contract.
   - The password must be stored only as a secure password hash.
   - Password values and password hashes must never be returned.

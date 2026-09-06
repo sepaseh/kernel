@@ -100,10 +100,14 @@ Public authentication screens are independent top-level features under
 Shared authentication requests and contracts remain in `src/features/auth` and
 are consumed through that feature's root public API.
 
-The user creation form generates a temporary password, submits it with the user
+The user creation form generates a 16-character temporary password using browser
+cryptographic randomness, submits it with the user
 profile, attempts to copy it to the clipboard, and shows it in an Ant Design
 notification. Editing identity fields does not generate or change a password;
 password changes remain a separate user action.
+Administrator password resets use the same generator. Backend integration tests
+exercise its output against both endpoints and sign in with the result, keeping
+generated credentials compatible with Better Auth's configured password policy.
 
 The settings feature manages the language catalog, light/dark logos, and theme
 colors. Successful updates are reflected immediately through `CoreProvider`;

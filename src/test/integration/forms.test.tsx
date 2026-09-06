@@ -98,6 +98,7 @@ describe("user identity form", () => {
 
     await waitFor(() => expect(api.createUser).toHaveBeenCalledOnce());
     const password = vi.mocked(api.createUser).mock.calls[0][0].password;
+    expect(password).toMatch(/^[a-z0-9]{16}$/);
     expect(api.createUser).toHaveBeenCalledWith({
       firstName: "Ada",
       lastName: "Lovelace",

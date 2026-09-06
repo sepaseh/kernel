@@ -31,6 +31,8 @@ docs {
 
   - A successful request returns no response body.
   - Deletion fails when it violates a protected system constraint.
+  - A user cannot delete themselves or the final active system administrator.
+  - The target's current capability and activation state are checked atomically with deletion, including concurrent promotion or activation requests.
 
   ## Response
 

@@ -41,6 +41,7 @@ docs {
   - Setting `is_system_admin` to `false` revokes the global `SYSTEM_ADMIN` capability.
   - `SYSTEM_ADMIN` is separate from roles and assignable permissions.
   - This is the only endpoint allowed to change `is_system_admin`.
+  - The final active system administrator cannot be demoted. The target's current capability and activation state are checked atomically with the mutation, including concurrent promotion or activation requests.
   - The operation is idempotent.
   - A successful request returns no response body.
 
@@ -51,4 +52,5 @@ docs {
   - `401 Unauthorized` — Authentication is missing or invalid.
   - `403 Forbidden` — The authenticated user is not a `SYSTEM_ADMIN`.
   - `404 Not Found` — The target user does not exist.
+  - `409 Conflict` — Demotion would remove the final active system administrator.
 }
