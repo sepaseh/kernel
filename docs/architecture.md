@@ -1,5 +1,43 @@
 # Architecture
 
+## System overview
+
+```mermaid
+flowchart LR
+    subgraph Browser[Browser]
+        UI[React pages and layouts]
+        Core[Providers: account, language, theme]
+        Client[Shared Axios client and token memory]
+        Prefs[Local storage: UI preferences]
+        UI --> Core
+        UI --> Client
+        Core --> Client
+        Core <--> Prefs
+    end
+    Web[Vite in development / static host in deployment] -->|HTML, JS, CSS| UI
+    Client -->|Credentialed HTTP with optional bearer token| API[Hono routes and authorization]
+    API --> Auth[Better Auth]
+    API --> ORM[Drizzle]
+    Auth --> ORM
+    ORM --> DB[(SQLite)]
+    API --> Store[Object storage adapter]
+    Store --> Local[Local private/public directories]
+    Store --> MinIO[MinIO private/public buckets]
+    UI -. Public MinIO object URLs .-> MinIO
+```
+
+The API is a separate Node process; Vite serves the frontend and does not start
+the backend. Exactly one object-storage driver is selected at runtime. SQLite
+stores identities, sessions, domain records, and file metadata; object bytes
+live in the selected storage. Local public files are read through the API,
+while public MinIO URLs can be read directly by the browser.
+
+The browser manages the HttpOnly session cookie, and the API client stores its
+access token only in memory. Local storage contains UI preferences. See the
+[sequence diagrams](sequences.md) for authentication, email verification,
+uploads, and final-administrator protection, and the
+[ERD](database-schema.md#entity-relationships) for persistence relations.
+
 ## Application Entry
 
 `src/main.tsx` mounts the React application. `src/app/App.tsx` composes the top-level providers and route tree.
@@ -109,9 +147,13 @@ Administrator password resets use the same generator. Backend integration tests
 exercise its output against both endpoints and sign in with the result, keeping
 generated credentials compatible with Better Auth's configured password policy.
 
-The settings feature manages the language catalog, light/dark logos, and theme
-colors. Successful updates are reflected immediately through `CoreProvider`;
-the login page and Ant Design provider consume the same shared state.
+The settings feature selects the global active language and manages light/dark
+logos and theme colors. The language catalog is defined in backend code;
+the form does not create or edit catalog entries. Successful settings updates
+are reflected immediately through `CoreProvider`; the login page and Ant Design
+provider consume the same shared state. See [Localization](localization.md) for
+adding a supported language and [Feature development](feature-development.md)
+for adding a page or permission.
 
 The calendar feature follows the earlier Dima administration flow: it loads a
 flat list of Gregorian dates and lets authorized users add or remove a date by

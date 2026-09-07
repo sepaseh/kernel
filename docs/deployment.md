@@ -16,6 +16,11 @@ separately from the static frontend build. A downstream deployment must provide
 production secrets, a production OTP delivery adapter, TLS, persistent data,
 backups, and the operational controls described in the [backend guide](../server/README.md).
 
+Use [Backup and restore](backup-restore.md) to establish and rehearse a matching
+database/object recovery point before schema changes or deployment. The
+[system diagram](architecture.md#system-overview) shows which components must
+be deployed and persisted independently.
+
 ## Production Build
 
 Create a production build:

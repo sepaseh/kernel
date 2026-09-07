@@ -1,6 +1,7 @@
 # Development
 
-This project is a Vite React application written in TypeScript.
+Kernel runs a Vite React frontend and a standalone Hono API as separate
+processes. Start both for a self-contained local environment.
 
 ## Prerequisites
 
@@ -13,10 +14,11 @@ storage driver locally.
 
 ## Setup
 
-Install dependencies:
+Select the Node version in `.nvmrc` and install the locked dependencies:
 
 ```bash
-npm install
+nvm use
+npm ci
 ```
 
 Copy the example environment file:
@@ -25,35 +27,63 @@ Copy the example environment file:
 cp .env.example .env.local
 ```
 
-Update `.env.local` for your backend:
+In Windows PowerShell, use `Copy-Item .env.example .env.local`. If your Node
+version manager requires an explicit version (for example, nvm-windows), select
+the version written in `.nvmrc` rather than relying on automatic file detection.
+Keep an existing local configuration when revisiting this setup.
+
+Set the frontend/API addresses in `.env.local`:
 
 ```env
 VITE_API_BASE_URL=http://localhost:3000
 VITE_APP_BASE_URL=/
+SERVER_ALLOWED_ORIGIN=http://localhost:5173
+BETTER_AUTH_URL=http://localhost:3000
 ```
 
-Start the app:
+Set `BETTER_AUTH_SECRET` to a locally generated random value; the API has no
+fallback secret. To generate a value locally, run:
 
 ```bash
-npm run dev
+node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
 ```
 
-Vite is configured to bind to `localhost`, matching the backend's default CORS
-origin.
+Keep that value in your local environment file. For the optional sample account
+and fixed local OTP adapter, also set:
 
-## Local API
+```env
+SERVER_SEED_DEVELOPMENT_DATA=true
+OTP_FIXED_CODE=123456
+```
 
-Kernel includes a standalone Hono backend with Better Auth, Drizzle/SQLite, and
-pluggable object storage. Start the API in a second terminal:
+The fixed code is a synthetic local fixture and is rejected in production.
+The API applies migrations and creates default application settings on startup;
+sample users, roles, and calendar dates require the seed flag.
+
+Start the API:
 
 ```bash
 npm run server
 ```
 
-Set `SERVER_SEED_DEVELOPMENT_DATA=true` with local-only administrator
-credentials, use `VITE_API_BASE_URL=http://localhost:3000`, and sign in with the
-seeded account. SQLite migrations and the optional idempotent development seed
-run at startup. User, role, calendar, settings, authentication, and
+Then start the frontend in a second terminal:
+
+```bash
+npm run dev
+```
+
+Open `http://localhost:5173`. Vite binds to `localhost`, matching the default
+CORS origin. `GET http://localhost:3000/health` should return
+`{"status":"ok"}`. Changing backend configuration requires an API restart;
+restart Vite after editing frontend environment values.
+
+## Local API
+
+The backend uses Better Auth, Drizzle/SQLite, and pluggable object storage.
+With the optional seed enabled, sign in using `09123456789` / `password123`.
+These are fixed development fixtures in `server/src/db/initialize.ts`, not
+configurable seed-credential variables. Existing users are not reset by the
+seed. User, role, calendar, settings, authentication, and
 file-metadata mutations persist across restarts. The default local driver stores
 uploaded bytes under `server/data/uploads`.
 
@@ -74,6 +104,15 @@ npm run server:test
 See the [backend guide](../server/README.md) for migrations, storage, local OTP,
 data ownership, and all environment variables. Credentialed CORS accepts only
 the exact `SERVER_ALLOWED_ORIGIN`, which defaults to `http://localhost:5173`.
+
+The included `compose.yaml` uses fixed local-only MinIO credentials. Changing
+the API's `.env.local` does not change those service credentials; configure the
+Compose service separately if you customize them, and keep both sides aligned.
+Passing an environment file to Compose does not override literal values in
+its service definition. Do not commit real credentials.
+
+Use [Troubleshooting](troubleshooting.md) for startup and login failures, and
+[Backup and restore](backup-restore.md) before repairing persistent data.
 
 ## Quality Checks
 
@@ -145,6 +184,9 @@ static Storybook bundle so broken stories and configuration fail before merge.
 
 ## Import Style
 
+For a complete implementation checklist, see
+[Adding a feature, page, and permission](feature-development.md).
+
 Use `./` for same-directory imports and `@/` for imports that cross source directories:
 
 ```ts
@@ -162,6 +204,7 @@ Keep feature code close to the existing structure:
 
 ## Localization
 
-The application currently ships with English (`en`) and Persian (`fa`). Translation strings live in `src/shared/i18n/locales/en.ts` and `src/shared/i18n/locales/fa.ts`.
-
-Ant Design direction and locale are selected in `src/app/providers/antd/Antd.tsx`. Day.js locale/calendar setup is handled in `src/app/providers/core/Core.tsx`, using the Jalali calendar for Persian.
+The application ships with ten languages: `ar`, `de`, `en`, `es`, `fa`, `fr`,
+`it`, `pt`, `ru`, and `tr`. Persian and Arabic use RTL; Persian displays the
+Jalali calendar. Translation resources, provider mappings, the backend catalog,
+and Gregorian API date rules are documented in [Localization](localization.md).

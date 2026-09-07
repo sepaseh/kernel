@@ -81,7 +81,9 @@ retention and secure transport. See [Backend logging](../backend-logging.md).
 - Authorization decisions are enforced by the API, never only by React.
 - Access tokens are not written to local or session storage.
 - Refresh cookies are inaccessible to JavaScript and narrowly scoped.
-- Logout and terminal refresh failure clear client and server session state.
+- Logout clears client credentials and, when the API operation succeeds,
+  deletes the current server session. Terminal refresh failure clears client
+  state only; it does not itself revoke a server session.
 - Error reports, logs, build artifacts, and test evidence contain no secrets.
 - Collection examples, development seeds, and test fixtures contain synthetic data only.
 - Production can return to a known-good build once deployment automation is

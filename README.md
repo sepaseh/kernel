@@ -46,16 +46,42 @@ Create a local environment file:
 cp .env.example .env.local
 ```
 
-Start the development server:
+For the bundled local API, configure `.env.local` as described in
+[Development](docs/development.md#setup). `BETTER_AUTH_SECRET` is required even
+locally. Enable `SERVER_SEED_DEVELOPMENT_DATA=true` if you want the sample
+administrator, and set `OTP_FIXED_CODE` explicitly to exercise local OTP flows.
+
+Start the API in one terminal:
+
+```bash
+npm run server
+```
+
+Start the frontend in a second terminal:
 
 ```bash
 npm run dev
 ```
 
-The frontend starts on `http://localhost:5173`. For a self-contained local
-environment, start `npm run server` in a second terminal before starting Vite.
-Windows users can copy `.env.example` to `.env.local` with their preferred shell
-or file manager.
+The frontend starts on `http://localhost:5173` and the API on
+`http://localhost:3000`. Keep `VITE_API_BASE_URL=http://localhost:3000` and
+`SERVER_ALLOWED_ORIGIN=http://localhost:5173` aligned with these addresses.
+Windows PowerShell users can copy the example with
+`Copy-Item .env.example .env.local`. See [Troubleshooting](docs/troubleshooting.md)
+if startup, CORS, or login fails.
+
+## Documentation
+
+Start with the [documentation map](docs/README.md), or go directly to:
+
+- [Development and local setup](docs/development.md)
+- [Architecture and system diagram](docs/architecture.md)
+- [Database tables, constraints, migrations, and ERD](docs/database-schema.md)
+- [Authentication, account, authorization, and file sequences](docs/sequences.md)
+- [Adding a feature, page, and permission](docs/feature-development.md)
+- [Languages, RTL, and calendars](docs/localization.md)
+- [Testing](docs/testing.md) and [Troubleshooting](docs/troubleshooting.md)
+- [Deployment](docs/deployment.md) and [Backup and restore](docs/backup-restore.md)
 
 ## Scripts
 
@@ -77,7 +103,7 @@ or file manager.
 | `npm run test`            | Run unit and component tests                          |
 | `npm run test:watch`      | Run Vitest in watch mode                              |
 | `npm run test:coverage`   | Run tests and produce coverage for CI and Sonar       |
-| `npm run test:contract`   | Generate and verify Pact consumer contracts           |
+| `npm run test:contract`   | Generate Pact contracts against a mock provider       |
 | `npm run server:test`     | Test backend persistence and API behavior             |
 | `npm run test:e2e`        | Run Playwright browser journeys                       |
 | `npm run storybook`       | Start the component explorer                          |
@@ -92,29 +118,35 @@ gate from [CONTRIBUTING.md](CONTRIBUTING.md) before committing or pushing.
 
 ## Environment
 
-| Variable                       | Scope    | Requirement or default                                              |
-| ------------------------------ | -------- | ------------------------------------------------------------------- |
-| `VITE_API_BASE_URL`            | Frontend | Required absolute URL in production; current origin otherwise       |
-| `VITE_APP_BASE_URL`            | Frontend | Required in production; must start and end with `/`                 |
-| `VITE_OBSERVABILITY_URL`       | Frontend | Optional absolute event-collector URL; disabled when omitted        |
-| `VITE_RELEASE_ID`              | Frontend | Optional immutable release identifier; defaults to `unknown`        |
-| `HOST` / `PORT`                | Backend  | Bind address; defaults to `localhost:3000`                          |
-| `SERVER_ALLOWED_ORIGIN`        | Backend  | Exact credentialed CORS origin; defaults to `http://localhost:5173` |
-| `SERVER_SEED_DEVELOPMENT_DATA` | Backend  | Enables synthetic local seed data; disabled in production           |
-| `BETTER_AUTH_SECRET`           | Backend  | Better Auth secret; replace the local fallback outside development  |
-| `BETTER_AUTH_URL`              | Backend  | Canonical backend URL; defaults to `http://localhost:3000`          |
-| `DATABASE_URL`                 | Backend  | SQLite URL; defaults to `file:server/data/kernel.sqlite`            |
-| `STORAGE_DRIVER`               | Backend  | `local` by default outside production; `minio` in production        |
-| `LOCAL_STORAGE_PATH`           | Backend  | Local upload directory; defaults to `server/data/uploads`           |
-| `MINIO_*`                      | Backend  | Required when `STORAGE_DRIVER=minio`                                |
-| `UPLOAD_LIMIT_BYTES`           | Backend  | Maximum uploaded file size; defaults to 5 MiB                       |
-| `OTP_FIXED_CODE`               | Backend  | Local-only OTP value; defaults to `123456`                          |
+| Variable                       | Scope    | Requirement or default                                                   |
+| ------------------------------ | -------- | ------------------------------------------------------------------------ |
+| `VITE_API_BASE_URL`            | Frontend | Required absolute URL in production; current origin otherwise            |
+| `VITE_APP_BASE_URL`            | Frontend | Required in production; must start and end with `/`                      |
+| `VITE_OBSERVABILITY_URL`       | Frontend | Optional absolute event-collector URL; disabled when omitted             |
+| `VITE_RELEASE_ID`              | Frontend | Optional immutable release identifier; defaults to `unknown`             |
+| `HOST` / `PORT`                | Backend  | Bind address; defaults to `localhost:3000`                               |
+| `SERVER_ALLOWED_ORIGIN`        | Backend  | Exact credentialed CORS origin; defaults to `http://localhost:5173`      |
+| `SERVER_SEED_DEVELOPMENT_DATA` | Backend  | Enables synthetic local seed data; disabled in production                |
+| `BETTER_AUTH_SECRET`           | Backend  | Required in every environment; no runtime fallback                       |
+| `BETTER_AUTH_URL`              | Backend  | Canonical backend URL; defaults to `http://localhost:3000`               |
+| `DATABASE_URL`                 | Backend  | SQLite URL; defaults to `file:server/data/kernel.sqlite`                 |
+| `STORAGE_DRIVER`               | Backend  | `local` by default outside production; `minio` in production             |
+| `LOCAL_STORAGE_PATH`           | Backend  | Local upload directory; defaults to `server/data/uploads`                |
+| `MINIO_*`                      | Backend  | Configure for MinIO; required production values are in the backend guide |
+| `UPLOAD_LIMIT_BYTES`           | Backend  | Maximum uploaded file size; defaults to 5 MiB                            |
+| `OTP_FIXED_CODE`               | Backend  | Explicit local-only OTP value; no default; rejected in production        |
+| `LOG_LEVEL`                    | Backend  | `debug` in development, otherwise `info`                                 |
+| `SERVER_ENVIRONMENT`           | Backend  | Logging environment; defaults to `NODE_ENV` or `development`             |
+| `SERVER_RELEASE_ID`            | Backend  | Immutable release identifier; required in production                     |
 
 Frontend variables are embedded by Vite at build time. Production builds stop
 before compilation when either required variable is missing or malformed;
 `VITE_OBSERVABILITY_URL`, when supplied, must also be an absolute URL. Example
 local values are available in `.env.example`. Keep machine-specific values in
 `.env.local` and do not commit secrets.
+
+The [backend guide](server/README.md#configuration) lists server configuration;
+[Deployment](docs/deployment.md) covers build variables and production setup.
 
 ## Local API
 
@@ -124,11 +156,15 @@ For local development, start `npm run server` and set
 `server/data/uploads`, and allows credentialed CORS from
 `http://localhost:5173` by default. Docker is not required for this default.
 
-Use `09123456789` / `password123` for the seeded system-administrator flow and
-`123456` for local OTP flows. `GET /health` reports API health. All domain
-mutations persist in SQLite, while uploaded bytes are stored by the selected
-storage driver and only their metadata/references are stored in the database. See the
-[backend guide](server/README.md) for configuration and data ownership.
+With `SERVER_SEED_DEVELOPMENT_DATA=true` outside production, startup creates a
+missing sample administrator with `09123456789` / `password123`. Re-running the
+seed does not reset an existing account's credentials. Local OTP flows use the
+explicitly configured `OTP_FIXED_CODE`; no SMS or email provider is bundled.
+These credentials are synthetic local fixtures. `GET /health` reports API
+health. All domain mutations persist in SQLite, while uploaded bytes are stored
+by the selected storage driver and only their metadata/references are stored in
+the database. See the [backend guide](server/README.md) for configuration and
+data ownership.
 
 ## Included Features
 
@@ -204,8 +240,9 @@ for the detailed contract and ownership rules.
 Permission contracts live in `src/features/roles/types.ts`; route and action
 permission mappings live in `src/app/config/routes.ts`. Every route declares
 its public, authenticated, or permission-gated `permissions.access` rule.
-Permission-gated routes use `.read` permissions for access and can expose
-create, delete, and update actions through `getRoutePermissions(route, user)`:
+Most permission-gated routes use `.read` for access; settings uses
+`settings.update`. Routes can expose create, delete, and update actions through
+`getRoutePermissions(route, user)`:
 
 ```ts
 type RouteAccessPermission =

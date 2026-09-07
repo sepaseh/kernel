@@ -22,6 +22,13 @@
       "when": 1788513805982,
       "tag": "0002_bind_otp_subject",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1788806081272,
+      "tag": "0003_outgoing_mauler",
+      "breakpoints": true
     }
   ]
 }
