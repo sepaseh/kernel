@@ -1,3 +1,4 @@
+import { isAPIError } from "better-auth/api";
 import { eq } from "drizzle-orm";
 import type { Context } from "hono";
 
@@ -6,11 +7,22 @@ import type { Dependencies } from "./dependencies.ts";
 import type { PermissionKey } from "./domain.ts";
 import { getUserPermissions } from "./domain.ts";
 import type { TranslationKey, Translator } from "./i18n.ts";
+import { getTranslator } from "./i18n.ts";
+import { type AppLogger, requestLogContext } from "./logger.ts";
 
 export type AppEnvironment = {
   Variables: {
     dependencies: Dependencies;
+    logger: AppLogger;
+    requestId: string;
     translate: Translator;
+    uploadStage?:
+      | "authentication"
+      | "validation"
+      | "read"
+      | "storage"
+      | "metadata"
+      | "response";
   };
 };
 
@@ -27,11 +39,38 @@ export class ApiError extends Error {
     values?: Record<string, string | number>,
   ) {
     super(key);
+    this.name = "ApiError";
     this.key = key;
     this.status = status;
     this.values = values;
   }
 }
+
+export const respondToError = (
+  error: Error,
+  context: Context<AppEnvironment>,
+) => {
+  const translate = context.get("translate") ?? getTranslator("en");
+  return error instanceof ApiError
+    ? context.json(
+        { message: translate(error.key, error.values) },
+        error.status,
+      )
+    : context.json({ message: translate("internalError") }, 500);
+};
+
+export const bindAuthenticatedUser = (
+  context: Context<AppEnvironment>,
+  userId: string,
+) => {
+  const logger = context.get("logger").child({ userId });
+  context.set("logger", logger);
+  const current = requestLogContext.getStore();
+  if (current) current.logger = logger;
+};
+
+export const isAuthRejection = (error: unknown) =>
+  isAPIError(error) && error.statusCode >= 400 && error.statusCode < 500;
 
 export const parseJson = async (context: Context<AppEnvironment>) => {
   try {
@@ -80,6 +119,7 @@ export const authenticate = async (
   if (!account || account.status !== "active") {
     throw new ApiError(401, "authenticationRequired");
   }
+  bindAuthenticatedUser(context, account.id);
   if (options.systemAdmin && !account.isSystemAdmin) {
     throw new ApiError(403, "systemAdminRequired");
   }

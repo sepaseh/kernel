@@ -10,6 +10,7 @@ import { loadConfig } from "./config.ts";
 import { createDatabase } from "./db/client.ts";
 import { initializeDatabase } from "./db/initialize.ts";
 import { user } from "./db/schema.ts";
+import { createLogger } from "./logger.ts";
 import { MemoryObjectStorage } from "./storage/memory.ts";
 
 let app: ReturnType<typeof createApp>;
@@ -45,12 +46,14 @@ beforeEach(async () => {
     OTP_FIXED_CODE: "123456",
   });
   ({ client, database } = createDatabase(config));
-  const auth = createAuth(config, database);
+  const logger = createLogger(config.logging, { write() {} });
+  const auth = createAuth(config, database, logger);
   await initializeDatabase(config, database, auth);
   app = createApp({
     auth,
     config,
     database,
+    logger,
     storage: new MemoryObjectStorage(),
   });
   const administrator = await auth.api.signUpEmail({

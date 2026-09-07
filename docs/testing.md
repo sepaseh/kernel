@@ -76,6 +76,11 @@ runtime server code remains independent of frontend modules.
 - `npm run test:coverage` writes text, HTML, JSON summary, and LCOV reports.
 - `npm run test:contract` generates Pact consumer contracts.
 - `npm run server:test` verifies the standalone backend integration behavior.
+  It also verifies Pino JSON redaction, safe error serialization, request IDs,
+  CORS, concurrent request isolation, upload/storage failure events, process
+  termination, and readable development output. Logging fixtures use synthetic
+  values, isolated in-memory SQLite/storage, and an injected output destination.
+  See [Backend logging](backend-logging.md) for the event and security contracts.
 - `npm run test:e2e` builds the application and runs Playwright.
 - `npm run test:e2e:ui` opens Playwright's interactive UI.
 - `npm run test:e2e:report` opens the most recent HTML report.

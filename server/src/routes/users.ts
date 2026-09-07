@@ -8,6 +8,7 @@ import type { AppEnvironment } from "../http.ts";
 import {
   ApiError,
   authenticate,
+  isAuthRejection,
   isUniqueConstraintError,
   parseJson,
   requiredString,
@@ -103,8 +104,8 @@ export const createUserRoutes = () => {
       const record = await findUser(context, created.user.id);
       return context.json(serializeUser(record), 201);
     } catch (error) {
-      if (error instanceof ApiError) throw error;
-      throw new ApiError(400, "userDataInvalid");
+      if (isAuthRejection(error)) throw new ApiError(400, "userDataInvalid");
+      throw error;
     }
   });
 

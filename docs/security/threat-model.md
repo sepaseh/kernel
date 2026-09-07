@@ -42,6 +42,13 @@ infrastructure, or trust-boundary changes and at least quarterly.
    configured storage adapter; file rows hold metadata and object references
    only.
 
+Backend logs cross a separate observability boundary through stdout. Only safe
+request metadata and authenticated user IDs are recorded; credentials, payloads,
+SQL parameters, SDK configuration, and raw Error messages are excluded. Request
+IDs received from clients are untrusted correlation values, not authentication
+or immutable audit evidence. External collectors must enforce access controls,
+retention and secure transport. See [Backend logging](../backend-logging.md).
+
 ## Primary threats and controls
 
 | Threat                                     | Impact                                    | Current controls                                                     | Required verification                                                          |
@@ -55,7 +62,7 @@ infrastructure, or trust-boundary changes and at least quarterly.
 | Unsafe deployment or rollback              | Extended outage or vulnerable release     | Reproducible production build and immutable commit history           | Define deployment and rollback controls when hosting is selected               |
 | Denial of service or automated abuse       | Unavailable authentication/API            | Client request cancellation where applicable                         | Verify API rate limits, quotas, timeouts, and alerting                         |
 | Clickjacking or content-type confusion     | Deceptive UI or script execution          | Frame denial, MIME sniffing protection, CSP                          | Validate headers on CDN and direct routes                                      |
-| Observability leakage                      | Secrets in monitoring systems             | Client-side redaction and optional endpoint                          | Test server-side scrubbing and access/retention policy                         |
+| Observability leakage                      | Secrets in monitoring systems             | Browser redaction and sanitized backend JSON logging                 | Test scrubbing and collector access/retention policy                           |
 
 ## Abuse cases
 

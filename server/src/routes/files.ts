@@ -6,6 +6,7 @@ import { Hono } from "hono";
 import { files } from "../db/schema.ts";
 import type { AppEnvironment } from "../http.ts";
 import { ApiError, authenticate } from "../http.ts";
+import { withStorageLogging } from "../storage/operations.ts";
 
 const safeObjectName = (name: string) =>
   name.replace(/[^a-zA-Z0-9._-]/g, "-").replace(/-+/g, "-");
@@ -30,9 +31,11 @@ export const createFileRoutes = () => {
     if (!record || record.visibility !== "public") {
       throw new ApiError(404, "fileNotFound");
     }
-    const contents = await dependencies.storage.get(
-      record.bucket,
-      record.objectKey,
+    const contents = await withStorageLogging(
+      context.get("logger"),
+      dependencies.config.storageDriver,
+      "get",
+      () => dependencies.storage.get(record.bucket, record.objectKey),
     );
     const inline = inlineContentTypes.has(record.contentType.toLowerCase());
     return new Response(Buffer.from(contents), {
@@ -52,6 +55,7 @@ export const createFileRoutes = () => {
 
   app.post("/", async (context) => {
     const { account } = await authenticate(context);
+    context.set("uploadStage", "validation");
     const dependencies = context.get("dependencies");
     const form = await context.req.formData();
     const file = form.get("file");
@@ -78,12 +82,23 @@ export const createFileRoutes = () => {
     const id = randomUUID();
     const objectKey = `${id}/${safeObjectName(file.name || "upload")}`;
     const contentType = file.type || "application/octet-stream";
-    const stored = await dependencies.storage.put({
-      contentType,
-      data: new Uint8Array(await file.arrayBuffer()),
-      objectKey,
-      visibility,
-    });
+    const logger = context.get("logger").child({ fileId: id });
+    context.set("uploadStage", "read");
+    const data = new Uint8Array(await file.arrayBuffer());
+    context.set("uploadStage", "storage");
+    const stored = await withStorageLogging(
+      logger,
+      dependencies.config.storageDriver,
+      "put",
+      () =>
+        dependencies.storage.put({
+          contentType,
+          data,
+          objectKey,
+          visibility,
+        }),
+    );
+    context.set("uploadStage", "metadata");
     try {
       await dependencies.database.insert(files).values({
         bucket: stored.bucket,
@@ -98,18 +113,34 @@ export const createFileRoutes = () => {
       });
     } catch (error) {
       try {
-        await dependencies.storage.delete(stored.bucket, stored.objectKey);
-      } catch {
-        console.error("Failed to remove an object after metadata failure.", {
-          fileId: id,
-        });
+        await withStorageLogging(
+          logger,
+          dependencies.config.storageDriver,
+          "delete",
+          () => dependencies.storage.delete(stored.bucket, stored.objectKey),
+        );
+      } catch (cleanupError) {
+        logger.error(
+          { err: cleanupError, event: "storage.cleanup.failed" },
+          "Object cleanup after metadata failure failed",
+        );
       }
       throw error;
     }
+    context.set("uploadStage", "response");
     const url = dependencies.storage.url(
       stored.bucket,
       stored.objectKey,
       visibility,
+    );
+    logger.info(
+      {
+        contentType,
+        event: "file.upload.completed",
+        sizeBytes: file.size,
+        visibility,
+      },
+      "File upload completed",
     );
     return context.json(
       {

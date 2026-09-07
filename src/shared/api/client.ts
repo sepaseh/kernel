@@ -94,12 +94,13 @@ const retryUnauthorizedRequest = async (
   }
 };
 
-const createResponseError = (data: unknown): Error => {
-  if (!isApiErrorBody(data)) {
-    return new Error(i18nInstance.t("unexpectedError"));
-  }
-
-  return new Error(data.message, { cause: data.cause });
+const createResponseError = (data: unknown, requestId: unknown): Error => {
+  const error = isApiErrorBody(data)
+    ? new Error(data.message, { cause: data.cause })
+    : new Error(i18nInstance.t("unexpectedError"));
+  return typeof requestId === "string" && /^[\w=-]{1,128}$/.test(requestId)
+    ? Object.assign(error, { requestId })
+    : error;
 };
 
 api.interceptors.request.use(
@@ -129,7 +130,10 @@ api.interceptors.response.use(
     if (retryResponse) return retryResponse;
 
     if (error.response) {
-      throw createResponseError(error.response.data);
+      throw createResponseError(
+        error.response.data,
+        error.response.headers["x-request-id"],
+      );
     }
 
     if (error.request) {

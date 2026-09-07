@@ -1,6 +1,13 @@
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
+export type LoggingConfig = {
+  environment: string;
+  level: "debug" | "info" | "warn" | "error";
+  pretty: boolean;
+  release: string;
+};
+
 export type ServerConfig = {
   allowedOrigin: string;
   authSecret: string;
@@ -8,6 +15,7 @@ export type ServerConfig = {
   databaseUrl: string;
   host: string;
   localStoragePath: string;
+  logging: LoggingConfig;
   minio: {
     accessKey: string;
     bucket: string;
@@ -22,6 +30,39 @@ export type ServerConfig = {
   seedDevelopmentData: boolean;
   storageDriver: "local" | "minio";
   uploadLimitBytes: number;
+};
+
+export const loadLoggingConfig = (
+  environment: NodeJS.ProcessEnv = process.env,
+): LoggingConfig => {
+  const runtime = environment.NODE_ENV ?? "development";
+  const name = environment.SERVER_ENVIRONMENT ?? runtime;
+  const release = environment.SERVER_RELEASE_ID ?? "development";
+  const level =
+    environment.LOG_LEVEL ?? (runtime === "development" ? "debug" : "info");
+  if (
+    level !== "debug" &&
+    level !== "info" &&
+    level !== "warn" &&
+    level !== "error"
+  ) {
+    throw new Error("LOG_LEVEL must be debug, info, warn, or error.");
+  }
+  if (
+    !/^[a-zA-Z0-9_.-]{1,64}$/.test(name) ||
+    !/^[a-zA-Z0-9_.@/-]{1,128}$/.test(release)
+  ) {
+    throw new Error("Logging environment or release identifier is invalid.");
+  }
+  if (runtime === "production" && !environment.SERVER_RELEASE_ID) {
+    throw new Error("SERVER_RELEASE_ID is required in production.");
+  }
+  return {
+    environment: name,
+    level,
+    pretty: runtime === "development" && name === "development",
+    release,
+  };
 };
 
 const numberFromEnvironment = (value: string | undefined, fallback: number) => {
@@ -84,6 +125,7 @@ export const loadConfig = (
     localStoragePath:
       environment.LOCAL_STORAGE_PATH ??
       path.resolve("server", "data", "uploads"),
+    logging: loadLoggingConfig(environment),
     minio: {
       accessKey: environment.MINIO_ACCESS_KEY ?? "minioadmin",
       bucket: environment.MINIO_BUCKET ?? "kernel",

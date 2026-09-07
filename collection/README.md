@@ -37,6 +37,21 @@ remaining authenticated requests use that token.
 Saved response files sit beside each request and are named after their HTTP
 status code.
 
+Every response from the Kernel API, including errors, preflight responses, and
+file content, includes `X-Request-Id`. Clients may send a value of 1–128 ASCII
+letters, digits, underscores, hyphens, or equals signs. Missing or invalid values
+are replaced with a UUID. Values that would be redacted as sensitive text (for
+example a mobile number or `token=...`) are also replaced, so the returned ID and
+the logged ID always agree. The returned header is the identifier used in server
+logs; it is correlation metadata, not proof of identity. CORS allows this request
+header and exposes it on responses. JSON response bodies are unchanged.
+
+Unexpected authentication-provider, database, and storage failures return `500`
+with the translated generic internal-error message, never a stack or SDK payload.
+Expected credential and validation failures retain their documented `400`
+responses. In particular, login, registration, password change, and user creation
+do not turn unexpected infrastructure failures into validation errors.
+
 Do not store real passwords or access tokens in this shared collection.
 
 ## Local backend integration

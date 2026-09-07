@@ -109,6 +109,16 @@ at this boundary and represented as optional fields in domain models.
   or capability. Existing `Promise<void>` helpers and request types remain
   unchanged; the transport surfaces the server's localized error message.
 
+## Error correlation
+
+The client retains a valid `X-Request-Id` response header as `error.requestId`
+when converting an HTTP error into an Error. Browser `reportError` includes that
+identifier in its sanitized context, preserving backend correlation without
+changing payload shapes or user-visible error messages. IDs must satisfy the
+bounded format in [Backend logging](backend-logging.md). Unexpected backend
+provider/database/storage errors return a generic 500, while expected validation
+and credential rejections retain their existing statuses.
+
 ## Adding Modules
 
 Add endpoint helpers to the owning feature's `api.ts`. Put only transport-level code used by multiple features in `src/shared/api`; do not create a global domain-service barrel.

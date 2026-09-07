@@ -1,9 +1,11 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { requestId } from "hono/request-id";
 
 import type { Dependencies } from "./dependencies.ts";
-import { ApiError, type AppEnvironment } from "./http.ts";
+import { type AppEnvironment, respondToError } from "./http.ts";
 import { getTranslator } from "./i18n.ts";
+import { requestLogging } from "./request-logging.ts";
 import { createAccountRoutes } from "./routes/account.ts";
 import { createAuthRoutes } from "./routes/auth.ts";
 import { createCalendarRoutes } from "./routes/calendar.ts";
@@ -18,12 +20,15 @@ import { createUserRoutes } from "./routes/users.ts";
 export const createApp = (dependencies: Dependencies) => {
   const app = new Hono<AppEnvironment>();
 
+  app.use("*", requestId({ limitLength: 128 }));
+  app.use("*", requestLogging(dependencies.logger));
   app.use(
     "*",
     cors({
-      allowHeaders: ["Authorization", "Content-Type"],
+      allowHeaders: ["Authorization", "Content-Type", "X-Request-Id"],
       allowMethods: ["DELETE", "GET", "OPTIONS", "PATCH", "POST", "PUT"],
       credentials: true,
+      exposeHeaders: ["X-Request-Id"],
       origin: dependencies.config.allowedOrigin,
     }),
   );
@@ -48,19 +53,7 @@ export const createApp = (dependencies: Dependencies) => {
   app.notFound((context) =>
     context.json({ message: context.get("translate")("notFound") }, 404),
   );
-  app.onError((error, context) => {
-    if (error instanceof ApiError) {
-      return context.json(
-        { message: context.get("translate")(error.key, error.values) },
-        error.status,
-      );
-    }
-    console.error(error);
-    return context.json(
-      { message: context.get("translate")("internalError") },
-      500,
-    );
-  });
+  app.onError(respondToError);
 
   return app;
 };
