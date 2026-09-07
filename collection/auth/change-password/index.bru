@@ -44,8 +44,9 @@ docs {
   - A successful request returns no response body.
   
   ## Response
-  
+
   - `200 OK` — Password changed successfully with no response body.
   - `400 Bad Request` — Request validation failed, the current password is incorrect, or the new password is invalid.
   - `401 Unauthorized` — Authentication is missing or invalid.
+  - `500 Internal Server Error` — Unexpected provider or database failure; generic translated message and `X-Request-Id`, with no exception details.
 }

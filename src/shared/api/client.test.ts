@@ -16,6 +16,28 @@ afterEach(() => {
 });
 
 describe("API client authentication", () => {
+  it.each(["request-123", "invalid.request", "x".repeat(129)])(
+    "retains only a valid response request ID: %s",
+    async (requestId) => {
+      server.use(
+        http.get("http://localhost/logging-error", () =>
+          HttpResponse.json(
+            { message: "Request failed" },
+            { headers: { "X-Request-Id": requestId }, status: 500 },
+          ),
+        ),
+      );
+      const error: unknown = await apiClient
+        .get("/logging-error")
+        .catch((value: unknown) => value);
+      expect(error).toBeInstanceOf(Error);
+      expect(error).toHaveProperty("message", "Request failed");
+      if (requestId === "request-123")
+        expect(error).toHaveProperty("requestId", requestId);
+      else expect(error).not.toHaveProperty("requestId");
+    },
+  );
+
   it("adds the access token to protected requests", async () => {
     setAccessToken("access-token");
     server.use(

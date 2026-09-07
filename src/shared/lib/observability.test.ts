@@ -17,6 +17,28 @@ afterEach(() => {
 });
 
 describe("observability", () => {
+  it("correlates API errors without copying arbitrary error properties", () => {
+    const send = vi.fn();
+    setObservabilityTransport(send);
+    reportError(
+      Object.assign(new Error("API failed"), {
+        password: "synthetic-secret",
+        requestId: "request-123",
+      }),
+      { source: "api" },
+    );
+    expect(send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        context: { requestId: "request-123", source: "api" },
+      }),
+    );
+    expect(JSON.stringify(send.mock.calls)).not.toContain("synthetic-secret");
+    reportError(
+      Object.assign(new Error("API failed"), { requestId: "bad.value" }),
+    );
+    expect(send.mock.calls[1][0].context).toBeUndefined();
+  });
+
   it("redacts valid email addresses without changing malformed addresses", () => {
     expect(
       sanitizeObservabilityValue(
