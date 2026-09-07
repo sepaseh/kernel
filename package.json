@@ -53,14 +53,14 @@
     "dayjs": "^1.11.23",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.13.5",
-    "i18next": "^26.4.0",
+    "i18next": "^26.4.2",
     "jalaliday": "^3.1.1",
     "lodash": "^4.18.1",
     "minio": "^8.0.7",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "react-i18next": "^17.0.12",
-    "react-router": "^8.3.0"
+    "react-i18next": "^17.0.13",
+    "react-router": "^8.3.1"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
