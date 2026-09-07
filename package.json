@@ -7,6 +7,7 @@
     "node": ">=24.15.0 <25"
   },
   "overrides": {
+    "@better-auth/core": "1.7.2",
     "qs": "^6.15.3"
   },
   "scripts": {
@@ -43,13 +44,13 @@
     "typecheck": "tsc -b --noEmit"
   },
   "dependencies": {
-    "@better-auth/drizzle-adapter": "^1.7.2",
+    "@better-auth/drizzle-adapter": "1.7.2",
     "@hono/node-server": "^2.1.1",
     "@libsql/client": "^0.18.0",
     "antd": "^6.6.2",
     "antd-style": "^4.1.0",
     "axios": "^1.20.0",
-    "better-auth": "^1.7.2",
+    "better-auth": "1.7.2",
     "dayjs": "^1.11.23",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.13.5",
@@ -72,8 +73,8 @@
     "@storybook/addon-docs": "10.6.0",
     "@storybook/addon-vitest": "10.6.0",
     "@storybook/react-vite": "10.6.0",
-    "@stryker-mutator/core": "^9.6.1",
-    "@stryker-mutator/vitest-runner": "^9.6.1",
+    "@stryker-mutator/core": "^10.0.0",
+    "@stryker-mutator/vitest-runner": "^10.0.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
