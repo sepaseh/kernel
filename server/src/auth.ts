@@ -5,8 +5,13 @@ import { bearer, username } from "better-auth/plugins";
 import type { ServerConfig } from "./config.ts";
 import type { Database } from "./db/client.ts";
 import * as schema from "./db/schema.ts";
+import { type AppLogger, createAuthLogger } from "./logger.ts";
 
-export const createAuth = (config: ServerConfig, database: Database) =>
+export const createAuth = (
+  config: ServerConfig,
+  database: Database,
+  logger: AppLogger,
+) =>
   betterAuth({
     basePath: "/__auth",
     baseURL: config.baseUrl,
@@ -18,6 +23,7 @@ export const createAuth = (config: ServerConfig, database: Database) =>
       enabled: true,
       minPasswordLength: 8,
     },
+    logger: createAuthLogger(logger),
     plugins: [bearer(), username()],
     secret: config.authSecret,
     trustedOrigins: [config.allowedOrigin],

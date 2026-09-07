@@ -10,7 +10,9 @@ import type { AppEnvironment } from "../http.ts";
 import {
   ApiError,
   authenticate,
+  bindAuthenticatedUser,
   copyAuthHeaders,
+  isAuthRejection,
   parseJson,
   requiredString,
 } from "../http.ts";
@@ -148,9 +150,11 @@ export const createAuthRoutes = () => {
         headers: context.req.raw.headers,
         returnHeaders: true,
       });
+      bindAuthenticatedUser(context, result.response.user.id);
       return accessTokenResponse(context, result.headers, 200);
-    } catch {
-      throw new ApiError(400, "invalidCredentials");
+    } catch (error) {
+      if (isAuthRejection(error)) throw new ApiError(400, "invalidCredentials");
+      throw error;
     }
   });
 
@@ -177,9 +181,12 @@ export const createAuthRoutes = () => {
         headers: context.req.raw.headers,
         returnHeaders: true,
       });
+      bindAuthenticatedUser(context, result.response.user.id);
       return accessTokenResponse(context, result.headers, 201);
-    } catch {
-      throw new ApiError(400, "registrationInvalid");
+    } catch (error) {
+      if (isAuthRejection(error))
+        throw new ApiError(400, "registrationInvalid");
+      throw error;
     }
   });
 
@@ -201,6 +208,7 @@ export const createAuthRoutes = () => {
       headers: context.req.raw.headers,
     });
     if (!current) throw new ApiError(401, "refreshInvalid");
+    bindAuthenticatedUser(context, current.user.id);
     const token = current.session.token;
     return context.json({ access_token: token });
   });
@@ -237,8 +245,10 @@ export const createAuthRoutes = () => {
         body: { currentPassword, newPassword },
         headers: context.req.raw.headers,
       });
-    } catch {
-      throw new ApiError(400, "passwordChangeInvalid");
+    } catch (error) {
+      if (isAuthRejection(error))
+        throw new ApiError(400, "passwordChangeInvalid");
+      throw error;
     }
     return context.body(null, 200);
   });

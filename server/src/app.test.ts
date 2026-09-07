@@ -12,6 +12,7 @@ import { loadConfig } from "./config.ts";
 import { createDatabase } from "./db/client.ts";
 import { initializeDatabase } from "./db/initialize.ts";
 import { files, settings, user } from "./db/schema.ts";
+import { createLogger } from "./logger.ts";
 import { LocalFileStorage } from "./storage/local.ts";
 import { MemoryObjectStorage } from "./storage/memory.ts";
 import { MinioObjectStorage } from "./storage/minio.ts";
@@ -49,10 +50,11 @@ before(async () => {
     SERVER_SEED_DEVELOPMENT_DATA: "true",
   });
   ({ client, database } = createDatabase(baseConfig));
-  const auth = createAuth(baseConfig, database);
+  const logger = createLogger(baseConfig.logging, { write() {} });
+  const auth = createAuth(baseConfig, database, logger);
   await initializeDatabase(baseConfig, database, auth);
   storage = new MemoryObjectStorage();
-  app = createApp({ auth, config: baseConfig, database, storage });
+  app = createApp({ auth, config: baseConfig, database, logger, storage });
 });
 
 after(async () => {
@@ -76,6 +78,7 @@ test("never enables synthetic seed data in production", () => {
     MINIO_PUBLIC_URL: "https://storage.example.com",
     MINIO_SECRET_KEY: "secret-key",
     NODE_ENV: "production",
+    SERVER_RELEASE_ID: "test-release",
     SERVER_ALLOWED_ORIGIN: "https://app.example.com",
     SERVER_SEED_DEVELOPMENT_DATA: "true",
   });

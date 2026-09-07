@@ -10,11 +10,11 @@ reusable templates that run only when started manually. A downstream project
 may configure and automate them after it has real, authorized deployment
 targets.
 
-The collection-driven server under `server/` is excluded from the production
-deployment architecture. Its development-only CORS allowlist, local signing
-secret, placeholder refresh cookie, and non-persistent mutations do not make it
-a production API substitute. Do not deploy it or expose it to untrusted
-networks.
+The standalone server under `server/` implements the API with Better Auth,
+Drizzle/SQLite persistence, and local-filesystem or MinIO storage. It runs
+separately from the static frontend build. A downstream deployment must provide
+production secrets, a production OTP delivery adapter, TLS, persistent data,
+backups, and the operational controls described in the [backend guide](../server/README.md).
 
 ## Production Build
 
@@ -55,6 +55,13 @@ start and end with `/`; use `/` when the application is served at the domain
 root.
 
 ## Observability
+
+The backend writes structured Pino JSON to stdout. Set `NODE_ENV=production`
+and `SERVER_RELEASE_ID` to the immutable deployment identifier. Use
+`SERVER_ENVIRONMENT` to distinguish staging and production, and `LOG_LEVEL` to
+select verbosity. A collector, retention, access controls and alerts belong to
+the deployment; no logging service or Sentry SDK is enabled by default. See
+[Backend logging](backend-logging.md) for schema, redaction and lifecycle details.
 
 Set `VITE_RELEASE_ID` to an immutable deployment identifier, such as the Git
 commit SHA. This release is included with every error and performance event.

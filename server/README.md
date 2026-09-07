@@ -72,6 +72,12 @@ developer environment. Replace them before connecting to any non-local service.
 
 ## Configuration
 
+Logging configuration (`LOG_LEVEL`, `SERVER_ENVIRONMENT`, and
+`SERVER_RELEASE_ID`) is documented in [Backend logging](../docs/backend-logging.md).
+Production startup requires an immutable `SERVER_RELEASE_ID`. JSON logs go to
+stdout; development uses readable output with the same redaction rules. Each API
+response carries `X-Request-Id`, including errors and binary file content.
+
 | Variable                       | Default                          | Purpose                                   |
 | ------------------------------ | -------------------------------- | ----------------------------------------- |
 | `BETTER_AUTH_SECRET`           | required                         | Better Auth signing and encryption secret |

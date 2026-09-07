@@ -26,6 +26,35 @@ afterEach(() => {
 });
 
 describe("Kernel API consumer contract", () => {
+  it("retains the correlation header on a generic server error", async () => {
+    await createPact()
+      .addInteraction()
+      .given("the authentication provider is unavailable")
+      .uponReceiving("a login request during an internal failure")
+      .withRequest("POST", "/auth/login", (request) => {
+        request.jsonBody({
+          identifier: "09120000001",
+          password: "synthetic-password",
+        });
+      })
+      .willRespondWith(500, (response) => {
+        response.headers({
+          "Access-Control-Expose-Headers": "X-Request-Id",
+          "X-Request-Id": "contract-request-123",
+        });
+        response.jsonBody({ message: "Internal server error." });
+      })
+      .executeTest(async ({ url }) => {
+        const [, { login }] = await loadApiFor(url);
+        await expect(
+          login({ identifier: "09120000001", password: "synthetic-password" }),
+        ).rejects.toMatchObject({
+          message: "Internal server error.",
+          requestId: "contract-request-123",
+        });
+      });
+  });
+
   it("surfaces a recovery password-policy rejection", async () => {
     await createPact()
       .addInteraction()

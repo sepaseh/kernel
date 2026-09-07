@@ -60,4 +60,5 @@ docs {
 
   - `201 Created` — Account created and authentication completed successfully.
   - `400 Bad Request` — Request validation failed, the mobile number is already registered, the OTP is invalid, or the password does not satisfy the password policy.
+  - `500 Internal Server Error` — Unexpected provider or database failure; generic translated message and `X-Request-Id`, with no exception details.
 }

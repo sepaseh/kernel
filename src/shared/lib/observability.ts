@@ -99,10 +99,17 @@ export const setObservabilityTransport = (
 export const reportError = (error: unknown, context?: ErrorContext): void => {
   const normalizedError =
     error instanceof Error ? error : new Error(String(error));
+  const requestId =
+    "requestId" in normalizedError &&
+    typeof normalizedError.requestId === "string" &&
+    /^[\w=-]{1,128}$/.test(normalizedError.requestId)
+      ? normalizedError.requestId
+      : undefined;
+  const eventContext = requestId ? { ...context, requestId } : context;
 
   void transport({
-    context: context
-      ? (sanitizeObservabilityValue(context) as ErrorContext)
+    context: eventContext
+      ? (sanitizeObservabilityValue(eventContext) as ErrorContext)
       : undefined,
     message: sanitizeText(normalizedError.message),
     name: "error",

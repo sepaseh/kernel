@@ -56,4 +56,5 @@ docs {
   - `400 Bad Request` — Request validation failed or a unique field is already in use.
   - `401 Unauthorized` — Authentication is missing or invalid.
   - `403 Forbidden` — The authenticated user cannot create users.
+  - `500 Internal Server Error` — Unexpected provider or database failure; generic translated message and `X-Request-Id`, with no exception details.
 }
