@@ -21,7 +21,7 @@ compliance commitments.
 | Lines      | 69%                    |
 
 Pull-request CI also blocks on contract tests, Storybook browser tests, the
-collection-driven mock-server tests, production and static Storybook builds,
+standalone backend persistence/API tests, production and static Storybook builds,
 and the Chromium end-to-end suite.
 
 ## Accessibility

@@ -18,7 +18,9 @@ user.
 
 ## Local setup
 
-Copy `.env.example` to `.env.local`, then start the API:
+Follow [Development](../docs/development.md#setup) to copy the environment
+example, set the required `BETTER_AUTH_SECRET`, and select optional seed/OTP
+settings. Then start the API:
 
 ```bash
 npm run server
@@ -57,18 +59,22 @@ npm run server:generate -- --name descriptive_name
 
 ## Local account and OTP
 
-The optional idempotent development seed creates a system administrator from
-local-only seed values. Enable it deliberately with
-`SERVER_SEED_DEVELOPMENT_DATA=true`; never reuse its credentials in a deployed
-environment.
+The optional idempotent development seed creates a missing system administrator
+with mobile `09123456789` and password `password123`, using fixed synthetic
+fixtures in `server/src/db/initialize.ts`. Enable it deliberately with
+`SERVER_SEED_DEVELOPMENT_DATA=true`. Seed credentials are not environment
+options, and rerunning the seed does not reset an existing user's credentials
+or status. Never reuse these credentials in a deployed environment.
 
 Local OTP flows require an explicit `OTP_FIXED_CODE`. This is a development
 delivery adapter, not a production SMS or email provider. Production startup
 rejects fixed OTP configuration; integrate a real delivery adapter before
 exposing OTP authentication flows.
 
-The included MinIO Compose service also uses local-only credentials from the
-developer environment. Replace them before connecting to any non-local service.
+The included MinIO Compose service uses fixed local-only credential fixtures in
+`compose.yaml`. It does not read the API's `.env.local` to override them. When
+customizing MinIO, configure the service and API credentials consistently;
+replace local fixtures before connecting to any non-local service.
 
 ## Configuration
 
@@ -103,10 +109,20 @@ production only when that driver is selected. Local filesystem storage is
 appropriate for development and persistent single-host deployments, but not
 for ephemeral or horizontally scaled instances.
 
+Production startup requires `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`,
+`DATABASE_URL`, `SERVER_ALLOWED_ORIGIN`, and `SERVER_RELEASE_ID`. With MinIO it
+also requires `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`, `MINIO_ENDPOINT`, and
+`MINIO_PUBLIC_URL`. `BETTER_AUTH_SECRET` is required in development as well.
+Non-loopback MinIO connections require `MINIO_USE_SSL=true`.
+
 Do not commit `.env.local`, credentials, or SQLite files. Production mode does
 not create the development administrator or sample records. Replace every
 development credential and provision the first production administrator through
 an approved operational process before any shared deployment.
+
+For request ordering and error paths, see [Runtime sequences](../docs/sequences.md).
+For persistent data recovery, see [Backup and restore](../docs/backup-restore.md).
+Changing a storage driver does not migrate existing objects or file metadata.
 
 ## Data ownership
 
@@ -115,6 +131,8 @@ administrator. These operations read the target's current state, count active
 administrators, and mutate within one SQLite write transaction. A target promoted
 or activated by a concurrent request receives the same protection; a stale
 pre-transaction read cannot bypass the guard. Conflicts return `409`.
+See the [transaction sequence](../docs/sequences.md#final-administrator-protection)
+for the concurrent-request example and the access rules for each operation.
 
 OTP recovery and administrator password resets validate both length limits from
 Better Auth's password configuration (currently 8–128 characters) before hashing

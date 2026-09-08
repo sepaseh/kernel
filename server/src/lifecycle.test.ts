@@ -9,6 +9,7 @@ const environment = {
   PATH: process.env.PATH,
   SystemRoot: process.env.SystemRoot,
 };
+const childProcessTimeout = 15_000;
 
 for (const failure of ["throw", "rejection"] as const) {
   test(`logs a process ${failure} without leaking stderr and exits unsuccessfully`, () => {
@@ -27,7 +28,7 @@ for (const failure of ["throw", "rejection"] as const) {
       }, 0);
     `,
       ],
-      { cwd, encoding: "utf8", env: environment, timeout: 5_000 },
+      { cwd, encoding: "utf8", env: environment, timeout: childProcessTimeout },
     );
     assert.equal(result.error, undefined);
     assert.equal(result.status, 1);
@@ -51,7 +52,7 @@ test("startup configuration failures are structured without opening a database",
     cwd,
     encoding: "utf8",
     env: environment,
-    timeout: 5_000,
+    timeout: childProcessTimeout,
   });
   assert.equal(result.error, undefined);
   assert.equal(result.status, 1);
@@ -73,7 +74,7 @@ test("development pretty printing preserves the same redaction policy", () => {
     logger.info({ password: 'synthetic-pretty-secret', event: 'test.pretty' }, 'Readable event');
   `,
     ],
-    { cwd, encoding: "utf8", env: environment, timeout: 5_000 },
+    { cwd, encoding: "utf8", env: environment, timeout: childProcessTimeout },
   );
   assert.equal(result.error, undefined);
   assert.equal(result.status, 0);

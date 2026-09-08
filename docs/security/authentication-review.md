@@ -35,6 +35,15 @@ cookie, token, account-recovery, or identity-provider change.
 - [ ] Session creation, refresh, revocation, privilege changes, and suspicious
       failures create protected audit events.
 
+## Current backend behavior
+
+Current backend behavior is documented in the [runtime sequences](../sequences.md):
+refresh returns the existing session token, terminal client refresh failure does
+not revoke server sessions, and password recovery does not explicitly revoke
+existing sessions. The checklist above includes deployment requirements that
+are not all implemented or verified. The historical review below remains a
+record of its original scope, not a current backend sign-off.
+
 ## Browser verification
 
 - [ ] Cookies and cache headers are inspected in browser developer tools.

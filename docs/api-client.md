@@ -2,6 +2,12 @@
 
 The API layer uses `src/shared/api/client.ts` as a small Axios wrapper around the configured backend base URL. Domain endpoint helpers live beside their feature.
 
+See [Runtime sequences](sequences.md) for login, shared session recovery, OTP
+recovery, email verification, file uploads, and final-administrator protection,
+including failure and cleanup paths. The current
+backend refresh endpoint returns the existing Better Auth session token; it
+does not implement a separate rotating refresh-token family.
+
 ## Features
 
 - Backend base URL from `VITE_API_BASE_URL`
@@ -104,6 +110,10 @@ at this boundary and represented as optional fields in domain models.
   uses a mobile-bound OTP. Both enforce Better Auth's configured password lengths
   and report policy rejection as `400`. Recovery leaves the OTP usable after a
   password-length rejection.
+- Email verification binds its OTP to the normalized email and authenticated
+  account. It updates the optional profile email independently of the internal
+  authentication identity. A duplicate-email rejection occurs after OTP
+  consumption; see [Email verification](sequences.md#email-verification).
 - Deleting, deactivating, or demoting the final active system administrator
   reports `409`, including when concurrent requests change the target's status
   or capability. Existing `Promise<void>` helpers and request types remain

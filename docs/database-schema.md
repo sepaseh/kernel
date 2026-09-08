@@ -1,8 +1,10 @@
 # Database schema
 
 This document is the human-readable reference for the Kernel SQLite database.
-The executable source of truth is `server/src/db/schema.ts`; versioned changes
-are applied by the SQL migrations in `server/drizzle`.
+The executable source of truth is [the Drizzle schema](../server/src/db/schema.ts);
+versioned changes are applied by the SQL migrations in `server/drizzle`.
+The [architecture diagram](architecture.md#system-overview) places this database
+in the system; [runtime sequences](sequences.md) explain how requests use it.
 
 ## Conventions
 
@@ -19,16 +21,21 @@ are applied by the SQL migrations in `server/drizzle`.
 
 ## Entity relationships
 
+The diagram shows all eleven application tables and their principal keys;
+the tables below list every column. Uppercase entity names correspond to the
+lowercase SQL table names. Dotted relationships are non-identifying foreign
+keys; solid relationships participate in a child's composite primary key.
+
 ```mermaid
 erDiagram
-    USER ||--o{ SESSION : has
-    USER ||--o{ ACCOUNT : authenticates_with
+    USER ||..o{ SESSION : has
+    USER ||..o{ ACCOUNT : authenticates_with
     USER ||--o{ USER_ROLES : receives
     ROLES ||--o{ USER_ROLES : assigned_through
     ROLES ||--o{ ROLE_PERMISSIONS : grants
-    USER ||--o{ FILES : uploads
-    FILES o|--o{ SETTINGS : light_logo
-    FILES o|--o{ SETTINGS : dark_logo
+    USER ||..o{ FILES : uploads
+    FILES o|..o{ SETTINGS : light_logo
+    FILES o|..o{ SETTINGS : dark_logo
 
     USER {
         text id PK
@@ -45,8 +52,8 @@ erDiagram
     ACCOUNT {
         text id PK
         text user_id FK
-        text issuer UK
-        text account_id UK
+        text provider_id "unique together with account_id"
+        text account_id "unique together with provider_id"
     }
     ROLES {
         text id PK
@@ -74,6 +81,7 @@ erDiagram
         text id PK
         text destination
         text purpose
+        text subject "nullable; no foreign key"
     }
     VERIFICATION {
         text id PK
@@ -85,7 +93,14 @@ erDiagram
 ```
 
 `UK` means a unique key. The uniqueness of `ACCOUNT` is the compound key
-`(issuer, account_id)`, rather than either column individually.
+`(provider_id, account_id)`, rather than either column individually.
+
+`SETTINGS` is used as a singleton (`id = 1`) by application code; the schema
+does not restrict the table to one row. The ERD shows the database's allowed
+cardinality. Logo references are optional and need not be distinct.
+`OTP_CODES.subject` is an application-level account binding with no foreign
+key. `VERIFICATION.identifier` and `CALENDAR_DATES.date` also have no declared
+entity relation, so the diagram intentionally leaves those tables unconnected.
 
 ## Better Auth tables
 
@@ -115,6 +130,15 @@ The internal `auth_email` exists because Better Auth's credential flow requires
 an email-shaped identity even for mobile-first accounts. It is not exposed as
 the user's email. The profile `email` remains `NULL` until a user verifies one.
 
+In TypeScript, `user.email` maps to SQL `auth_email`, while `user.profileEmail`
+maps to SQL `email`. Keep this distinction when reading authentication code or
+writing migrations; they are separate columns with separate unique constraints.
+
+The account email-verification flow updates `profileEmail` only; it does not
+change `auth_email` or Better Auth's `email_verified` flag. See
+[Email verification](sequences.md#email-verification) for challenge scope,
+consumption, and uniqueness failures.
+
 ### `session`
 
 | Column       | Drizzle type      | Null | Key/default    | Purpose                           |
@@ -136,9 +160,8 @@ Deleting a user cascades to its sessions.
 | -------------------------- | ----------------- | ---- | --------------- | ------------------------------------- |
 | `id`                       | text              | no   | PK              | Authentication account identifier     |
 | `user_id`                  | text              | no   | FK → `user.id`  | Owning user                           |
-| `issuer`                   | text              | no   | compound unique | Identity namespace                    |
-| `account_id`               | text              | no   | compound unique | Identity within the issuer            |
-| `provider_id`              | text              | no   | —               | Credential or external provider       |
+| `account_id`               | text              | no   | compound unique | Identity within the provider          |
+| `provider_id`              | text              | no   | compound unique | Credential or external provider       |
 | `password`                 | text              | yes  | —               | Password hash for credential accounts |
 | `access_token`             | text              | yes  | —               | Provider access token                 |
 | `refresh_token`            | text              | yes  | —               | Provider refresh token                |
@@ -149,7 +172,7 @@ Deleting a user cascades to its sessions.
 | `created_at`               | integer/timestamp | no   | —               | Creation time                         |
 | `updated_at`               | integer/timestamp | no   | —               | Last update time                      |
 
-The unique constraint covers `(issuer, account_id)`. Deleting a user cascades
+The unique constraint covers `(provider_id, account_id)`. Deleting a user cascades
 to its accounts.
 
 ### `verification`
@@ -224,6 +247,9 @@ must be handled deliberately by application logic.
 | `dark_logo_id`  | text         | yes  | FK → `files.id` | Public dark logo                    |
 
 Deleting a referenced logo sets the corresponding setting to `NULL`.
+Both theme columns contain serialized JSON but use ordinary SQLite text
+columns. The HTTP settings route validates palettes and language codes;
+the database has no language-catalog table or language foreign key.
 
 ### `otp_codes`
 
@@ -245,6 +271,12 @@ Deleting a referenced logo sets the corresponding setting to `NULL`.
 | `date` | text         | no   | PK          | ISO calendar date |
 
 The date is a natural key; a separate UUID would not add identity information.
+Values are Gregorian `YYYY-MM-DD` strings even when the frontend displays
+Jalali dates. See [Localization](localization.md#dates-and-layout).
+
+Drizzle's enum declarations for user status and file visibility constrain
+TypeScript values; the current migrations do not add SQL `CHECK` constraints
+for those fields. Request validation remains part of the HTTP boundary.
 
 ## Foreign keys and delete behavior
 
@@ -273,7 +305,7 @@ The date is a natural key; a separate UUID would not add identity information.
 | `session`          | `user_id`                       | non-unique | Sessions belonging to a user                    |
 | `account`          | `id`                            | primary    | Lookup by account ID                            |
 | `account`          | `user_id`                       | non-unique | Accounts belonging to a user                    |
-| `account`          | `issuer, account_id`            | unique     | Provider-scoped account identity                |
+| `account`          | `provider_id, account_id`       | unique     | Provider-scoped account identity                |
 | `verification`     | `id`                            | primary    | Lookup by verification ID                       |
 | `verification`     | `identifier`                    | non-unique | Latest verification for a subject               |
 | `roles`            | `id`                            | primary    | Lookup by role ID                               |
@@ -295,6 +327,22 @@ role lookup, owner file listing, or expiry cleanup becomes frequent.
 
 ## Changing the schema
 
+### Current migration history
+
+| Migration                         | Change                                                                                                       |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `0000_init_backend.sql`           | Creates the initial auth, authorization, settings, calendar, OTP, and file tables                            |
+| `0001_optional_profile_email.sql` | Rebuilds `user`, separates internal `auth_email` from nullable profile `email`, and recreates unique indexes |
+| `0002_bind_otp_subject.sql`       | Adds nullable `otp_codes.subject` and extends the destination/purpose index with that binding                |
+| `0003_outgoing_mauler.sql`        | Removes the obsolete account `issuer` column and keys accounts by `(provider_id, account_id)`                |
+
+Startup applies pending migrations before initializing settings and the optional
+development seed. `npm run server:migrate` applies migrations explicitly, but
+does not create application settings or seed records. Migration history is
+maintained by Drizzle in addition to the eleven application tables shown above.
+
+### Change procedure
+
 1. Update `server/src/db/schema.ts`.
 2. Generate a named migration:
 
@@ -311,3 +359,8 @@ role lookup, owner file listing, or expiry cleanup becomes frequent.
 
 Never edit an already deployed migration. Add a new migration so existing
 databases can move forward safely.
+
+Before applying a migration to retained data, rehearse it on a restored copy and
+preserve the matching database/object recovery point. Follow
+[Backup and restore](backup-restore.md); replacing an application artifact does
+not reverse a database migration.

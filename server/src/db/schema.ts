@@ -66,7 +66,6 @@ export const account = sqliteTable(
     createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
     id: text("id").primaryKey(),
     idToken: text("id_token"),
-    issuer: text("issuer").notNull(),
     password: text("password"),
     providerId: text("provider_id").notNull(),
     refreshToken: text("refresh_token"),
@@ -81,8 +80,8 @@ export const account = sqliteTable(
   },
   (table) => [
     index("account_user_id_index").on(table.userId),
-    uniqueIndex("account_issuer_account_id_index").on(
-      table.issuer,
+    uniqueIndex("account_provider_id_account_id_index").on(
+      table.providerId,
       table.accountId,
     ),
   ],

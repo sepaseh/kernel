@@ -40,6 +40,8 @@ the release manager must verify:
 - If DAST or manual security review is adopted, it has no unresolved
   release-blocking findings.
 - Required configuration or data migrations have a tested rollback path.
+- A matching database/object backup has passed an isolated
+  [restore rehearsal](backup-restore.md).
 - The previous production artifact and its configuration remain available.
 - A deployment operator and incident lead are available for the release window.
 - If staging is adopted as a release gate, the exact candidate artifact passes
@@ -100,6 +102,9 @@ collected. Do not attempt an unrelated forward fix during an active rollback.
    have changed.
 5. Restore the matching environment configuration. Run only a separately tested
    backward migration when data or schema changes require it.
+   If recovery requires a database snapshot, restore its matching object storage
+   as described in [Backup and restore](backup-restore.md), and record the
+   resulting data-loss window.
 6. Purge or invalidate cached HTML when necessary; fingerprinted static assets
    may remain cached.
 7. Re-run deployment smoke tests, critical authentication checks, API health
