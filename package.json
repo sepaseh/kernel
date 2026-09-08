@@ -7,7 +7,7 @@
     "node": ">=24.15.0 <25"
   },
   "overrides": {
-    "@better-auth/core": "1.7.2",
+    "@better-auth/core": "1.7.3",
     "qs": "^6.15.3"
   },
   "scripts": {
@@ -44,13 +44,13 @@
     "typecheck": "tsc -b --noEmit"
   },
   "dependencies": {
-    "@better-auth/drizzle-adapter": "1.7.2",
+    "@better-auth/drizzle-adapter": "1.7.3",
     "@hono/node-server": "^2.1.1",
     "@libsql/client": "^0.18.0",
     "antd": "^6.6.2",
     "antd-style": "^4.1.0",
     "axios": "^1.20.0",
-    "better-auth": "1.7.2",
+    "better-auth": "1.7.3",
     "dayjs": "^1.11.23",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.13.5",
