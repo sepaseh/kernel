@@ -85,7 +85,7 @@
     "@types/react-dom": "^19.2.7",
     "@typescript-eslint/types": "^8.69.0",
     "@vitejs/plugin-react": "^6.1.1",
-    "@vitest/browser-playwright": "^4.1.11",
+    "@vitest/browser-playwright": "^5.0.0",
     "@vitest/coverage-v8": "^4.1.11",
     "chrome-launcher": "^1.2.1",
     "drizzle-kit": "^0.31.10",
